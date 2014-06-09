@@ -6,5 +6,6 @@ package oop.ex7;
 public class memem {
     public static void main(String[] args) {
         int i = 0;
+        int b = 1;
     }
 }
