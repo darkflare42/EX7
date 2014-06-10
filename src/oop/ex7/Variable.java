@@ -6,7 +6,7 @@ package oop.ex7;
 public class Variable {
     private VariableType type;
     private String name;
-    private String value = "";
+    private boolean initialized = false;
 
 
     public Variable (String varType, String varName) throws InvalidTypeException{
@@ -14,10 +14,10 @@ public class Variable {
         name = varName;
     }
 
-    public Variable (String varType, String varName, String varValue) throws InvalidTypeException{
+    public Variable (String varType, String varName, boolean isInitialized) throws InvalidTypeException{
         type = findType(varType);
         name = varName;
-        value = varValue;
+        initialized = isInitialized;
     }
 
     private VariableType findType (String varType) throws InvalidTypeException{
@@ -44,7 +44,7 @@ public class Variable {
         return type;
     }
 
-    public String getValue () {
-        return value;
+    public boolean isInitialized () {
+        return initialized;
     }
 }
