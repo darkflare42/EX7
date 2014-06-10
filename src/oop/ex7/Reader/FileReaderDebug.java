@@ -7,7 +7,9 @@ import java.io.File;
  */
 public class FileReaderDebug {
     public static void main(String[] args) {
-        File file = new File("C:\\Dropbox\\Univercity\\Studies\\Semester_B\\OOP\\Homework\\ex7\\EX7\\tests\\test510.sjava");
+
+        //File file = new File("..\\tests\\test510.sjava");
+        File file = new File(FileReaderDebug.class.getResource("/oop/ex7/tests/test510.sjava").getFile());
         String string = "^[0-9]+;$";
         try {
             FileReader fileReader = new FileReader(file);
