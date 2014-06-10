@@ -12,7 +12,7 @@ public class FileReaderDebug {
         try {
             FileReader fileReader = new FileReader(file);
             while (fileReader.hasNext()) {
-//                System.in.read();
+                System.in.read();
                 System.out.println(fileReader.next());
             }
         }
