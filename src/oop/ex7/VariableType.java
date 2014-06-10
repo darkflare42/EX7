@@ -3,7 +3,7 @@ package oop.ex7;
 /**
  * Created by Oded on 10/6/2014.
  */
-public enum Types {
+public enum VariableType {
     INT("int"),
     STRING("String"),
     CHAR("char"),
@@ -12,7 +12,7 @@ public enum Types {
 
     private final String nameString;
 
-    Types (String name) {
+    VariableType(String name) {
         nameString = name;
     }
 
