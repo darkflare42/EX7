@@ -1,4 +1,4 @@
-package oop.ex7;
+package oop.ex7.Reader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,7 +28,8 @@ public class FileReader {
     }
 
     public String next() {
-        return scanner.next();
+        Pattern pattern = Pattern.compile(".*[;|{]");
+        return scanner.next(pattern).trim();
     }
 
     public String next(Pattern pattern) {
