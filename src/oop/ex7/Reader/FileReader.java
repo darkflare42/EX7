@@ -28,9 +28,9 @@ public class FileReader {
     }
 
     public String next() {
-        Pattern pattern = Pattern.compile(".*");
-        scanner.useDelimiter("[;|{]");
-        return scanner.next(pattern).trim();
+//        Pattern pattern = Pattern.compile(".*");
+        scanner.useDelimiter("[;|{]$");
+        return scanner.next().trim();
     }
 
     public String next(Pattern pattern) {
