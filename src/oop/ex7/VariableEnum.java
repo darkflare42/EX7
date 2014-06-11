@@ -11,6 +11,7 @@ public enum VariableEnum {
     DOUBLE("double");
 
     private final String nameString;
+    public static final String TYPES="(int|double|String|boolean|char)";
 
     VariableEnum(String name) {
         nameString = name;
