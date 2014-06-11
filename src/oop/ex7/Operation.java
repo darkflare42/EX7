@@ -1,14 +1,12 @@
 package oop.ex7;
 
-import com.sun.xml.internal.bind.v2.TODO;
-
 /**
  * Created by Oded on 10/6/2014.
  */
 public class Operation {
-    private VariableType varLeft;
-    private VariableType varRight;
-    private OperationType operation;
+    private VariableEnum varLeft;
+    private VariableEnum varRight;
+    private OperationEnum operation;
 
     /**
      * Operation constructor. Receives the VariableTypes of 2 operands and a string of an operator.
@@ -18,37 +16,37 @@ public class Operation {
      * @param var1
      * @param var2
      * @param op
-     * @throws OperatorTypeException
+     * @throws OperationTypeException
      */
-    public Operation(VariableType var1, VariableType var2, String op) throws OperatorTypeException {
+    public Operation(VariableEnum var1, String op, VariableEnum var2) throws OperationTypeException {
         varLeft = var1;
         varRight = var2;
-        operation = FindOperation(op);
+        operation = OperationEnum.toEnum(op);
     }
 
-    private OperationType FindOperation (String op) throws OperatorTypeException {
-        if (op.equals("+")) {
-            return OperationType.ADD;
-        } else if (op.equals("-")) {
-            return OperationType.SUBTRACT;
-        } else if (op.equals("*")) {
-            return OperationType.MULTIPLY;
-        } else if (op.equals("/")) {
-            return OperationType.DIVIDE;
-        } else {
-            throw new OperatorTypeException();
-        }
-    }
-
-    public VariableType ReturnType () throws OperationMismatchException {
-        double a = 1.2; //DEBUG
-        int b = 1;//DEBUG
-        double c = a + b;//DEBUG
-        //TODO finish this. add support for all crossing variables, eg double + int
+    public VariableEnum ReturnType () throws OperationMismatchException {
         if (varLeft == varRight) {
-            VariableType type =
-        } else {
-            throw new OperationMismatchException();
+            switch (varRight) {
+                case INT:
+                    return VariableEnum.INT;
+                case DOUBLE:
+                    return VariableEnum.DOUBLE;
+                case BOOLEAN:
+                    throw new OperationMismatchException();
+                case CHAR:
+                    throw new OperationMismatchException();
+                case STRING:
+                    if (operation == OperationEnum.ADD) {
+                        return VariableEnum.STRING;
+                    } else {
+                        throw new OperationMismatchException();
+                    }
+            }
+        } else if ((varLeft == VariableEnum.INT || varRight == VariableEnum.INT)
+                   && (varLeft == VariableEnum.DOUBLE || varRight == VariableEnum.DOUBLE)) {
+            return VariableEnum.DOUBLE;
         }
+
+        throw new OperationMismatchException();
     }
 }
