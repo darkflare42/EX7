@@ -3,7 +3,7 @@ package oop.ex7;
 /**
  * Created by Oded on 10/6/2014.
  */
-public class Variable {
+public class Variable implements Expression{
     private VariableEnum type;
     private String name;
     private boolean initialized = false;
