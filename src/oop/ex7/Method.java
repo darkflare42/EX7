@@ -18,25 +18,29 @@ public class Method implements Expression {
             type = VariableEnum.toEnum(returnType);
         }
         name = methodName;
-        SetVariables(args);
+        variables = SetVariables(args);
     }
 
-    private void SetVariables(String args) throws VariableTypeException, MethodBadArgsException{
-        args = args.trim();
-        if (args.endsWith(",")) {
-            throw new MethodBadArgsException();
-        }
+    private ArrayList<Variable> SetVariables(String args) throws VariableTypeException, MethodBadArgsException{
         String[] arguments = args.split(",");
         String[] currentArgument;
         String argument;
+        ArrayList<Variable> newVariables= new ArrayList<Variable>();
         for (String arg: arguments) {
             argument = arg.trim();
             if (argument.matches(VariableEnum.TYPES+"\\s+([a-zA-Z_]+)([\\w]*)")) {
                 currentArgument = argument.split(" ");
-                variables.add(new Variable(currentArgument[0], currentArgument[1]));
+                newVariables.add(new Variable(currentArgument[0], currentArgument[1]));
             } else {
                 throw new MethodBadArgsException();
             }
+        }
+        return newVariables;
+    }
+
+    public void AddVariable (Variable variable) {
+        if (!variables.contains(variable)) {
+            variables.add(variable);
         }
     }
 
