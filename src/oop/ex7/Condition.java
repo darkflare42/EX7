@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Condition {
 
     public static boolean isValid (String condition, ArrayList<Expression> expressions)
-            throws ConditionExpressionNotBooleanException, ConditionUnknownExpressionException, ConditionExpressionNotInitializedException{
+            throws ConditionExpressionNotBooleanException, ConditionUnknownExpressionException, VariableUninitializedException{
         condition = condition.trim();
         if (condition.matches("\\b(true|false)\\b")) {
             // Is the string a boolean.
@@ -26,7 +26,7 @@ public class Condition {
                         throw new ConditionExpressionNotBooleanException();
                     }
                 } else {
-                    throw new ConditionExpressionNotInitializedException();
+                    throw new VariableUninitializedException();
                 }
             }
         }
