@@ -4,49 +4,36 @@ package oop.ex7;
  * Created by Oded on 10/6/2014.
  */
 public class Operation {
-    private VariableEnum varLeft;
-    private VariableEnum varRight;
-    private OperationEnum operation;
 
-    /**
-     * Operation constructor. Receives the VariableTypes of 2 operands and a string of an operator.
-     * If the caller would have sent strings of the names of the variables, then it would also have
-     * to send the database of all initialized values and it would have to cross-check for initialzied values, as such
-     * the caller is the one that should handle that.
-     * @param var1
-     * @param var2
-     * @param op
-     * @throws OperationTypeException
-     */
-    public Operation(VariableEnum var1, String op, VariableEnum var2) throws OperationTypeException {
-        varLeft = var1;
-        varRight = var2;
-        operation = OperationEnum.toEnum(op);
+    public static VariableEnum Operate(VariableEnum var1, String op, VariableEnum var2) throws OperationTypeException, OperationMismatchException {
+        return ReturnType(var1, OperationEnum.toEnum(op), var2);
     }
 
-    public Operation(VariableEnum var1, String op, Variable var2) throws OperationTypeException, OperationUninitializedVariableException {
-        varLeft = var1;
+    public static VariableEnum Operate(VariableEnum var1, String op, Variable var2) throws OperationTypeException, OperationMismatchException, OperationUninitializedVariableException {
+        VariableEnum varRight;
         if (var2.isInitialized()) {
             varRight = var2.getType();
         } else {
             throw new OperationUninitializedVariableException ();
         }
-        operation = OperationEnum.toEnum(op);
+        return Operate(var1, op, varRight);
     }
 
-    public Operation(Variable var1, String op, Variable var2) throws OperationTypeException, OperationUninitializedVariableException {
+    public static VariableEnum Operate(Variable var1, String op, Variable var2) throws OperationTypeException, OperationMismatchException, OperationUninitializedVariableException {
+        VariableEnum varLeft;
+        VariableEnum varRight;
         if (var1.isInitialized() && var2.isInitialized()) {
             varLeft = var1.getType();
             varRight = var2.getType();
         } else {
             throw new OperationUninitializedVariableException ();
         }
-        operation = OperationEnum.toEnum(op);
+        return Operate(varLeft, op, varRight);
     }
 
-    public VariableEnum ReturnType () throws OperationMismatchException {
-        if (varLeft == varRight) {
-            switch (varRight) {
+    private static VariableEnum ReturnType (VariableEnum var1, OperationEnum op, VariableEnum var2) throws OperationMismatchException {
+        if (var1 == var2) {
+            switch (var1) {
                 case INT:
                     return VariableEnum.INT;
                 case DOUBLE:
@@ -63,8 +50,8 @@ public class Operation {
 //                        throw new OperationMismatchException();
 //                    }
             }
-        } else if ((varLeft == VariableEnum.INT || varRight == VariableEnum.INT)
-                   && (varLeft == VariableEnum.DOUBLE || varRight == VariableEnum.DOUBLE)) {
+        } else if ((var1 == VariableEnum.INT || var2 == VariableEnum.INT)
+                   && (var1 == VariableEnum.DOUBLE || var2 == VariableEnum.DOUBLE)) {
             return VariableEnum.DOUBLE;
         }
 
