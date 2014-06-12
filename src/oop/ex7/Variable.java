@@ -38,6 +38,16 @@ public class Variable implements Expression{
         initialized = true;
     }
 
+    public void Assign (Variable assign) throws VariableTypeException, VariableUninitializedException{
+        if (!assign.isInitialized()) {
+            throw new VariableUninitializedException();
+        }
+        if (assign.getType()!=type) {
+            throw new VariableTypeException();
+        }
+        initialized = true;
+    }
+
     @Override
     public boolean equals(Object nameString) {
         return (nameString.equals(name));
