@@ -24,6 +24,26 @@ public class Operation {
         operation = OperationEnum.toEnum(op);
     }
 
+    public Operation(VariableEnum var1, String op, Variable var2) throws OperationTypeException, OperationUninitializedVariableException {
+        varLeft = var1;
+        if (var2.isInitialized()) {
+            varRight = var2.getType();
+        } else {
+            throw new OperationUninitializedVariableException ();
+        }
+        operation = OperationEnum.toEnum(op);
+    }
+
+    public Operation(Variable var1, String op, Variable var2) throws OperationTypeException, OperationUninitializedVariableException {
+        if (var1.isInitialized() && var2.isInitialized()) {
+            varLeft = var1.getType();
+            varRight = var2.getType();
+        } else {
+            throw new OperationUninitializedVariableException ();
+        }
+        operation = OperationEnum.toEnum(op);
+    }
+
     public VariableEnum ReturnType () throws OperationMismatchException {
         if (varLeft == varRight) {
             switch (varRight) {
@@ -36,7 +56,7 @@ public class Operation {
                 case CHAR:
                     throw new OperationMismatchException();
                 case STRING:
-                    throw new OperationMismatchException(); // Java supports this, but s-java does not.
+                    throw new OperationMismatchException(); // Java supports String addition, but s-java does not.
 //                    if (operation == OperationEnum.ADD) {
 //                        return VariableEnum.STRING;
 //                    } else {

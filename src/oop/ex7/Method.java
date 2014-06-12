@@ -28,7 +28,7 @@ public class Method implements Expression {
         ArrayList<Variable> newVariables= new ArrayList<Variable>();
         for (String arg: arguments) {
             argument = arg.trim();
-            if (argument.matches(VariableEnum.TYPES+"\\s+([a-zA-Z_]+)([\\w]*)")) {
+            if (argument.matches(VariableEnum.Types()+"\\s+([a-zA-Z_]+)([\\w]*)")) {
                 currentArgument = argument.split(" ");
                 newVariables.add(new Variable(currentArgument[0], currentArgument[1], true));
             } else {

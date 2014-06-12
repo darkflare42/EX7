@@ -11,7 +11,8 @@ public enum VariableEnum {
     DOUBLE("double");
 
     private final String nameString;
-    public static final String TYPES="(int|double|String|boolean|char)";
+//    public static final String TYPES="(int|double|String|boolean|char)";
+    private static String TYPES = null;
 
     VariableEnum(String name) {
         nameString = name;
@@ -35,5 +36,21 @@ public enum VariableEnum {
         } else {
             throw new VariableTypeException();
         }
+    }
+
+    /**
+     * Dynamically create the regex expression for all the Variable types.
+     * @return
+     */
+    public static String Types () {
+        if (TYPES != null) {
+            return TYPES;
+        }
+        TYPES = "(";
+        for (VariableEnum type : VariableEnum.values()) {
+            TYPES += type.toString() + "|";
+        }
+        TYPES = TYPES.substring(0, TYPES.length()-1) + ")";
+        return TYPES;
     }
 }

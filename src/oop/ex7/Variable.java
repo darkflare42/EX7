@@ -6,18 +6,36 @@ package oop.ex7;
 public class Variable implements Expression{
     private VariableEnum type;
     private String name;
-    private boolean initialized = false;
+    private boolean initialized;
+    private boolean array;
 
 
     public Variable (String varType, String varName) throws VariableTypeException {
         type = VariableEnum.toEnum(varType);
         name = varName;
+        initialized = false;
+        array = false;
     }
 
     public Variable (String varType, String varName, boolean isInitialized) throws VariableTypeException {
         type = VariableEnum.toEnum(varType);
         name = varName;
         initialized = isInitialized;
+        array = false;
+    }
+
+    public Variable (String varType, String varName, boolean isinitialized, boolean isarray) throws VariableTypeException {
+        type = VariableEnum.toEnum(varType);
+        name = varName;
+        initialized = isinitialized;
+        array = isarray;
+    }
+
+    public void Assign (VariableEnum assign) throws VariableTypeException{
+        if (assign!=type) {
+            throw new VariableTypeException();
+        }
+        initialized = true;
     }
 
     public String getName () {
@@ -30,5 +48,9 @@ public class Variable implements Expression{
 
     public boolean isInitialized () {
         return initialized;
+    }
+
+    public boolean isArray () {
+        return array;
     }
 }
