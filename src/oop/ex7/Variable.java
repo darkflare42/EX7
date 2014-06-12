@@ -38,6 +38,11 @@ public class Variable implements Expression{
         initialized = true;
     }
 
+    @Override
+    public boolean equals(Object nameString) {
+        return (nameString.equals(name));
+    }
+
     public String getName () {
         return name;
     }
