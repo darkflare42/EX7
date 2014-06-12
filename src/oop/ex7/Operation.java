@@ -9,24 +9,24 @@ public class Operation {
         return ReturnType(var1, OperationEnum.toEnum(op), var2);
     }
 
-    public static VariableEnum Operate(VariableEnum var1, String op, Variable var2) throws OperationTypeException, OperationMismatchException, OperationUninitializedVariableException {
+    public static VariableEnum Operate(VariableEnum var1, String op, Variable var2) throws OperationTypeException, OperationMismatchException, VariableUninitializedException {
         VariableEnum varRight;
         if (var2.isInitialized()) {
             varRight = var2.getType();
         } else {
-            throw new OperationUninitializedVariableException ();
+            throw new VariableUninitializedException();
         }
         return Operate(var1, op, varRight);
     }
 
-    public static VariableEnum Operate(Variable var1, String op, Variable var2) throws OperationTypeException, OperationMismatchException, OperationUninitializedVariableException {
+    public static VariableEnum Operate(Variable var1, String op, Variable var2) throws OperationTypeException, OperationMismatchException, VariableUninitializedException {
         VariableEnum varLeft;
         VariableEnum varRight;
         if (var1.isInitialized() && var2.isInitialized()) {
             varLeft = var1.getType();
             varRight = var2.getType();
         } else {
-            throw new OperationUninitializedVariableException ();
+            throw new VariableUninitializedException();
         }
         return Operate(varLeft, op, varRight);
     }
