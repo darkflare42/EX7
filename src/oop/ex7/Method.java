@@ -30,7 +30,7 @@ public class Method implements Expression {
             argument = arg.trim();
             if (argument.matches(VariableEnum.TYPES+"\\s+([a-zA-Z_]+)([\\w]*)")) {
                 currentArgument = argument.split(" ");
-                newVariables.add(new Variable(currentArgument[0], currentArgument[1]));
+                newVariables.add(new Variable(currentArgument[0], currentArgument[1], true));
             } else {
                 throw new MethodBadArgsException();
             }
