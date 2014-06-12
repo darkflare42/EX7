@@ -36,11 +36,12 @@ public class Operation {
                 case CHAR:
                     throw new OperationMismatchException();
                 case STRING:
-                    if (operation == OperationEnum.ADD) {
-                        return VariableEnum.STRING;
-                    } else {
-                        throw new OperationMismatchException();
-                    }
+                    throw new OperationMismatchException(); // Java supports this, but s-java does not.
+//                    if (operation == OperationEnum.ADD) {
+//                        return VariableEnum.STRING;
+//                    } else {
+//                        throw new OperationMismatchException();
+//                    }
             }
         } else if ((varLeft == VariableEnum.INT || varRight == VariableEnum.INT)
                    && (varLeft == VariableEnum.DOUBLE || varRight == VariableEnum.DOUBLE)) {
