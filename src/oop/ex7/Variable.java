@@ -24,10 +24,10 @@ public class Variable implements Expression{
         array = false;
     }
 
-    public Variable (String varType, String varName, boolean isinitialized, boolean isarray) throws VariableTypeException {
+    public Variable (String varType, String varName, boolean isInitialized, boolean isarray) throws VariableTypeException {
         type = VariableEnum.toEnum(varType);
         name = varName;
-        initialized = isinitialized;
+        initialized = isInitialized;
         array = isarray;
     }
 

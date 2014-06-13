@@ -1,6 +1,9 @@
 package oop.ex7;
 
+import sun.awt.image.ImageWatched;
+
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 /**
  * Created by Oded on 11/6/2014.
@@ -8,7 +11,7 @@ import java.util.ArrayList;
 public class Method implements Expression {
     private VariableEnum type;
     private String name;
-    private ArrayList<Expression> expressions;
+    private LinkedHashMap<String, Expression> expressions;
 
 
     /**
@@ -31,21 +34,21 @@ public class Method implements Expression {
         expressions = SetVariables(args);
     }
 
-    public Method (String returnType, String methodName, String args, ArrayList<Expression> outsideExpressions) throws VariableTypeException, MethodBadArgsException{
+    public Method (String returnType, String methodName, String args, LinkedHashMap<String,Expression> outsideExpressions) throws VariableTypeException, MethodBadArgsException{
         this(returnType, methodName, args);
-        expressions.addAll(outsideExpressions);
+        expressions.putAll(outsideExpressions);
     }
 
-    private ArrayList<Expression> SetVariables(String args) throws VariableTypeException, MethodBadArgsException{
+    private LinkedHashMap<String, Expression> SetVariables(String args) throws VariableTypeException, MethodBadArgsException{
         String[] arguments = args.split(",");
         String[] currentArgument;
         String argument;
-        ArrayList<Expression> newVariables= new ArrayList<Expression>();
+        LinkedHashMap<String,Expression> newVariables= new LinkedHashMap<String, Expression>();
         for (String arg: arguments) {
             argument = arg.trim();
             if (argument.matches(VariableEnum.Types()+"\\s+([a-zA-Z_]+)([\\w]*)")) {
                 currentArgument = argument.split(" ");
-                newVariables.add(new Variable(currentArgument[0], currentArgument[1], true));
+                newVariables.put(currentArgument[1], new Variable(currentArgument[0], currentArgument[1], true));
             } else {
                 throw new MethodBadArgsException();
             }
@@ -54,8 +57,8 @@ public class Method implements Expression {
     }
 
     public void AddVariable (Variable variable) {
-        if (!expressions.contains(variable)) {
-            expressions.add(variable);
+        if (!expressions.containsValue(variable)) {
+            expressions.put(variable.getName(), variable);
         }
     }
 
@@ -71,7 +74,7 @@ public class Method implements Expression {
         return true;
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public LinkedHashMap<String, Expression> getExpressions() {
         return expressions;
     }
 }
