@@ -31,8 +31,8 @@ public class Condition {
             }
         }
         if (condition.matches("\\b([a-zA-Z_]+)([\\w]*)[ ]*[(][ ]*[)]\\b")) {
-            // Is the string a method. Assumes method are saved without parentheses in their names.
-            int index = expressions.indexOf(condition.substring(0, condition.indexOf("(")).trim());
+            // Is the string a method. Assumes method are saved with parentheses in their names.
+            int index = expressions.indexOf(condition);
             if (index != 0) {
                 Method method = (Method)expressions.get(index);
                 if (method.getType() == VariableEnum.BOOLEAN) {

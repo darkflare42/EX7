@@ -18,7 +18,8 @@ public class Method implements Expression {
         } else {
             type = VariableEnum.toEnum(returnType);
         }
-        name = methodName;
+        name = methodName.trim() + "()"; // Save a method name with parentheses to deal with variable and methods having
+                                         // possibly the same name.
         expressions = SetVariables(args);
     }
 
