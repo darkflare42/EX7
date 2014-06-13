@@ -67,6 +67,10 @@ public class Method implements Expression {
         return type;
     }
 
+    public boolean isInitialized () {
+        return true;
+    }
+
     public ArrayList<Expression> getExpressions() {
         return expressions;
     }
