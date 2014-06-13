@@ -10,25 +10,17 @@ public class Operation {
     }
 
     public static VariableEnum Operate(VariableEnum var1, String op, Expression var2) throws OperationTypeException, OperationMismatchException, VariableUninitializedException {
-        if (CheckInitialize(var2)) {
+        if (var2.isInitialized()) {
             return Operate(var1, op, var2.getType());
         }
         throw new VariableUninitializedException();
     }
 
     public static VariableEnum Operate(Expression var1, String op, Expression var2) throws OperationTypeException, OperationMismatchException, VariableUninitializedException {
-        if (CheckInitialize(var1) && CheckInitialize(var2)) {
+        if (var1.isInitialized() && var2.isInitialized()) {
             return Operate(var1.getType(), op, var2.getType());
         }
         throw new VariableUninitializedException();
-    }
-
-    private static boolean CheckInitialize(Expression expression) {
-        if (expression.getClass() == Method.class) {
-            return true;
-        }
-        Variable variable = (Variable)expression;
-        return (variable.isInitialized());
     }
 
     private static VariableEnum ReturnType (VariableEnum var1, OperationEnum op, VariableEnum var2) throws OperationMismatchException {
