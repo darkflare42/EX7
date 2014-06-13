@@ -6,4 +6,5 @@ package oop.ex7;
 public interface Expression {
     public String getName();
     public VariableEnum getType();
+    public boolean equals(Object nameString);
 }
