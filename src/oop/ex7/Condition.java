@@ -17,7 +17,7 @@ public class Condition {
         if (condition.matches("\\b([a-zA-Z_]+)([\\w]*)\\b")) {
             // Is the string a variable.
             int index = indexOf(condition, expressions);
-            if (index != 0) {
+            if (index != -1) {
                 Variable variable = (Variable)expressions.get(index);
                 if (variable.isInitialized()) {
                     if (variable.getType() == VariableEnum.BOOLEAN) {
@@ -33,7 +33,7 @@ public class Condition {
         if (condition.matches("\\b([a-zA-Z_]+)([\\w]*)[ ]*[(][ ]*[)]\\b")) {
             // Is the string a method. Assumes method are saved with parentheses in their names.
             int index = indexOf(condition, expressions);
-            if (index != 0) {
+            if (index != -1) {
                 Method method = (Method)expressions.get(index);
                 if (method.getType() == VariableEnum.BOOLEAN) {
                     return true;
