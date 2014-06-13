@@ -13,7 +13,7 @@ public class Method implements Expression {
 
     /**
      *
-     * @param returnType VariableType that the method will return. If void, should be "null"
+     * @param returnType VariableType that the method will return. If void, should be "void"
      * @param methodName
      * @param args
      * @throws VariableTypeException
@@ -21,7 +21,7 @@ public class Method implements Expression {
      */
     public Method (String returnType, String methodName, String args) throws VariableTypeException, MethodBadArgsException{
         // May be redundant due to always needing reference to the expressions outside of this method's scope.
-        if (returnType.equals("null")) {
+        if (returnType.equals("void")) {
             type = null;
         } else {
             type = VariableEnum.toEnum(returnType);
