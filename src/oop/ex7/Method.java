@@ -59,6 +59,11 @@ public class Method implements Expression {
         }
     }
 
+    @Override
+    public boolean equals(Object nameString) {
+        return (nameString.equals(name));
+    }
+
     public String getName () {
         return name;
     }
