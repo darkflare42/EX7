@@ -11,6 +11,14 @@ public class Method implements Expression {
     private ArrayList<Expression> expressions;
 
 
+    /**
+     *
+     * @param returnType VariableType that the method will return. If void, should be "null"
+     * @param methodName
+     * @param args
+     * @throws VariableTypeException
+     * @throws MethodBadArgsException
+     */
     public Method (String returnType, String methodName, String args) throws VariableTypeException, MethodBadArgsException{
         // May be redundant due to always needing reference to the expressions outside of this method's scope.
         if (returnType.equals("null")) {
