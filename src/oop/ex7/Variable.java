@@ -38,7 +38,7 @@ public class Variable implements Expression{
         initialized = true;
     }
 
-    public void Assign (Variable assign) throws VariableTypeException, VariableUninitializedException{
+    public void Assign (Expression assign) throws VariableTypeException, VariableUninitializedException{
         if (!assign.isInitialized()) {
             throw new VariableUninitializedException();
         }
