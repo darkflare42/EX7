@@ -62,4 +62,17 @@ public enum VariableEnum {
         TYPES = TYPES.substring(0, TYPES.length()-1) + ")";
         return TYPES;
     }
+
+    public static String TypesInclVoid(){
+        if (TYPES != null) {
+            return TYPES;
+        }
+        TYPES = "(";
+        for (VariableEnum type : VariableEnum.values()) {
+            TYPES += type.toString() + "|";
+        }
+        TYPES += "void|";
+        TYPES = TYPES.substring(0, TYPES.length()-1) + ")";
+        return TYPES;
+    }
 }
