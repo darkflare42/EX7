@@ -6,7 +6,7 @@ package oop.ex7;
 public class RegexBlat {
     //TODO delete this
     public static void main(String[] args) {
-        String regexHell = "\\b(([a-zA-Z_]+)([\\w]*))\\s*[=]\\s*((([a-zA-Z_]+)([\\w]*))|(([a-zA-Z_]+)([\\w]*)[(].*[)])|(\\d+\\.\\d+)|(\\d+))\\s*(\\+|\\-|\\*|\\/)\\s*((([a-zA-Z_]+)([\\w]*))|(([a-zA-Z_]+)([\\w]*)[(].*[)])|(\\d+\\.\\d+)|(\\d+))\\s*[;]";
+        String regexHell = "\\s*(([a-zA-Z_]+)([\\w]*))\\s*[=]\\s*((([a-zA-Z_]+)([\\w]*))|(([a-zA-Z_]+)([\\w]*)[(].*[)])|(\\d+\\.\\d+)|(\\d+))\\s*(\\+|\\-|\\*|\\/)\\s*((([a-zA-Z_]+)([\\w]*))|(([a-zA-Z_]+)([\\w]*)[(].*[)])|(\\d+\\.\\d+)|(\\d+))\\s*[;]";
 
         // regex for human beings:
         String variableReg = "(([a-zA-Z_]+)([\\w]*))";
@@ -15,17 +15,18 @@ public class RegexBlat {
         String intReg = "(\\d+)";
         String operations = "(\\+|\\-|\\*|\\/)";
         String zeroSpaceOrMore = "\\s*";
-        String boundry = "\\b";
         String equals = "[=]";
         String semicolon = "[;]";
         String startSet = "(";
         String endSet = ")";
         String orReg = "|";
-        String finalReg = boundry + variableReg + zeroSpaceOrMore + equals + zeroSpaceOrMore +
-                startSet + variableReg + orReg + methodReg + orReg + doubleReg + orReg + intReg + endSet +
-                zeroSpaceOrMore + operations + zeroSpaceOrMore +
-                startSet + variableReg + orReg + methodReg + orReg + doubleReg + orReg + intReg + endSet +
-                zeroSpaceOrMore + semicolon;
+
+        String VariableEquals = zeroSpaceOrMore + variableReg + zeroSpaceOrMore + equals + zeroSpaceOrMore;
+        String ValidOperationTypes = startSet + variableReg + orReg + methodReg + orReg + doubleReg + orReg + intReg + endSet;
+        String Operators = zeroSpaceOrMore + operations + zeroSpaceOrMore;
+        String EndOfLine = zeroSpaceOrMore + semicolon;
+
+        String finalReg = VariableEquals + ValidOperationTypes + Operators + ValidOperationTypes + EndOfLine;
 
         if (finalReg.equals(regexHell)) {
             System.out.println("true");
