@@ -1,4 +1,4 @@
-package oop.ex7;
+package oop.ex7.Expressions;
 
 /**
  * Interface class to every expression, e.g. Variables and Methods

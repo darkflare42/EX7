@@ -1,6 +1,7 @@
 package oop.ex7.Reader;
 
 import oop.ex7.Expressions.ExpressionTypeEnum;
+import oop.ex7.Expressions.VariableEnum;
 
 import java.io.File;
 
@@ -10,8 +11,10 @@ import java.io.File;
 public class FileReaderDebug {
     public static void main(String[] args) {
 
+        String test3 = VariableEnum.Types(true);
+        String test2 = VariableEnum.Types(false);
         //File file = new File("..\\tests\\test510.sjava");
-        File file = new File(FileReaderDebug.class.getResource("/oop/ex7/tests/test001.sjava").getFile());
+        File file = new File(FileReaderDebug.class.getResource("/oop/ex7/testers/tests/test001.sjava").getFile());
         String string = "^[0-9]+;$";
         ExpressionTypeEnum expressionType;
         String test  = ExpressionTypeEnum.MEMBER_DECLARATION_REGEX;

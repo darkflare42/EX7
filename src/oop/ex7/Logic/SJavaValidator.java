@@ -4,6 +4,7 @@ import oop.ex7.Logic.Exceptions.CompilationException;
 import oop.ex7.Reader.FileReader;
 import oop.ex7.Reader.IOException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
@@ -15,18 +16,19 @@ public class SJavaValidator {
     public static void validate(String filename){
 
         try{
-            FileReader reader = new FileReader(filename); //throws filenotfound
+            File file = new File(filename);
+            FileReader reader = new FileReader(file); //throws filenotfound
             SyntaxCompiler.compile(reader);
-            RunTimeCompiler.compile(); //TODO: implement
+            System.out.println(0);
         }
         catch (FileNotFoundException ex){
-
+            System.out.println(2);
         }
         catch (CompilationException ex){
-
+            System.out.println(1);
         }
         catch (IOException ex){
-
+            System.out.println(2);
         }
 
     }

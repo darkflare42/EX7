@@ -1,4 +1,8 @@
-package oop.ex7;
+package oop.ex7.Expressions;
+
+import oop.ex7.Expressions.Exceptions.OperationMismatchException;
+import oop.ex7.Expressions.Exceptions.OperationTypeException;
+import oop.ex7.Expressions.Exceptions.VariableUninitializedException;
 
 /**
  * Class to handle an operation of 2 Expressions.

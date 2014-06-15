@@ -1,7 +1,9 @@
-package oop.ex7;
+package oop.ex7.Expressions;
+
+import oop.ex7.Expressions.Exceptions.OperationTypeException;
 
 /**
- * Enum for all the Operation types recognized.
+ * Created by Oded on 10/6/2014.
  */
 public enum OperationEnum {
     ADD("+"),
@@ -10,6 +12,8 @@ public enum OperationEnum {
     DIVIDE("/");
 
     private final String nameString;
+    private static String OPERATIONS = null;
+
 
     OperationEnum(String name) {
         nameString = name;
@@ -19,19 +23,25 @@ public enum OperationEnum {
         return nameString;
     }
 
-    /**
-     * Convert a string to enum.
-     * @param string String to convert.
-     * @return OperationEnum according to the string.
-     * @throws OperationTypeException if string is not a String of a valid operation.
-     */
-    public static OperationEnum toEnum (String string) throws OperationTypeException{
+    public static OperationEnum toEnum (String string) throws OperationTypeException {
         for (OperationEnum operation: OperationEnum.values()) {
             if (string.equals(operation.toString())) {
                 return operation;
             }
         }
         throw new OperationTypeException();
+    }
+
+    public static String operationValues () {
+        if (OPERATIONS != null) {
+                return OPERATIONS;
+        }
+        OPERATIONS = "(";
+        for (OperationEnum type : OperationEnum.values()) {
+            OPERATIONS += type.toString() + "|";
+        }
+        OPERATIONS = OPERATIONS.substring(0, OPERATIONS.length()-1) + ")";
+        return OPERATIONS;
     }
 
 //    public static OperationEnum toEnum (String string) throws OperationTypeException{

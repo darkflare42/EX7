@@ -1,4 +1,4 @@
-package oop.ex7;
+package oop.ex7.Expressions.Exceptions;
 
 import oop.ex7.Logic.Exceptions.CompilationException;
 
