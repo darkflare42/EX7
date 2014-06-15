@@ -62,13 +62,13 @@ public class Method implements Expression {
         }
     }
 
-    public boolean ValidateHeader (VariableEnum[] hearderTypes) throws MethodBadArgsCountException, MethodTypeMismatchException{
-        if (headerExpressions.size() != hearderTypes.length) {
+    public boolean ValidateHeader (VariableEnum[] headerTypes) throws MethodBadArgsCountException, MethodTypeMismatchException{
+        if (headerExpressions.size() != headerTypes.length) {
             throw new MethodBadArgsCountException();
         }
         int i = 0;
         for (Expression innerExpression : headerExpressions.values()) {
-            if (innerExpression.getType() != hearderTypes[i]) {
+            if (innerExpression.getType() != headerTypes[i]) {
                 throw new MethodTypeMismatchException();
             }
             i++;
