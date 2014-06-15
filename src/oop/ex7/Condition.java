@@ -15,6 +15,7 @@ public class Condition {
      * @throws ConditionExpressionNotBooleanException Condition represents a VariableType which is not boolean.
      * @throws ConditionUnknownExpressionException Condition call an expression that does not exist.
      * @throws VariableUninitializedException Condition contains a variable which is uninitialized.
+     * @throws oop.ex7.ConditionArrayCallMismatch Condition refers to a variable as an array or vice versa.
      */
     public static boolean isValid (String condition, LinkedHashMap<String, Expression> expressions)
             throws ConditionExpressionNotBooleanException, ConditionUnknownExpressionException, VariableUninitializedException, ConditionArrayCallMismatch{
