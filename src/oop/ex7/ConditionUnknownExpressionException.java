@@ -1,10 +1,10 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 12/06/14.
+ * Exception for when a Condition contains a reference to an expression that does not exist.
  */
 public class ConditionUnknownExpressionException extends Exception {
     public ConditionUnknownExpressionException() {
-        super();
+        super("Condition contains a reference to an expression that does not exist");
     }
 }

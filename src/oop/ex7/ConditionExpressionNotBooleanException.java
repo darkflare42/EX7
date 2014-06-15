@@ -1,10 +1,10 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 12/06/14.
+ * Exception for when a condition tries to treat a non-boolean type as a boolean.
  */
 public class ConditionExpressionNotBooleanException extends Exception {
     public ConditionExpressionNotBooleanException () {
-        super();
+        super("Condition tried to treat a non-boolean type as a boolean");
     }
 }
