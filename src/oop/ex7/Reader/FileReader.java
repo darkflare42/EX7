@@ -88,7 +88,7 @@ public class FileReader {
     }
 
     public void moveToFirstMethodDeclaration(){
-        while(ExpressionTypeEnum.checkType(next()) != ExpressionTypeEnum.METHOD_DECLARATION && hasNext()){
+        while(ExpressionTypeEnum.checkType(m_currLine) != ExpressionTypeEnum.METHOD_DECLARATION && hasNext()){
             next();
         }
     }
@@ -96,7 +96,7 @@ public class FileReader {
     public FileReader getMethodBlock(){
         next(); //Read start of method block
         String methodBlock = "";
-        int counter = 0;
+        int counter = 1;
         do{
             if(m_currLine.contains("{"))
                 counter++;

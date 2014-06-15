@@ -33,7 +33,7 @@ public enum ExpressionTypeEnum {
             //"int|double|String|boolean|char) *[\w\<\>\[\]]+\s+_?[a-zA-Z][_\w]*( ?=.*)?;";
     public static final String RETURN_REGEX = "return.*;";
     public static final String METHOD_CALL_REGEX = NAME + "\\(.*\\);";
-    public static final String OPERATION_REGEX =  " ?=.*;$";
+    public static final String OPERATION_REGEX =  "\\w.*=.*;";
     public static final String BLOCK_TYPES = "(if|while)";
     public static final String BLOCK_REGEX = BLOCK_TYPES + " ?\\(.*\\) ?\\"+BLOCK_START_CHAR;
     public static final String ARRAY_TYPE_REGEX = "(int|String|char|boolean|double)\\[\\]";

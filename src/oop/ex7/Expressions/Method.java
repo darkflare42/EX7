@@ -27,15 +27,19 @@ public class Method implements Expression {
      */
     public Method (String returnType, String methodName, String args) throws VariableTypeException, MethodBadArgsException {
         // May be redundant due to always needing reference to the allExpressions outside of this method's scope.
-        if (returnType.equals("void")) {
-            type = null;
-        } else {
-            type = VariableEnum.toEnum(returnType);
-        }
-        name = methodName.trim() + "()"; // Save a method name with parentheses to deal with variable and methods having
+        type = VariableEnum.toEnum(returnType);
+
+        //OR - modified (removed '()' )
+        name = methodName.trim(); // Save a method name with parentheses to deal with variable and methods having
                                          // possibly the same name.
-        headerExpressions = SetVariables(args);
-        allExpressions = new LinkedHashMap<String, Expression>(headerExpressions);
+        if(!args.equals("")){
+            headerExpressions = SetVariables(args);
+            allExpressions = new LinkedHashMap<String, Expression>(headerExpressions);
+        }
+        else{
+            headerExpressions = new LinkedHashMap<String, Expression>();
+            allExpressions = new LinkedHashMap<String, Expression>();
+        }
 
     }
 
