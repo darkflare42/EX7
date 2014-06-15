@@ -1,7 +1,7 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 10/6/2014.
+ * Enum for all Variable types.
  */
 public enum VariableEnum {
     INT("int"),
@@ -11,17 +11,26 @@ public enum VariableEnum {
     DOUBLE("double");
 
     private final String nameString;
-//    public static final String TYPES="(int|double|String|boolean|char)";
     private static String TYPES = null;
 
     VariableEnum(String name) {
         nameString = name;
     }
 
+    /**
+     * Return the String value of a VariableEnum.
+     * @return nameString value.
+     */
     public String toString() {
         return nameString;
     }
 
+    /**
+     * Convert a String value to enum.
+     * @param string String to convert.
+     * @return VariableEnum type according to the string.
+     * @throws VariableTypeException if string does not represent a valid VariableEnum.
+     */
     public static VariableEnum toEnum (String string) throws VariableTypeException {
         for (VariableEnum type: VariableEnum.values()) {
             if (string.equals(type.toString())) {
@@ -31,25 +40,9 @@ public enum VariableEnum {
         throw new VariableTypeException();
     }
 
-//    public static VariableEnum toEnum (String string) throws VariableTypeException {
-//        if (string.equals("int")) {
-//            return VariableEnum.INT;
-//        } else if (string.equals("String")) {
-//            return VariableEnum.STRING;
-//        } else if (string.equals("char")) {
-//            return VariableEnum.CHAR;
-//        } else if (string.equals("boolean")) {
-//            return VariableEnum.BOOLEAN;
-//        } else if (string.equals("double")) {
-//            return VariableEnum.DOUBLE;
-//        } else {
-//            throw new VariableTypeException();
-//        }
-//    }
-
     /**
      * Dynamically create the regex expression for all the Variable types.
-     * @return
+     * @return Sring in regex format for a set of all the different types, separated with "|" symbols.
      */
     public static String Types () {
         if (TYPES != null) {
@@ -63,16 +56,14 @@ public enum VariableEnum {
         return TYPES;
     }
 
+    /**
+     * Dynamically create the regex expression for all the Variable types, including Void.
+     * @return Sring in regex format for a set of all the different types, separated with "|" symbols.
+     */
     public static String TypesInclVoid(){
         if (TYPES != null) {
-            return TYPES;
+            return TYPES.substring(0, TYPES.length()-1) + "void)";
         }
-        TYPES = "(";
-        for (VariableEnum type : VariableEnum.values()) {
-            TYPES += type.toString() + "|";
-        }
-        TYPES += "void|";
-        TYPES = TYPES.substring(0, TYPES.length()-1) + ")";
-        return TYPES;
+        return Types();
     }
 }
