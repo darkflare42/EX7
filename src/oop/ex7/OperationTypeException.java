@@ -1,10 +1,10 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 10/6/2014.
+ * Exception for when trying to resolve an operation that does not exist
  */
 public class OperationTypeException extends Exception {
     public OperationTypeException() {
-        super();
+        super("Type of Operation does not exist");
     }
 }
