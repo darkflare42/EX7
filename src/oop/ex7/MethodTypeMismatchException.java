@@ -1,10 +1,10 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 15/6/2014.
+ * Exception for a method is called with a variable of a wrong type.
  */
 public class MethodTypeMismatchException extends Exception{
     public MethodTypeMismatchException() {
-        super();
+        super("A method was called with a variable of a wrong type");
     }
 }

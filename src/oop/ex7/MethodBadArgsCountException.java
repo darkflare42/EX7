@@ -1,10 +1,10 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 15/6/2014.
+ * Exception for when a method is called with an invalid amount of Expressions.
  */
 public class MethodBadArgsCountException extends Exception {
     public MethodBadArgsCountException () {
-        super();
+        super("Attempted to call a method with an invalid amount of Expressions");
     }
 }

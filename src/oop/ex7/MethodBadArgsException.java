@@ -1,10 +1,10 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 11/6/2014.
+ * Exception for when the Variables declaration in the header structure is invalid.
  */
 public class MethodBadArgsException extends Exception {
     public MethodBadArgsException() {
-        super();
+        super("Declaration arguments structure is invalid");
     }
 }
