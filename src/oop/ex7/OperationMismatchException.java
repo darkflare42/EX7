@@ -1,10 +1,10 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 10/6/2014.
+ * Exception for when trying to apply an operation on 2 expressions that can't be operated on, using that operation.
  */
 public class OperationMismatchException extends Exception {
     public OperationMismatchException () {
-        super();
+        super("Operation attempted between 2 types that can't be operated together");
     }
 }
