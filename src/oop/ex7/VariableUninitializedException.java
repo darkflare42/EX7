@@ -1,10 +1,10 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 12/06/14.
+ * Exception for when a variable or an array are attempted to be accessed, as an assignment or in an operation before initialized.
  */
 public class VariableUninitializedException extends Exception{
     public VariableUninitializedException() {
-        super();
+        super("Variable or array were accessed before initialized");
     }
 }
