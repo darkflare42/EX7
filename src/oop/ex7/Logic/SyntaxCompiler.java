@@ -95,11 +95,11 @@ public class SyntaxCompiler {
     //TODO: Implement
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
             ExistingMethodNameException{
-        String[] methodDeclaration = line.split(" "); //split type and method name+params
+        String[] methodDeclaration = line.split(" ", 2); //line.split(" "); //split type and method name+params
         //int foo(int b, int c);
         String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("("));
         String methodArgs = methodDeclaration[1].substring(methodDeclaration[1].indexOf("(")+1,
-                methodDeclaration[1].length()-2);
+                methodDeclaration[1].lastIndexOf(")"));
         Method method = new Method(methodDeclaration[0], methodName, methodArgs);
         if(m_MethodMap.containsKey(methodName))
             throw new ExistingMethodNameException();
