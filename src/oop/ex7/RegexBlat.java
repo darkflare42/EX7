@@ -22,7 +22,9 @@ public class RegexBlat {
         String methodReg = "(([a-zA-Z_]+)([\\w]*)[(].*[)])";
         String doubleReg = "(\\d+\\.\\d+)";
         String intReg = "(\\d+)";
-        String variableArrayReg = "(([a-zA-Z_]+)([\\w]*))\\s*(\\[" + startSet + intReg + orReg + variableReg + endSet +"])";
+//        String variableArrayReg = "(([a-zA-Z_]+)([\\w]*))\\s*(\\[" + startSet + intReg + orReg + variableReg + endSet +"])";
+        String variableArrayReg = "(([a-zA-Z_]+)([\\w]*))\\s*(\\[((\\d+)|(([a-zA-Z_]+)([\\w]*)))])";
+
 
 
 
