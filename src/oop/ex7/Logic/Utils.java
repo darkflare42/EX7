@@ -2,6 +2,7 @@ package oop.ex7.Logic;
 
 import oop.ex7.Expressions.Expression;
 import oop.ex7.Expressions.VariableEnum;
+import oop.ex7.Logic.Exceptions.InvalidArrayMembersDeclaration;
 import sun.security.krb5.Config;
 
 import java.util.LinkedHashMap;
@@ -66,6 +67,7 @@ public class Utils {
     }
 
     public static VariableEnum getValueEnum(String value){
+        // TODO this functionality is available at the VariableEnum class, without the "void" support.
         if(IntegerTryParse(value))
             return VariableEnum.INT;
         if(DoubleTryParse(value))
@@ -85,5 +87,15 @@ public class Utils {
         tempMap.putAll(main);
         tempMap.putAll(secondary);
         return tempMap;
+    }
+
+    public static boolean ValidArrayDeclaration(String string) throws InvalidArrayMembersDeclaration{
+        if (string.equals("")) {
+            return true;
+        }
+        if (string.trim().endsWith(",")) {
+            throw new InvalidArrayMembersDeclaration();
+        }
+        return true;
     }
 }
