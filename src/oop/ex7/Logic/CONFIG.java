@@ -12,7 +12,6 @@ public class CONFIG {
 
     public static final String operations = "(\\+|\\-|\\*|\\/)";
     public static final String zeroSpaceOrMore = "\\s*";
-    public static final String equals = "[=]";
     public static final String semicolon = "[;]";
     public static final String startSet = "(";
     public static final String endSet = ")";
@@ -28,11 +27,10 @@ public class CONFIG {
 
 
 
-    public static final String VariableEquals = zeroSpaceOrMore + startSet + variableReg + orReg + variableArrayReg + endSet + zeroSpaceOrMore + equals + zeroSpaceOrMore;
     public static final String ValidOperationTypes = startSet + variableReg + orReg + methodReg + orReg + doubleReg + orReg + intReg + orReg + variableArrayReg + endSet;
     public static final String Operators = zeroSpaceOrMore + operations + zeroSpaceOrMore;
     public static final String EndOfLine = zeroSpaceOrMore + semicolon;
 
-    public static final String finalReg = VariableEquals + ValidOperationTypes + Operators + ValidOperationTypes + EndOfLine;
+    public static final String finalReg = zeroSpaceOrMore + ValidOperationTypes + Operators + ValidOperationTypes + EndOfLine;
     public static Pattern VAR_MATH_OP = Pattern.compile(finalReg);
 }
