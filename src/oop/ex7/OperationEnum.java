@@ -1,7 +1,7 @@
 package oop.ex7;
 
 /**
- * Created by Oded on 10/6/2014.
+ * Enum for all the Operation types recognized.
  */
 public enum OperationEnum {
     ADD("+"),
@@ -19,6 +19,12 @@ public enum OperationEnum {
         return nameString;
     }
 
+    /**
+     * Convert a string to enum.
+     * @param string String to convert.
+     * @return OperationEnum according to the string.
+     * @throws OperationTypeException if string is not a String of a valid operation.
+     */
     public static OperationEnum toEnum (String string) throws OperationTypeException{
         for (OperationEnum operation: OperationEnum.values()) {
             if (string.equals(operation.toString())) {
