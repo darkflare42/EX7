@@ -274,7 +274,7 @@ public class SyntaxCompiler {
 
     private static void validateBoolCondition(String line, Method method) throws ConditionExpressionNotBooleanException,
             ConditionUnknownExpressionException, VariableUninitializedException, ConditionArrayCallMismatch {
-        String condition = line.substring(line.indexOf("("), line.indexOf(")")); //TODO: Check indexes
+        String condition = line.substring(line.indexOf("(")+1, line.indexOf(")")); //TODO: Check indexes
         LinkedHashMap allExpressions = Utils.mergeExpressions(m_MemberMap, m_MethodMap);
         allExpressions = Utils.mergeExpressions(allExpressions, method.getAllExpressions());
         Condition.isValid(condition, allExpressions);
