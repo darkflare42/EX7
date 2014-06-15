@@ -59,6 +59,9 @@ public class Method implements Expression {
      * @throws MethodBadArgsException args has an invalid structure.
      */
     private LinkedHashMap<String, Expression> SetVariables(String args) throws VariableTypeException, MethodBadArgsException{
+        if (args.endsWith(",")) {
+            throw new MethodBadArgsException();
+        }
         String[] arguments = args.split(",");
         String[] currentArgument;
         String argument;
