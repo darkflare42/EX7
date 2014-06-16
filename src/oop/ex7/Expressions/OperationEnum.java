@@ -3,7 +3,7 @@ package oop.ex7.Expressions;
 import oop.ex7.Expressions.Exceptions.OperationTypeException;
 
 /**
- * Created by Oded on 10/6/2014.
+ * Enum for all recognized operation types.
  */
 public enum OperationEnum {
     ADD("+"),
@@ -14,17 +14,33 @@ public enum OperationEnum {
     private final String nameString;
     private static String OPERATIONS = null;
 
-
+    /**
+     * Private constructor.
+     *
+     * @param name String to be the String value for this enum.
+     */
     OperationEnum(String name) {
         nameString = name;
     }
 
+    /**
+     * Return the String value of this enum.
+     *
+     * @return nameString
+     */
     public String toString() {
         return nameString;
     }
 
-    public static OperationEnum toEnum (String string) throws OperationTypeException {
-        for (OperationEnum operation: OperationEnum.values()) {
+    /**
+     * Convert a String to enum.
+     *
+     * @param string String to convert.
+     * @return OperationEnum corresponding to the String.
+     * @throws OperationTypeException if string does not represent a valid operation.
+     */
+    public static OperationEnum toEnum(String string) throws OperationTypeException {
+        for (OperationEnum operation : OperationEnum.values()) {
             if (string.equals(operation.toString())) {
                 return operation;
             }
@@ -32,29 +48,20 @@ public enum OperationEnum {
         throw new OperationTypeException();
     }
 
-    public static String operationValues () {
+    /**
+     * Create upon first call, return a value on next calls.
+     *
+     * @return String of the regex set of all possible operations.
+     */
+    public static String operationValues() {
         if (OPERATIONS != null) {
-                return OPERATIONS;
+            return OPERATIONS;
         }
         OPERATIONS = "(";
         for (OperationEnum type : OperationEnum.values()) {
             OPERATIONS += type.toString() + "|";
         }
-        OPERATIONS = OPERATIONS.substring(0, OPERATIONS.length()-1) + ")";
+        OPERATIONS = OPERATIONS.substring(0, OPERATIONS.length() - 1) + ")";
         return OPERATIONS;
     }
-
-//    public static OperationEnum toEnum (String string) throws OperationTypeException{
-//        if (string.equals("+")) {
-//            return OperationEnum.ADD;
-//        } else if (string.equals("-")) {
-//            return OperationEnum.SUBTRACT;
-//        } else if (string.equals("*")) {
-//            return OperationEnum.MULTIPLY;
-//        } else if (string.equals("/")) {
-//            return OperationEnum.DIVIDE;
-//        } else {
-//            throw new OperationTypeException();
-//        }
-//    }
 }

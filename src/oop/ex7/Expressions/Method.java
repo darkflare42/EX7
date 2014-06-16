@@ -22,13 +22,13 @@ public class Method implements Expression {
 
 
     /**
-     *
-     * @param returnType
-     * @param methodName
-     * @param args
-     * @throws VariableTypeException
-     * @throws MethodBadArgsException
-     * @throws ExistingVariableName
+     * Standard constructor - Creates a method object be defining a return type, a name and the argumnts declared in it's header.
+     * @param returnType String of the type the method returns, "void" if none.
+     * @param methodName String of the name of the method.
+     * @param args String of the members declared in the method declaration.
+     * @throws VariableTypeException args contains a Variable declaration with an invalid Variable type.
+     * @throws MethodBadArgsException args has an invalid structure.
+     * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
      */
     public Method (String returnType, String methodName, String args) throws VariableTypeException,
             MethodBadArgsException, ExistingVariableName {
@@ -55,12 +55,31 @@ public class Method implements Expression {
         headerExpressions = new LinkedHashMap<>(method.getParams());
     }
 
+    /**
+     * Overload constructor to determine if if the Method returns an array of it's return type.
+     * @param returnType String of the type the method returns, "void" if none.
+     * @param methodName String of the name of the method.
+     * @param args String of the members declared in the method declaration.
+     * @param isReturnArray boolean if the method returns an array of the returnType.
+     * @throws VariableTypeException args contains a Variable declaration with an invalid Variable type.
+     * @throws MethodBadArgsException args has an invalid structure.
+     * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
+
+     */
     public Method(String returnType, String methodName, String args, boolean isReturnArray)
             throws VariableTypeException, MethodBadArgsException, ExistingVariableName {
         this(returnType, methodName, args);
         m_isArray = true;
     }
 
+    /**
+     * Set the collection of Variables from a string that represents Variables initializations.
+     * @param args String of of Variable declarations inside the parentheses in the method header.
+     * @return LinkedHashMap of all the header declared Variables.
+     * @throws VariableTypeException args contains a Variable declaration with an invalid Variable type.
+     * @throws MethodBadArgsException args has an invalid structure.
+     * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
+     */
     private LinkedHashMap<String, Expression> SetVariables(String args) throws VariableTypeException,
             MethodBadArgsException, ExistingVariableName {
         if (args.trim().endsWith(",")) {
@@ -106,12 +125,20 @@ public class Method implements Expression {
         return newVariables;
     }
 
+    // TODO might be redundant.
     public void AddVariable (Variable variable) {
         if (!allExpressions.containsValue(variable)) {
             allExpressions.put(variable.getName(), variable);
         }
     }
 
+    /**
+     * Given an array of VariableEnums, checks its' validity, in order, against the headerExpressions LinkedHashMap.
+     * @param headerTypes an array of VariableEnums.
+     * @return true if the number of types and the types all match.
+     * @throws MethodBadArgsCountException headerTypes has an invalid amount of values.
+     * @throws MethodTypeMismatchException headerTypes has a value that mismatches headerExpressions.
+     */
     public boolean ValidateHeader (VariableEnum[] headerTypes) throws MethodBadArgsCountException, MethodTypeMismatchException {
         if(headerTypes[0] == VariableEnum.VOID && headerExpressions.size() == 0) //no params
             return true;
@@ -128,33 +155,65 @@ public class Method implements Expression {
         return true;
     }
 
+    /**
+     * Returns the method's name.
+     * @return name
+     */
     public String getName () {
         return name;
     }
 
+    /**
+     * Return the method's return type.
+     * @return type
+     */
     public VariableEnum getType () {
         return type;
     }
 
+    /**
+     * Return if the method's is initialized. Always true since a declarated method can be called.
+     * @return true
+     */
     public boolean isInitialized () {
         return true;
     }
 
+    /**
+     * Merge the current inner expressions with the global expressions.
+     * @param globalExpressions LinkedHashMap expressions to merge.
+     */
     public void mergeAllExpressions(LinkedHashMap<String, Expression> globalExpressions){
         allExpressions.putAll(globalExpressions);
     }
 
+    /**
+     * Return all the expressions the method recognizes.
+     * @return allExpressions
+     */
     public LinkedHashMap<String, Expression> getAllExpressions() {
         return allExpressions;
     }
 
+    /**
+     * Return the Variables declared in the method's header.
+     * @return headerExpressions.
+     */
     public LinkedHashMap<String, Expression> getParams(){
         return headerExpressions;
     }
 
+    /**
+     * Return a boolean if the method returns an array.
+     * @return m_isArray
+     */
     public boolean isArray(){
         return m_isArray;
     }
 
+    /**
+     * Return a boolean if the method can be accessed globally. Always true.
+     * @return true
+     */
     public boolean isGlobal(){return true;}
 }
