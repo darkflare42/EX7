@@ -56,7 +56,7 @@ public class SyntaxCompiler {
      * @param reader The FileReader that reads through the current file
      */
     private static void compileMethods(FileReader reader) throws VariableTypeException, MethodBadArgsException,
-            ExistingMethodNameException, UnkownCodeLineException, ExistingVariableName {
+            ExistingMethodNameException, UnkownCodeLineException, ExistingVariableName, InvalidNameException {
         String currLine;
         while(reader.hasNext()){
             currLine = reader.next();
@@ -100,10 +100,12 @@ public class SyntaxCompiler {
 
     //TODO: Implement
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
-            ExistingMethodNameException, ExistingVariableName {
+            ExistingMethodNameException, ExistingVariableName, InvalidNameException {
         String[] methodDeclaration = line.split(" ", 2); //line.split(" "); //split type and method name+params
         //int foo(int b, int c);
         String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("("));
+        if(!Utils.checkValidVariableName(methodName))
+            throw new InvalidNameException();
         String methodArgs = methodDeclaration[1].substring(methodDeclaration[1].indexOf("(")+1,
                 methodDeclaration[1].lastIndexOf(")"));
         String type = methodDeclaration[0];
@@ -135,19 +137,36 @@ public class SyntaxCompiler {
     private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap, boolean isGlobal)
             throws InvalidMemberDeclaration, VariableTypeException,
             ExistingVariableName, TypeMismatchException, UnknownMethodCallException, VariableUninitializedException,
-            InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException {
+            InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException, InvalidNameException,
+            UnkownCodeLineException {
 
 
         //TODO: Check redundancy
         if(line.charAt(line.length()-1) != ';') //if the line doesn't end with a semicolon
             throw new InvalidMemberDeclaration();
 
-        String[] splitDeclaration = line.split(" ");
+        Matcher matcher = ExpressionTypeEnum.MEMBER_DECLARATION_PATTERN.matcher(line);
+        if(matcher.lookingAt()){ //this is a member declaration
+
+        }
+        else{
+            matcher = ExpressionTypeEnum.ARRAY_DECLARATION_PATTERN.matcher(line);
+            if(matcher.lookingAt()){
+
+            }
+            else{
+                throw new UnkownCodeLineException();
+            }
+        }
+
+        String[] splitDeclaration = line.split(" "); //split type and expression
 
         //TODO: Check name against saved expressions
 
         int index = line.indexOf('=');
         String name = splitDeclaration[1].replace(";", "");
+        //if(!Utils.checkValidVariableName(name))
+        //    throw new InvalidNameException();
         if(index == -1){ //No initialization
             if(isGlobal){ //we are defining a global variable
                 if(variableMap.containsKey(name))
@@ -224,7 +243,7 @@ public class SyntaxCompiler {
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
             OperationTypeException, OperationMismatchException, MethodBadArgsCountException, MethodTypeMismatchException,
             ConditionUnknownExpressionException, ConditionExpressionNotBooleanException, ConditionArrayCallMismatch,
-            InvalidArrayIndexException, InvalidArrayMembersDeclaration {
+            InvalidArrayIndexException, InvalidArrayMembersDeclaration, InvalidNameException {
         FileReader methodCode = reader.getMethodBlock();
         String currLine;
         while(methodCode.hasNext()){

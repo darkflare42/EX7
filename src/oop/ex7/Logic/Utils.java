@@ -111,4 +111,11 @@ public class Utils {
         }
         return true;
     }
+
+    public static boolean checkValidVariableName(String variableName){
+
+        if(!variableName.matches(CONFIG.VALID_NAME))
+            return  false;
+        return true;
+    }
 }

@@ -1,5 +1,7 @@
 package oop.ex7.Expressions;
 
+import java.util.regex.Pattern;
+
 /**
  * Created by Or Keren on 10/06/14.
  */
@@ -15,12 +17,13 @@ public enum ExpressionTypeEnum {
     UNKNOWN;
 
     //TODO: Add string values and change throughout code
+    //TODO: FIXES
 
     public static final char BLOCK_START_CHAR = '{';  //Has to be constant expression
     public static final char BLOCK_END_CHAR = '}';
     public static final char END_OF_LINE_CHAR = ';';
 
-    public static final String NAME="_?[a-zA-Z][_\\w]*";
+    public static final String NAME="(_?[a-zA-Z][_\\w]*)";
     //*( ?\s*?=\s*?\w.*)?;$ - new
     //( ?=\w.*)?;$"
 
@@ -30,7 +33,7 @@ public enum ExpressionTypeEnum {
             BLOCK_START_CHAR;
     //public static final String ARRAY_DECLARATION_REGEX = VariableEnum.Types(false) + " *[\\w\\<\\>\\[\\]]+\\s+" +NAME+
     //        "*( ?=.*)?\\{(.*?)\\};";
-    public static final String ARRAY_DECLARATION_REGEX = "(int|String|char|boolean|double) *[\\[\\]]+ _?[a-zA-Z][_\\w]*(\\s?=\\s?\\{\\s?.*\\})?;";
+    public static final String ARRAY_DECLARATION_REGEX = "(int|String|char|boolean|double) *[\\[\\]]+ (_?[a-zA-Z][_\\w])*(\\s?=\\s?\\{\\s?.*\\})?;";
             //"int|double|String|boolean|char) *[\w\<\>\[\]]+\s+_?[a-zA-Z][_\w]*( ?=.*)?;";
     public static final String RETURN_REGEX = "return.*;";
     public static final String METHOD_CALL_REGEX = NAME + "\\(.*\\);";
@@ -39,6 +42,9 @@ public enum ExpressionTypeEnum {
     public static final String BLOCK_REGEX = BLOCK_TYPES + " ?\\(.*\\) ?\\"+BLOCK_START_CHAR;
     public static final String ARRAY_TYPE_REGEX = "(int|String|char|boolean|double)\\[\\]";
     public static final String COMMENT_TYPE_REGEX = "(//.*)";
+
+    public static final Pattern MEMBER_DECLARATION_PATTERN = Pattern.compile(MEMBER_DECLARATION_REGEX);
+    public static final Pattern ARRAY_DECLARATION_PATTERN = Pattern.compile(ARRAY_DECLARATION_REGEX);
 
 
 
@@ -74,7 +80,7 @@ public enum ExpressionTypeEnum {
                 return BLOCK_END;
 
             case END_OF_LINE_CHAR: //member declaration or unknown
-                if(line.matches(MEMBER_DECLARATION_REGEX) || line.matches(ARRAY_DECLARATION_REGEX)) //TODO: Add array
+                if(line.matches(MEMBER_DECLARATION_REGEX) || line.matches(ARRAY_DECLARATION_REGEX))
                     return MEM_DECLARATION;
                 else if(line.matches(METHOD_CALL_REGEX))
                     return METHOD_CALL;
