@@ -3,7 +3,7 @@ package oop.ex7.Expressions;
 import java.util.regex.Pattern;
 
 /**
- * Created by Or Keren on 10/06/14.
+ * Enum to contain all valid line types that can be compiled.
  */
 public enum ExpressionTypeEnum {
     MEM_DECLARATION,
@@ -33,7 +33,7 @@ public enum ExpressionTypeEnum {
             BLOCK_START_CHAR;
     //public static final String ARRAY_DECLARATION_REGEX = VariableEnum.Types(false) + " *[\\w\\<\\>\\[\\]]+\\s+" +NAME+
     //        "*( ?=.*)?\\{(.*?)\\};";
-    public static final String ARRAY_DECLARATION_REGEX = "(int|String|char|boolean|double) *[\\[\\]]+ (_?[a-zA-Z][_\\w]*)(\\s?=\\s?\\{\\s?.*\\})?;";
+    public static final String ARRAY_DECLARATION_REGEX = "(int|String|char|boolean|double) *[\\[\\]]+ *(_?[a-zA-Z][_\\w]*)(\\s?=\\s?\\{\\s?.*\\})?;";
             //"int|double|String|boolean|char) *[\w\<\>\[\]]+\s+_?[a-zA-Z][_\w]*( ?=.*)?;";
     public static final String RETURN_REGEX = "return.*;";
     public static final String METHOD_CALL_REGEX = NAME + "\\(.*\\);";
