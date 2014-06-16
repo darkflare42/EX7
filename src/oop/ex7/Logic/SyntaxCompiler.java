@@ -44,7 +44,7 @@ public class SyntaxCompiler {
             for(String methodName: m_MethodMap.keySet()){
                 ((Method)m_MethodMap.get(methodName)).mergeAllExpressions(globalValues);
                  validateMethodBlock(reader, methodName, (Method) m_MethodMap.get(methodName));
-
+                reader.moveToEndOfMethod();
             }
         }
 
@@ -140,6 +140,8 @@ public class SyntaxCompiler {
 
         //TODO: Check redundancy
         String[] splitDeclaration = line.split(" ");
+        //if(splitDeclaration.length != 2)
+        //    throw new InvalidMemberDeclaration();
         //if(!splitDeclaration[0].matches(VariableEnum.Types(false)))  //If first element in the string is not a TYPE
         //    throw new InvalidMemberDeclaration();
         //TODO: Check name against saved expressions
@@ -311,11 +313,14 @@ public class SyntaxCompiler {
     }
 
     private static void validateMethodCall(String line, Method method) throws MethodBadArgsCountException,
-            MethodTypeMismatchException {
+            MethodTypeMismatchException, UnknownMethodCallException {
         String methodName = line.substring(0, line.indexOf("("));
+        if(!method.getAllExpressions().containsKey(methodName)){
+            throw new UnknownMethodCallException();
+        }
         String params = line.substring(line.indexOf("(")+1, line.length()-2); //TODO: Check indexes
         VariableEnum[] paramTypes = getParameterTypes(params, method.getAllExpressions());
-        method.ValidateHeader(paramTypes);
+        ((Method)method.getAllExpressions().get(methodName)).ValidateHeader(paramTypes);
     }
 
     //TODO: Check if needs to deal with multiple math operations
@@ -428,6 +433,7 @@ public class SyntaxCompiler {
     }
 
     private static Expression getExpression(String name, LinkedHashMap<String, Expression> methodMembers){
+        name = name.replace("-", "");
         Expression ex = getExpression(name);
         if(ex == null && !methodMembers.isEmpty())
             ex = methodMembers.get(name);
@@ -435,6 +441,7 @@ public class SyntaxCompiler {
     }
 
     private static Expression getExpression(String name){
+        name = name.replace("-", "");
         Expression ex = m_MemberMap.get(name);
         if(ex == null)
             ex = m_MethodMap.get(name);
