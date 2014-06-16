@@ -145,14 +145,17 @@ public class SyntaxCompiler {
         if(line.charAt(line.length()-1) != ';') //if the line doesn't end with a semicolon
             throw new InvalidMemberDeclaration();
 
+        String name, value2;
         Matcher matcher = ExpressionTypeEnum.MEMBER_DECLARATION_PATTERN.matcher(line);
         if(matcher.lookingAt()){ //this is a member declaration
-
+            name = matcher.group(2);
+            value2 = matcher.group(3);
         }
         else{
             matcher = ExpressionTypeEnum.ARRAY_DECLARATION_PATTERN.matcher(line);
             if(matcher.lookingAt()){
-
+                name = matcher.group(2);
+                value2 = matcher.group(3);
             }
             else{
                 throw new UnkownCodeLineException();
@@ -164,9 +167,9 @@ public class SyntaxCompiler {
         //TODO: Check name against saved expressions
 
         int index = line.indexOf('=');
-        String name = splitDeclaration[1].replace(";", "");
-        //if(!Utils.checkValidVariableName(name))
-        //    throw new InvalidNameException();
+        if(value2 == null) value2 = "";
+
+        if(!value2.equals("") && !value2.contains("=")) throw new InvalidNameException();
         if(index == -1){ //No initialization
             if(isGlobal){ //we are defining a global variable
                 if(variableMap.containsKey(name))
