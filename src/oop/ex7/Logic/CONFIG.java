@@ -15,20 +15,22 @@ public class CONFIG {
     public static final String semicolon = "[;]";
     public static final String startSet = "(";
     public static final String endSet = ")";
-    public static final String orReg = "|";
+    public static final String OR = "|";
     public static final String minusOrNot = "[-]{0,1}";
 
     public static final String variableReg = minusOrNot + "(([a-zA-Z_]+)([\\w]*))";
     public static final String methodReg = minusOrNot + "(([a-zA-Z_]+)([\\w]*)[(].*[)])";
     public static final String doubleReg = minusOrNot + "(\\d+\\.\\d+)";
     public static final String intReg = minusOrNot + "(\\d+)";
-    public static final String variableArrayReg = minusOrNot + "(([a-zA-Z_]+)([\\w]*))\\s*(\\[" + startSet + intReg + orReg + variableReg + endSet +"])";
+    public static final String variableArrayReg = minusOrNot + "(([a-zA-Z_]+)([\\w]*))\\s*(\\[" + startSet + intReg + OR + variableReg + endSet +"])";
+    public static final String stringReg = minusOrNot + "[\"][\\w]+[\"]";
+
     public static final String VALUE_REGEX = "[-]?\\d*(\\.\\d+)?";
     //TODO: Insert variable saved names
 
 
 
-    public static final String ValidOperationTypes = startSet + variableReg + orReg + methodReg + orReg + doubleReg + orReg + intReg + orReg + variableArrayReg + endSet;
+    public static final String ValidOperationTypes = startSet + variableReg + OR + methodReg + OR + doubleReg + OR + intReg + OR + variableArrayReg + OR + stringReg + endSet;
     public static final String Operators = zeroSpaceOrMore + operations + zeroSpaceOrMore;
     public static final String EndOfLine = zeroSpaceOrMore + semicolon;
 
