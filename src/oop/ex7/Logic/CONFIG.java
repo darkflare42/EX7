@@ -31,6 +31,6 @@ public class CONFIG {
     public static final String Operators = zeroSpaceOrMore + operations + zeroSpaceOrMore;
     public static final String EndOfLine = zeroSpaceOrMore + semicolon;
 
-    public static final String finalReg = zeroSpaceOrMore + ValidOperationTypes + Operators + ValidOperationTypes + EndOfLine;
+    public static final String finalReg = zeroSpaceOrMore + ValidOperationTypes + Operators + ValidOperationTypes; //+ EndOfLine;
     public static Pattern VAR_MATH_OP = Pattern.compile(finalReg);
 }

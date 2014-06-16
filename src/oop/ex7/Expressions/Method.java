@@ -142,6 +142,10 @@ public class Method implements Expression {
         return true;
     }
 
+    public void mergeAllExpressions(LinkedHashMap<String, Expression> globalExpressions){
+        allExpressions.putAll(globalExpressions);
+    }
+
     public LinkedHashMap<String, Expression> getAllExpressions() {
         return allExpressions;
     }

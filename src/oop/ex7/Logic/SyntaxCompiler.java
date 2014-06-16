@@ -40,9 +40,11 @@ public class SyntaxCompiler {
             reader.reset();
 
             reader.moveToFirstMethodDeclaration();
-
+            LinkedHashMap<String, Expression> globalValues = Utils.mergeExpressions(m_MemberMap, m_MethodMap);
             for(String methodName: m_MethodMap.keySet()){
-                validateMethodBlock(reader, methodName, (Method)m_MethodMap.get(methodName));
+                ((Method)m_MethodMap.get(methodName)).mergeAllExpressions(globalValues);
+                 validateMethodBlock(reader, methodName, (Method) m_MethodMap.get(methodName));
+
             }
         }
 
@@ -263,7 +265,7 @@ public class SyntaxCompiler {
 
     private static void validateReturnStatement(String line, Method method) throws TypeMismatchException,
             OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException {
-        String[] splitReturn = line.split(" ");
+        String[] splitReturn = line.split(" ", 2);
         if(splitReturn.length != 2){ //we have a return, with no value returned
             if(method.getType() != VariableEnum.VOID)
                 throw new TypeMismatchException();
@@ -376,8 +378,17 @@ public class SyntaxCompiler {
             //group14 is the left operator
             String op1 = varOperation.group(1);
             //group33 is the right operator
-            String op2 = varOperation.group(20);
+            String op2 = varOperation.group(20); 
 
+            //Check if it is a method call
+            int indexOfBrackets = op1.indexOf("(");
+            if(indexOfBrackets != -1){
+                op1 = op1.substring(0, indexOfBrackets);
+            }
+            indexOfBrackets = op2.indexOf("(");
+            if(indexOfBrackets != -1){
+                op2 = op2.substring(0, indexOfBrackets);
+            }
             Expression op1Expression = getExpression(op1, methodMembers);
             Expression op2Expression = getExpression(op2, methodMembers);
             VariableEnum operationResultType = VariableEnum.VOID;
@@ -389,10 +400,10 @@ public class SyntaxCompiler {
                 operationResultType =  Operation.Operate(Utils.getValueEnum(op1), opType, Utils.getValueEnum(op2));
             }
             if(op1Expression == null && op2Expression != null){
-                operationResultType = Operation.Operate(VariableEnum.toEnum(op1), opType, op2Expression);
+                operationResultType = Operation.Operate(Utils.getValueEnum(op1), opType, op2Expression);
             }
             if(op1Expression != null && op2Expression == null){
-                operationResultType = Operation.Operate(VariableEnum.toEnum(op2), opType, op1Expression);
+                operationResultType = Operation.Operate(Utils.getValueEnum(op2), opType, op1Expression);
             }
             return operationResultType;
         }
