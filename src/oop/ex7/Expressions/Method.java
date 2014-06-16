@@ -33,8 +33,7 @@ public class Method implements Expression {
         type = VariableEnum.toEnum(returnType);
 
         //OR - modified (removed '()' )
-        name = methodName.trim(); // Save a method name with parentheses to deal with variable and methods having
-                                         // possibly the same name.
+        name = methodName.trim();
         if(!args.equals("")){
             headerExpressions = SetVariables(args);
             allExpressions = new LinkedHashMap<String, Expression>(headerExpressions);
@@ -80,6 +79,8 @@ public class Method implements Expression {
         LinkedHashMap<String,Expression> newVariables= new LinkedHashMap<String, Expression>();
         for (String arg: arguments) {
             argument = arg.trim();
+            argument = argument.replace("\\s+", " ");
+            argument = argument.replace(" []", "[] "); // TODO TESTER 137 best fix in the world
             currentArgument = argument.split(" ");
             String variableName = currentArgument[1];
             if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){

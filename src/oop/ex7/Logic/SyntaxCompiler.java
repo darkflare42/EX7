@@ -103,7 +103,7 @@ public class SyntaxCompiler {
             ExistingMethodNameException, ExistingVariableName, InvalidNameException {
         String[] methodDeclaration = line.split(" ", 2); //line.split(" "); //split type and method name+params
         //int foo(int b, int c);
-        String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("("));
+        String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("(")).trim();
         if(!Utils.checkValidVariableName(methodName))
             throw new InvalidNameException();
         String methodArgs = methodDeclaration[1].substring(methodDeclaration[1].indexOf("(")+1,
