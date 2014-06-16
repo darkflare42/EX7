@@ -1,4 +1,4 @@
-boolean[] a;
+boolean[] a = {};
 void foo(){
 a[1] = true;
 return;

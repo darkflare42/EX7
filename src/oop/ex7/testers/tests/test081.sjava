@@ -1,4 +1,4 @@
-double[] a;
+double[] a = {};
 void foo(){
 a[1] = 2.5;
 return;

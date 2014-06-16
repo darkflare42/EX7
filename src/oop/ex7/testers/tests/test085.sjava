@@ -1,4 +1,4 @@
-char[] a;
+char[] a = {};
 void foo(){
 a[1] = 'a';
 return;
