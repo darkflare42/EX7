@@ -9,7 +9,9 @@ import oop.ex7.Logic.Exceptions.ExistingVariableName;
 import java.util.LinkedHashMap;
 
 /**
- * Created by Oded on 11/6/2014.
+ * Class to represent a method Expression.
+ * Contains members for its' name, the type it returns, if the return type is an array all the Expressions it is
+ * aware of, and all the Expressions that were declared when the method is created.
  */
 public class Method implements Expression {
     private VariableEnum type;
@@ -21,18 +23,16 @@ public class Method implements Expression {
 
     /**
      *
-     * @param returnType VariableType that the method will return. If void, should be "void"
+     * @param returnType
      * @param methodName
      * @param args
-     * @throws oop.ex7.Expressions.Exceptions.VariableTypeException
-     * @throws oop.ex7.Expressions.Exceptions.MethodBadArgsException
+     * @throws VariableTypeException
+     * @throws MethodBadArgsException
+     * @throws ExistingVariableName
      */
     public Method (String returnType, String methodName, String args) throws VariableTypeException,
             MethodBadArgsException, ExistingVariableName {
-        // May be redundant due to always needing reference to the allExpressions outside of this method's scope.
         type = VariableEnum.toEnum(returnType);
-
-        //OR - modified (removed '()' )
         name = methodName.trim();
         if(!args.equals("")){
             headerExpressions = SetVariables(args);
@@ -42,24 +42,17 @@ public class Method implements Expression {
             headerExpressions = new LinkedHashMap<String, Expression>();
             allExpressions = new LinkedHashMap<String, Expression>();
         }
-
     }
 
     /**
-     * Copy ctor
-     * @param method
+     * Copy constructor.
+     * @param method Method to copy.
      */
     public Method(Method method){
         type = method.getType();
         name = method.getName();
         allExpressions = new LinkedHashMap<>(method.getAllExpressions());
         headerExpressions = new LinkedHashMap<>(method.getParams());
-    }
-
-    public Method (String returnType, String methodName, String args, LinkedHashMap<String ,
-            Expression> outsideExpressions) throws VariableTypeException, MethodBadArgsException, ExistingVariableName {
-        this(returnType, methodName, args);
-        allExpressions.putAll(outsideExpressions);
     }
 
     public Method(String returnType, String methodName, String args, boolean isReturnArray)
@@ -78,10 +71,12 @@ public class Method implements Expression {
         String argument;
         LinkedHashMap<String,Expression> newVariables= new LinkedHashMap<String, Expression>();
         for (String arg: arguments) {
-            argument = arg.trim();
-            argument = argument.replace("\\s+", " ");
+            boolean isArray = false;
+            argument = arg.replace("\\s+", " ").trim();
             argument = argument.replace(" []", "[] "); // TODO TESTER 137 best fix in the world
-            currentArgument = argument.split(" ");
+            currentArgument = argument.split(" ");  //TODO this can be a lot cleaner but im getting lost in ExpressionTypeEnum
+                                                    //TODO instead of splitting by 'space', which is a bad idea, should look into matching patterns
+                                                    //TODO and dividing into groups of the match.
             String variableName = currentArgument[1];
             if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){
                 throw new MethodBadArgsException();
