@@ -23,7 +23,7 @@ public class CONFIG {
     public static final String intReg = "(\\d+)";
     public static final String variableArrayReg = "(([a-zA-Z_]+)([\\w]*))\\s*(\\[" + startSet + intReg + orReg + variableReg + endSet +"])";
     public static final String VALUE_REGEX = "[-]?\\d*(\\.\\d+)?";
-    //TODO: Insert variable saved names
+    //TODO: Insert variable saved names.
 
 
 
