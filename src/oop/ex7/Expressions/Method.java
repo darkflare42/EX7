@@ -60,6 +60,9 @@ public class Method implements Expression {
     }
 
     private LinkedHashMap<String, Expression> SetVariables(String args) throws VariableTypeException, MethodBadArgsException{
+        if (args.trim().endsWith(",")) {
+            throw new MethodBadArgsException();
+        }
         String[] arguments = args.split(",");
         String[] currentArgument;
         String argument;
