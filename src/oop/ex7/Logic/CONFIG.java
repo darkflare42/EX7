@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  */
 public class CONFIG {
 
-    public static String METHOD_CALL = "(_?[a-zA-Z\\d]+) \\s*\\((.*)\\)"; //TODO: Change
+    public static String METHOD_CALL = "(_?[a-zA-Z\\d]+) \\s*\\((.*)\\)"; //TODO: Change.
 
 
     public static final String operations = "(\\+|\\-|\\*|\\/)";
