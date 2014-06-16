@@ -50,7 +50,6 @@ public class FileReader {
         return scanner.hasNext(pattern);
     }
 
-    //TODO: check for int a\n=5
     public String next() {
         /*
         Pattern pattern = Pattern.compile(".*");
@@ -59,7 +58,8 @@ public class FileReader {
         */
         String temp;
         do{
-            temp = scanner.nextLine().replace("=", " = ").replaceAll("(/\\*.*\\*/|//.*$)", " ").replaceAll("\\s+", " ").trim();
+            //temp = scanner.nextLine().replace("=", " = ").replaceAll("(//.*$)", " ").replaceAll("\\s+", " ").trim();
+            temp = scanner.nextLine().replace("=", " = ").replaceAll("\\s+", " ").trim();
         }while(temp.length() < 1);
         m_currLine = temp;
         return temp;

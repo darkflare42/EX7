@@ -117,6 +117,8 @@ public class Method implements Expression {
     }
 
     public boolean ValidateHeader (VariableEnum[] headerTypes) throws MethodBadArgsCountException, MethodTypeMismatchException {
+        if(headerTypes[0] == VariableEnum.VOID && headerExpressions.size() == 0) //no params
+            return true;
         if (headerExpressions.size() != headerTypes.length) {
             throw new MethodBadArgsCountException();
         }

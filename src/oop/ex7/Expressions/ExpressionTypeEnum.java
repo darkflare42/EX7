@@ -11,6 +11,7 @@ public enum ExpressionTypeEnum {
     BLOCK_START,
     BLOCK_END,
     ASSIGNMENT,
+    COMMENT,
     UNKNOWN;
 
     //TODO: Add string values and change throughout code
@@ -37,6 +38,7 @@ public enum ExpressionTypeEnum {
     public static final String BLOCK_TYPES = "(if|while)";
     public static final String BLOCK_REGEX = BLOCK_TYPES + " ?\\(.*\\) ?\\"+BLOCK_START_CHAR;
     public static final String ARRAY_TYPE_REGEX = "(int|String|char|boolean|double)\\[\\]";
+    public static final String COMMENT_TYPE_REGEX = "(//.*)";
 
 
 
@@ -56,12 +58,17 @@ public enum ExpressionTypeEnum {
 
 
     public static ExpressionTypeEnum checkType(String line){
+        if(line.startsWith("//"))
+            return COMMENT;
         switch(line.charAt(line.length()-1)){ //Check the last character in the line
             case BLOCK_START_CHAR: //Method declaration/while, if block
                 if(line.matches(METHOD_DECLARATION_REGEX))
                     return METHOD_DECLARATION;
                 else if(line.matches(BLOCK_REGEX))
                     return BLOCK_START;
+                else{
+                    return UNKNOWN;
+                }
 
             case BLOCK_END_CHAR: //End of method/block
                 return BLOCK_END;
@@ -76,7 +83,9 @@ public enum ExpressionTypeEnum {
                 else if(line.matches(RETURN_REGEX))
                     return RETURN;
 
-            default:
+            default: //this may be a comment
+                if(line.matches(COMMENT_TYPE_REGEX))
+                    return COMMENT;
                 return UNKNOWN;
         }
 

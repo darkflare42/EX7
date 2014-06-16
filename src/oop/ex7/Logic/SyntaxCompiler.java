@@ -89,6 +89,8 @@ public class SyntaxCompiler {
                 case METHOD_DECLARATION:
                     reader.moveToEndOfMethod();
                     break;
+                case COMMENT:
+                    continue;
                 default: //A line which is not compliant with code regulations (int[] a = 5;)
                     throw new UnkownCodeLineException();
             }
@@ -131,7 +133,8 @@ public class SyntaxCompiler {
      */
     private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap)
             throws InvalidMemberDeclaration, VariableTypeException,
-            ExistingVariableName, TypeMismatchException, UnknownMethodCallException, VariableUninitializedException, InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException {
+            ExistingVariableName, TypeMismatchException, UnknownMethodCallException, VariableUninitializedException,
+            InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException {
 
 
         //TODO: Check redundancy
@@ -149,7 +152,7 @@ public class SyntaxCompiler {
         int index = line.indexOf('=');
         String name = splitDeclaration[1].replace(";", "");
         if(index == -1){ //No initialization
-           if(variableMap.containsKey(splitDeclaration[1]))
+           if(variableMap.containsKey(name))
                 throw new ExistingVariableName();
             //check if it is an array or normal member
            if(splitDeclaration[0].matches(ExpressionTypeEnum.ARRAY_TYPE_REGEX)){ //This is an array
@@ -174,9 +177,10 @@ public class SyntaxCompiler {
                 String arrayValues = line.substring(indexOfCurly + 1, lastIndexOfCurly);
                 String[] splitArrayValues = arrayValues.split(",");
                 if((lastIndexOfCurly - indexOfCurly) > 1){
-                    validateArrayInitialization(splitArrayValues, VariableEnum.toEnum(type));
+                    validateArrayInitialization(splitArrayValues, VariableEnum.toEnum(type), variableMap);
                 }
                 Utils.ValidArrayDeclaration(arrayValues);
+                initialized = true;
                 Variable vr = new Variable(type, name, initialized, true);
                 variableMap.put(name, vr);
             }
@@ -184,7 +188,7 @@ public class SyntaxCompiler {
                 String value = line.substring(index+2, line.length()-1).replaceAll(" ", ""); //TODO: Check indexes
                 String type = splitDeclaration[0];
                 VariableEnum valueType =  validateValueExpression(value,
-                        Utils.mergeExpressions(m_MemberMap, m_MethodMap));
+                        variableMap);
 
                 if(!VariableEnum.checkValidAssignment(VariableEnum.toEnum(type), valueType))
                     throw new TypeMismatchException();
@@ -195,6 +199,14 @@ public class SyntaxCompiler {
         }
 
 
+    }
+
+    private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> mapOne,
+                                                  LinkedHashMap<String, Expression> mapTwo) throws
+            OperationTypeException, UnknownMethodCallException, InvalidArrayMembersDeclaration,
+            VariableTypeException, OperationMismatchException, InvalidMemberDeclaration, VariableUninitializedException,
+            ExistingVariableName, TypeMismatchException {
+        validateMemberDeclaration(line, Utils.mergeExpressions(mapOne, mapTwo));
     }
 
     /**
@@ -275,7 +287,7 @@ public class SyntaxCompiler {
         else if(method.getType() == VariableEnum.VOID) //Return with value but method is void
             throw new TypeMismatchException();
         else{
-            String value = line.substring(line.indexOf("n")+1, line.length()-1);
+            String value = line.substring(line.indexOf("n")+1, line.length()-1).trim();
             VariableEnum valueType =  validateValueExpression(value, method.getAllExpressions());
             if(valueType == VariableEnum.ARRAY_TYPE){ //validate array values
                 int indexOfBrackets = value.indexOf("{");
@@ -296,7 +308,8 @@ public class SyntaxCompiler {
                 */
             }
             else{
-                VariableEnum.checkValidAssignment(method.getType(), valueType);
+                if(!VariableEnum.checkValidAssignment(method.getType(), valueType))
+                    throw new TypeMismatchException();
             }
         }
 
@@ -351,9 +364,11 @@ public class SyntaxCompiler {
             VariableEnum indexType = validateValueExpression(index, method.getAllExpressions());
             if(indexType != VariableEnum.INT) //Index is not a type value
                 throw new TypeMismatchException();
-            else{
-                if(Integer.parseInt(index) < 0)
-                    throw new InvalidArrayIndexException();
+            else{ //check if it is a single non zero value
+                if(!index.matches(CONFIG.finalReg)){ //check only if value is a single digit
+                    if(Integer.parseInt(index) < 0)
+                        throw new InvalidArrayIndexException();
+                }
             }
 
         }
@@ -421,7 +436,7 @@ public class SyntaxCompiler {
             else{
                 Expression ex = getExpression(valueExpression, methodMembers);
                 if(ex == null){
-                    return Utils.getValueEnum(valueExpression);
+                    return Utils.getValueEnum(valueExpression.trim());
                 }
                 else{
                     if(!ex.isInitialized())
@@ -434,6 +449,14 @@ public class SyntaxCompiler {
 
     private static Expression getExpression(String name, LinkedHashMap<String, Expression> methodMembers){
         name = name.replace("-", "");
+        int indexOfBracket = name.indexOf("(");
+        if(indexOfBracket != -1){
+            name = name.substring(0, indexOfBracket);
+        }
+        indexOfBracket = name.indexOf("[");
+        if(indexOfBracket != -1){
+            name = name.substring(0, indexOfBracket);
+        }
         Expression ex = getExpression(name);
         if(ex == null && !methodMembers.isEmpty())
             ex = methodMembers.get(name);
@@ -442,6 +465,14 @@ public class SyntaxCompiler {
 
     private static Expression getExpression(String name){
         name = name.replace("-", "");
+        int indexOfBracket = name.indexOf("(");
+        if(indexOfBracket != -1){
+            name = name.substring(0, indexOfBracket);
+        }
+        indexOfBracket = name.indexOf("[");
+        if(indexOfBracket != -1){
+            name = name.substring(0, indexOfBracket);
+        }
         Expression ex = m_MemberMap.get(name);
         if(ex == null)
             ex = m_MethodMap.get(name);
@@ -489,9 +520,17 @@ public class SyntaxCompiler {
 
 
     //TODO: Expand to use expressionMap
-    private static void validateArrayInitialization(String[] params, VariableEnum arrayType) throws TypeMismatchException {
+    private static void validateArrayInitialization(String[] params, VariableEnum arrayType,
+                                                    LinkedHashMap<String, Expression> expressions)
+            throws TypeMismatchException, OperationTypeException, VariableUninitializedException,
+            OperationMismatchException, VariableTypeException {
         VariableEnum paramType;
         for(String value: params){
+            VariableEnum argumentType = validateValueExpression(value, expressions );
+            if(!VariableEnum.checkValidAssignment(arrayType, argumentType))
+                throw new TypeMismatchException();
+
+            /*
             Expression ex = getExpression(value);
             if(ex == null){
                 paramType = Utils.getValueEnum(value);
@@ -501,6 +540,8 @@ public class SyntaxCompiler {
             }
             if(!VariableEnum.checkValidAssignment(arrayType, paramType))
                 throw new TypeMismatchException();
+            }
+            */
         }
     }
 
