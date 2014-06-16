@@ -1,4 +1,4 @@
-int[] a;
+int[] a = {};
 int[] foo(){
 int[] b = {9};
 a = b[9];

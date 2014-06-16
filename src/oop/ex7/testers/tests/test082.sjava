@@ -1,4 +1,4 @@
-String[] a;
+String[] a = {};
 void foo(){
 a[1] = "Hello";
 return;

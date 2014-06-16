@@ -1,4 +1,4 @@
-int[] a;
+int[] a = {};
 void foo(){
 a[1] = 8;
 return;
