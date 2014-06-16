@@ -11,7 +11,8 @@ public enum VariableEnum {
     CHAR("char"),
     BOOLEAN("boolean"),
     DOUBLE("double"),
-    VOID("void");
+    VOID("void"),
+    ARRAY_TYPE("");
 
     private final String nameString;
 //    public static final String TYPES="(int|double|String|boolean|char)";

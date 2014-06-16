@@ -17,11 +17,11 @@ public class CONFIG {
     public static final String endSet = ")";
     public static final String orReg = "|";
 
-    public static final String variableReg = "(([a-zA-Z_]+)([\\w]*))";
-    public static final String methodReg = "(([a-zA-Z_]+)([\\w]*)[(].*[)])";
+    public static final String variableReg = "(([_a-zA-Z0-9]+)([\\w]*))";
+    public static final String methodReg = "(([_a-zA-Z0-9]+)([\\w]*)[(].*[)])";
     public static final String doubleReg = "(\\d+\\.\\d+)";
     public static final String intReg = "(\\d+)";
-    public static final String variableArrayReg = "(([a-zA-Z_]+)([\\w]*))\\s*(\\[" + startSet + intReg + orReg + variableReg + endSet +"])";
+    public static final String variableArrayReg = "(([_a-zA-Z0-9]+)([\\w]*))\\s*(\\[" + startSet + intReg + orReg + variableReg + endSet +"])";
     public static final String VALUE_REGEX = "[-]?\\d*(\\.\\d+)?";
     //TODO: Insert variable saved names
 
@@ -31,6 +31,6 @@ public class CONFIG {
     public static final String Operators = zeroSpaceOrMore + operations + zeroSpaceOrMore;
     public static final String EndOfLine = zeroSpaceOrMore + semicolon;
 
-    public static final String finalReg = zeroSpaceOrMore + ValidOperationTypes + Operators + ValidOperationTypes + EndOfLine;
+    public static final String finalReg = zeroSpaceOrMore + ValidOperationTypes + Operators + ValidOperationTypes;// + EndOfLine;
     public static Pattern VAR_MATH_OP = Pattern.compile(finalReg);
 }

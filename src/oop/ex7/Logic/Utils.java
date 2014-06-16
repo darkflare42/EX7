@@ -98,4 +98,17 @@ public class Utils {
         }
         return true;
     }
+
+    public static boolean validateArrayTypes(String args, VariableEnum arrayType){
+        if(args.equals(""))
+            return true;
+        String[] arguments = args.split(",");
+        for(String argument: arguments){
+            argument = argument.trim();
+            VariableEnum argType = getValueEnum(argument);
+            if(!VariableEnum.checkValidAssignment(arrayType, argType))
+                return false;
+        }
+        return true;
+    }
 }

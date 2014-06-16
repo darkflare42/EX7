@@ -4,6 +4,7 @@ import oop.ex7.Expressions.Exceptions.MethodBadArgsCountException;
 import oop.ex7.Expressions.Exceptions.MethodBadArgsException;
 import oop.ex7.Expressions.Exceptions.MethodTypeMismatchException;
 import oop.ex7.Expressions.Exceptions.VariableTypeException;
+import oop.ex7.Logic.Exceptions.ExistingVariableName;
 
 import java.util.LinkedHashMap;
 
@@ -15,6 +16,7 @@ public class Method implements Expression {
     private String name;
     private LinkedHashMap<String, Expression> allExpressions;
     private LinkedHashMap<String, Expression> headerExpressions;
+    private boolean m_isArray = false;
 
 
     /**
@@ -25,7 +27,8 @@ public class Method implements Expression {
      * @throws oop.ex7.Expressions.Exceptions.VariableTypeException
      * @throws oop.ex7.Expressions.Exceptions.MethodBadArgsException
      */
-    public Method (String returnType, String methodName, String args) throws VariableTypeException, MethodBadArgsException {
+    public Method (String returnType, String methodName, String args) throws VariableTypeException,
+            MethodBadArgsException, ExistingVariableName {
         // May be redundant due to always needing reference to the allExpressions outside of this method's scope.
         type = VariableEnum.toEnum(returnType);
 
@@ -54,12 +57,20 @@ public class Method implements Expression {
         headerExpressions = method.getParams();
     }
 
-    public Method (String returnType, String methodName, String args, LinkedHashMap<String,Expression> outsideExpressions) throws VariableTypeException, MethodBadArgsException{
+    public Method (String returnType, String methodName, String args, LinkedHashMap<String ,
+            Expression> outsideExpressions) throws VariableTypeException, MethodBadArgsException, ExistingVariableName {
         this(returnType, methodName, args);
         allExpressions.putAll(outsideExpressions);
     }
 
-    private LinkedHashMap<String, Expression> SetVariables(String args) throws VariableTypeException, MethodBadArgsException{
+    public Method(String returnType, String methodName, String args, boolean isReturnArray)
+            throws VariableTypeException, MethodBadArgsException, ExistingVariableName {
+        this(returnType, methodName, args);
+        m_isArray = true;
+    }
+
+    private LinkedHashMap<String, Expression> SetVariables(String args) throws VariableTypeException,
+            MethodBadArgsException, ExistingVariableName {
         if (args.trim().endsWith(",")) {
             throw new MethodBadArgsException();
         }
@@ -69,12 +80,32 @@ public class Method implements Expression {
         LinkedHashMap<String,Expression> newVariables= new LinkedHashMap<String, Expression>();
         for (String arg: arguments) {
             argument = arg.trim();
+            currentArgument = argument.split(" ");
+            String variableName = currentArgument[1];
+            if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){
+                throw new MethodBadArgsException();
+            }
+            if(newVariables.containsKey(variableName)){ //
+                throw new ExistingVariableName();
+            }
+            //check if it is an array
+            if(currentArgument[0].matches(ExpressionTypeEnum.ARRAY_TYPE_REGEX)){ //this is an array
+                String type = currentArgument[0].substring(0, currentArgument[0].indexOf("["));
+                newVariables.put(variableName, new Variable(type, variableName, true, true));
+            }
+            else{ //normal declaration
+                newVariables.put(variableName, new Variable(currentArgument[0], variableName, true));
+            }
+            /*
             if (argument.matches(VariableEnum.Types(false)+"\\s+([a-zA-Z_]+)([\\w]*)")) {
                 currentArgument = argument.split(" ");
+                if(newVariables.containsKey(currentArgument[1])) //Member with the same name already exists
+                    throw new ExistingVariableName();
                 newVariables.put(currentArgument[1], new Variable(currentArgument[0], currentArgument[1], true));
             } else {
                 throw new MethodBadArgsException();
             }
+            */
         }
         return newVariables;
     }
@@ -117,5 +148,9 @@ public class Method implements Expression {
 
     public LinkedHashMap<String, Expression> getParams(){
         return headerExpressions;
+    }
+
+    public boolean isArray(){
+        return m_isArray;
     }
 }
