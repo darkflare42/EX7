@@ -1,7 +1,7 @@
 package oop.ex7.Logic.Exceptions;
 
 /**
- * Created by Or Keren on 13/06/14.
+ * Exception every compilation related exception should extend.
  */
 public class CompilationException extends Exception {
     public CompilationException(){

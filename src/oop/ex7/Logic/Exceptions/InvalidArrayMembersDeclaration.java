@@ -1,10 +1,10 @@
 package oop.ex7.Logic.Exceptions;
 
 /**
- * Created by Oded on 15/6/2014.
+ * Exception for an invalid form of Array's member declaration.
  */
 public class InvalidArrayMembersDeclaration extends CompilationException{
     public InvalidArrayMembersDeclaration() {
-        super("Array members declaration are invalid.");
+        super("Array members declaration is invalid.");
     }
 }

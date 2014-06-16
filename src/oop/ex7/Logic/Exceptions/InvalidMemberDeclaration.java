@@ -1,7 +1,10 @@
 package oop.ex7.Logic.Exceptions;
 
 /**
- * Created by Or Keren on 13/06/14.
+ * Exception for an invalid form of member declaration.
  */
 public class InvalidMemberDeclaration extends CompilationException {
+    public InvalidMemberDeclaration () {
+        super("Member declaration is invalid.");
+    }
 }

@@ -6,7 +6,6 @@ import oop.ex7.Logic.Exceptions.*;
 import oop.ex7.Reader.FileReader;
 import oop.ex7.Reader.IOException;
 
-import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 
@@ -56,7 +55,7 @@ public class SyntaxCompiler {
      * @param reader The FileReader that reads through the current file
      */
     private static void compileMethods(FileReader reader) throws VariableTypeException, MethodBadArgsException,
-            ExistingMethodNameException, UnkownCodeLineException, ExistingVariableName, InvalidNameException {
+            ExistingMethodNameException, UnknownCodeLineException, ExistingVariableName, InvalidNameException {
         String currLine;
         while(reader.hasNext()){
             currLine = reader.next();
@@ -66,7 +65,7 @@ public class SyntaxCompiler {
                     reader.moveToEndOfMethod();
                     break;
                 case UNKNOWN:
-                    throw new UnkownCodeLineException();
+                    throw new UnknownCodeLineException();
 
 
             }
@@ -93,7 +92,7 @@ public class SyntaxCompiler {
                 case COMMENT:
                     continue;
                 default: //A line which is not compliant with code regulations (int[] a = 5;)
-                    throw new UnkownCodeLineException();
+                    throw new UnknownCodeLineException();
             }
         }
     }
@@ -138,7 +137,7 @@ public class SyntaxCompiler {
             throws InvalidMemberDeclaration, VariableTypeException,
             ExistingVariableName, TypeMismatchException, UnknownMethodCallException, VariableUninitializedException,
             InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException, InvalidNameException,
-            UnkownCodeLineException {
+            UnknownCodeLineException {
 
 
         //TODO: Check redundancy
@@ -158,7 +157,7 @@ public class SyntaxCompiler {
                 value2 = matcher.group(3);
             }
             else{
-                throw new UnkownCodeLineException();
+                throw new UnknownCodeLineException();
             }
         }
 
@@ -242,7 +241,7 @@ public class SyntaxCompiler {
 
 
     private static void validateMethodBlock(FileReader reader, String methodName, Method method) throws
-            UnkownCodeLineException, TypeMismatchException, InvalidMemberDeclaration, ExistingVariableName,
+            UnknownCodeLineException, TypeMismatchException, InvalidMemberDeclaration, ExistingVariableName,
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
             OperationTypeException, OperationMismatchException, MethodBadArgsCountException, MethodTypeMismatchException,
             ConditionUnknownExpressionException, ConditionExpressionNotBooleanException, ConditionArrayCallMismatch,
@@ -270,7 +269,7 @@ public class SyntaxCompiler {
                     validateAssignment(currLine, method);
                     break;
                 case UNKNOWN:
-                    throw new UnkownCodeLineException();
+                    throw new UnknownCodeLineException();
 
             }
         }
@@ -335,7 +334,7 @@ public class SyntaxCompiler {
         ((Method)method.getAllExpressions().get(methodName)).ValidateHeader(paramTypes);
     }
 
-    //TODO: Check if needs to deal with multiple math operations
+    //TODO: Check if needs to deal with multiple math operations, Oded: no
 
     /**
      * Several options - normal assignment of a member
@@ -525,7 +524,7 @@ public class SyntaxCompiler {
             OperationMismatchException, VariableTypeException {
         VariableEnum paramType;
         for(String value: params){
-            VariableEnum argumentType = validateValueExpression(value, expressions );
+            VariableEnum argumentType = validateValueExpression(value, expressions);
             if(!VariableEnum.checkValidAssignment(arrayType, argumentType))
                 throw new TypeMismatchException();
 
