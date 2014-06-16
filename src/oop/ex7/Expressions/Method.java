@@ -159,4 +159,6 @@ public class Method implements Expression {
     public boolean isArray(){
         return m_isArray;
     }
+
+    public boolean isGlobal(){return true;}
 }

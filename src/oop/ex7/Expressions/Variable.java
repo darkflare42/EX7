@@ -11,6 +11,7 @@ public class Variable implements Expression{
     private String name;
     private boolean initialized;
     private boolean array;
+    private boolean m_isGlobal;
 
 
     public Variable (String varType, String varName) throws VariableTypeException {
@@ -33,6 +34,8 @@ public class Variable implements Expression{
         initialized = isInitialized;
         array = isarray;
     }
+
+
 
     public void Assign (VariableEnum assign) throws VariableTypeException{
         if (assign!=type) {
@@ -65,5 +68,11 @@ public class Variable implements Expression{
 
     public boolean isArray () {
         return array;
+    }
+
+    public boolean isGlobal(){return m_isGlobal;}
+
+    public void setGlobal(boolean isGlobal){
+        m_isGlobal = isGlobal;
     }
 }

@@ -8,4 +8,5 @@ public interface Expression {
     public VariableEnum getType();
     public boolean isInitialized();
     public boolean isArray();
+    public boolean isGlobal();
 }

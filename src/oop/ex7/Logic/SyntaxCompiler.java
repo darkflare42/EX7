@@ -83,7 +83,7 @@ public class SyntaxCompiler {
             currLine = reader.next();
             switch (ExpressionTypeEnum.checkType(currLine)){
                 case MEM_DECLARATION:
-                    validateMemberDeclaration(currLine, m_MemberMap);
+                    validateMemberDeclaration(currLine, m_MemberMap, true);
                      //move to the end of the function block, we don't do a deep check now
                     break;
                 case METHOD_DECLARATION:
@@ -131,7 +131,7 @@ public class SyntaxCompiler {
      * @throws TypeMismatchException
      * @throws UnknownMethodCallException
      */
-    private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap)
+    private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap, boolean isGlobal)
             throws InvalidMemberDeclaration, VariableTypeException,
             ExistingVariableName, TypeMismatchException, UnknownMethodCallException, VariableUninitializedException,
             InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException {
@@ -141,26 +141,33 @@ public class SyntaxCompiler {
         if(line.charAt(line.length()-1) != ';') //if the line doesn't end with a semicolon
             throw new InvalidMemberDeclaration();
 
-        //TODO: Check redundancy
         String[] splitDeclaration = line.split(" ");
-        //if(splitDeclaration.length != 2)
-        //    throw new InvalidMemberDeclaration();
-        //if(!splitDeclaration[0].matches(VariableEnum.Types(false)))  //If first element in the string is not a TYPE
-        //    throw new InvalidMemberDeclaration();
+
         //TODO: Check name against saved expressions
 
         int index = line.indexOf('=');
         String name = splitDeclaration[1].replace(";", "");
         if(index == -1){ //No initialization
-           if(variableMap.containsKey(name))
-                throw new ExistingVariableName();
-            //check if it is an array or normal member
+            if(isGlobal){ //we are defining a global variable
+                if(variableMap.containsKey(name))
+                    throw new ExistingVariableName();
+            }
+            else{ //we are defining a local variable
+                if(variableMap.containsKey(name) && !variableMap.get(name).isGlobal())
+                    throw new ExistingVariableName();
+
+            }
            if(splitDeclaration[0].matches(ExpressionTypeEnum.ARRAY_TYPE_REGEX)){ //This is an array
                String type = splitDeclaration[0].substring(0, splitDeclaration[0].indexOf("["));
-               variableMap.put(name, new Variable(type, name, false, true));
+               Variable vr = new Variable(type, name, false, true);
+               vr.setGlobal(isGlobal);
+               variableMap.put(name, vr);
            }
-           else
-                variableMap.put(name, new Variable(splitDeclaration[0], name, false));
+           else{
+                Variable vr = new Variable(splitDeclaration[0], name, false);
+                vr.setGlobal(isGlobal);
+                variableMap.put(name, vr);
+           }
 
         }
         else{ //Initialization of the member
@@ -192,52 +199,21 @@ public class SyntaxCompiler {
 
                 if(!VariableEnum.checkValidAssignment(VariableEnum.toEnum(type), valueType))
                     throw new TypeMismatchException();
-                if(variableMap.containsKey(name))
-                    throw new ExistingVariableName();
-                variableMap.put(name, new Variable(type, name, true));
+                if(isGlobal){ //we are defining a global variable
+                    if(variableMap.containsKey(name))
+                        throw new ExistingVariableName();
+                }
+                else{ //we are defining a local variable
+                    if(variableMap.containsKey(name) && !variableMap.get(name).isGlobal())
+                        throw new ExistingVariableName();
+
+                }
+                Variable vr = new Variable(type, name, true);
+                vr.setGlobal(isGlobal);
+                variableMap.put(name,vr );
             }
         }
 
-
-    }
-
-    private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> mapOne,
-                                                  LinkedHashMap<String, Expression> mapTwo) throws
-            OperationTypeException, UnknownMethodCallException, InvalidArrayMembersDeclaration,
-            VariableTypeException, OperationMismatchException, InvalidMemberDeclaration, VariableUninitializedException,
-            ExistingVariableName, TypeMismatchException {
-        validateMemberDeclaration(line, Utils.mergeExpressions(mapOne, mapTwo));
-    }
-
-    /**
-     * This function parses the value of the variable to the type the variable is assigned as
-     * @param value The value that is assigned to the variable
-     * @param type The declaration type of the variable
-     * @throws VariableTypeException
-     * @throws TypeMismatchException
-     */
-    private static void parseVariableValue(String value, String type) throws VariableTypeException,
-            TypeMismatchException, VariableUninitializedException {
-        VariableEnum memberType = VariableEnum.toEnum(type);
-        if(value.contains(")")){ //this is a function call
-            VariableEnum valueType = m_MethodMap.get(value.substring(0, value.indexOf("("))).getType();
-            if(!VariableEnum.checkValidAssignment(memberType, valueType)){
-                throw new TypeMismatchException();
-            }
-        }
-        else if(m_MemberMap.containsKey(value)){ //This is a variable assignment //TODO: member assignment within method
-            if(!m_MemberMap.get(value).isInitialized()){ //TODO: Check
-                throw new VariableUninitializedException();
-            }
-            VariableEnum.checkValidAssignment(memberType, m_MemberMap.get(value).getType());
-        }
-        else{ //This is a value assignment
-
-            VariableEnum valueType = Utils.getValueEnum(value);
-            if(!VariableEnum.checkValidAssignment(memberType, valueType))
-                throw new TypeMismatchException();
-
-        }
 
     }
 
@@ -265,7 +241,7 @@ public class SyntaxCompiler {
                     validateReturnStatement(currLine, method);
                     break;
                 case MEM_DECLARATION: //check member declaration with and without initialization
-                    validateMemberDeclaration(currLine, method.getAllExpressions());
+                    validateMemberDeclaration(currLine, method.getAllExpressions(), false);
                     break;
                 case ASSIGNMENT:
                     validateAssignment(currLine, method);
@@ -530,18 +506,6 @@ public class SyntaxCompiler {
             if(!VariableEnum.checkValidAssignment(arrayType, argumentType))
                 throw new TypeMismatchException();
 
-            /*
-            Expression ex = getExpression(value);
-            if(ex == null){
-                paramType = Utils.getValueEnum(value);
-            }
-            else{
-                paramType = ex.getType();
-            }
-            if(!VariableEnum.checkValidAssignment(arrayType, paramType))
-                throw new TypeMismatchException();
-            }
-            */
         }
     }
 
