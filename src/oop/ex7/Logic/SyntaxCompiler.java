@@ -53,7 +53,7 @@ public class SyntaxCompiler {
      * @param reader The FileReader that reads through the current file
      */
     private static void compileMethods(FileReader reader) throws VariableTypeException, MethodBadArgsException,
-    ExistingMethodNameException, UnkownCodeLineException{
+            ExistingMethodNameException, UnkownCodeLineException, ExistingVariableName {
         String currLine;
         while(reader.hasNext()){
             currLine = reader.next();
@@ -64,6 +64,7 @@ public class SyntaxCompiler {
                     break;
                 case UNKNOWN:
                     throw new UnkownCodeLineException();
+
 
             }
         }
@@ -94,13 +95,23 @@ public class SyntaxCompiler {
 
     //TODO: Implement
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
-            ExistingMethodNameException{
+            ExistingMethodNameException, ExistingVariableName {
         String[] methodDeclaration = line.split(" ", 2); //line.split(" "); //split type and method name+params
         //int foo(int b, int c);
         String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("("));
         String methodArgs = methodDeclaration[1].substring(methodDeclaration[1].indexOf("(")+1,
                 methodDeclaration[1].lastIndexOf(")"));
-        Method method = new Method(methodDeclaration[0], methodName, methodArgs);
+        String type = methodDeclaration[0];
+        Method method;
+        int indexOfBrackets = type.indexOf("[");
+
+        if(indexOfBrackets == -1){ //The return type is not an array
+            method = new Method(methodDeclaration[0], methodName, methodArgs);
+        }
+        else{
+            type = type.substring(0, indexOfBrackets);
+            method = new Method(type, methodName, methodArgs, true);
+        }
         if(m_MethodMap.containsKey(methodName))
             throw new ExistingMethodNameException();
         m_MethodMap.put(methodName, method);
@@ -118,7 +129,7 @@ public class SyntaxCompiler {
      */
     private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap)
             throws InvalidMemberDeclaration, VariableTypeException,
-            ExistingVariableName, TypeMismatchException, UnknownMethodCallException, VariableUninitializedException {
+            ExistingVariableName, TypeMismatchException, UnknownMethodCallException, VariableUninitializedException, InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException {
 
 
         //TODO: Check redundancy
@@ -134,7 +145,7 @@ public class SyntaxCompiler {
         int index = line.indexOf('=');
         String name = splitDeclaration[1].replace(";", "");
         if(index == -1){ //No initialization
-            if(variableMap.containsKey(splitDeclaration[1]))
+           if(variableMap.containsKey(splitDeclaration[1]))
                 throw new ExistingVariableName();
             //check if it is an array or normal member
            if(splitDeclaration[0].matches(ExpressionTypeEnum.ARRAY_TYPE_REGEX)){ //This is an array
@@ -156,28 +167,23 @@ public class SyntaxCompiler {
                 int indexOfCurly = line.indexOf("{");
                 if(indexOfCurly == -1) initialized = false;
                 int lastIndexOfCurly = line.lastIndexOf("}");
-                String arrayValues = line.substring(indexOfCurly+1, lastIndexOfCurly);
+                String arrayValues = line.substring(indexOfCurly + 1, lastIndexOfCurly);
                 String[] splitArrayValues = arrayValues.split(",");
                 if((lastIndexOfCurly - indexOfCurly) > 1){
                     validateArrayInitialization(splitArrayValues, VariableEnum.toEnum(type));
                 }
+                Utils.ValidArrayDeclaration(arrayValues);
                 Variable vr = new Variable(type, name, initialized, true);
                 variableMap.put(name, vr);
             }
             else{ //This isn't an array
                 String value = line.substring(index+2, line.length()-1).replaceAll(" ", ""); //TODO: Check indexes
                 String type = splitDeclaration[0];
-                if(value.matches(CONFIG.METHOD_CALL)){  //Check if it is initialized by a method call
-                    String methodName = value.substring(0, value.indexOf("(")); //get method name
-                    if(!m_MethodMap.containsKey(methodName))
-                        throw new UnknownMethodCallException();
-                    parseVariableValue(methodName, type);
-                }
-                else{ //A direct value is given
-                    parseVariableValue(value, type);
-                }
-                //Add the member to the member map
-                //TODO: Check double checking with creating variable object
+                VariableEnum valueType =  validateValueExpression(value,
+                        Utils.mergeExpressions(m_MemberMap, m_MethodMap));
+
+                if(!VariableEnum.checkValidAssignment(VariableEnum.toEnum(type), valueType))
+                    throw new TypeMismatchException();
                 if(variableMap.containsKey(name))
                     throw new ExistingVariableName();
                 variableMap.put(name, new Variable(type, name, true));
@@ -225,7 +231,7 @@ public class SyntaxCompiler {
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
             OperationTypeException, OperationMismatchException, MethodBadArgsCountException, MethodTypeMismatchException,
             ConditionUnknownExpressionException, ConditionExpressionNotBooleanException, ConditionArrayCallMismatch,
-            InvalidArrayIndexException {
+            InvalidArrayIndexException, InvalidArrayMembersDeclaration {
         FileReader methodCode = reader.getMethodBlock();
         String currLine;
         while(methodCode.hasNext()){
@@ -266,7 +272,28 @@ public class SyntaxCompiler {
             throw new TypeMismatchException();
         else{
             String value = line.substring(line.indexOf("n")+1, line.length()-1);
-            validateValueExpression(value, method.getAllExpressions());
+            VariableEnum valueType =  validateValueExpression(value, method.getAllExpressions());
+            if(valueType == VariableEnum.ARRAY_TYPE){ //validate array values
+                int indexOfBrackets = value.indexOf("{");
+                String arguments = value.substring(indexOfBrackets+1, value.lastIndexOf("}"));
+                if(arguments.equals("")){ //empty array is valid
+                    return;
+                }
+                String[] splitArguments = arguments.split(",");
+                for(String arg:splitArguments){
+                    arg = arg.trim();
+                    VariableEnum argType = validateValueExpression(arg, method.getAllExpressions());
+                    if(!VariableEnum.checkValidAssignment(method.getType(), argType))
+                        throw new TypeMismatchException();
+                }
+                /*
+                if(!Utils.validateArrayTypes(arguments, method.getType()))
+                    throw new TypeMismatchException();
+                */
+            }
+            else{
+                VariableEnum.checkValidAssignment(method.getType(), valueType);
+            }
         }
 
 
@@ -345,11 +372,11 @@ public class SyntaxCompiler {
         Matcher varOperation = CONFIG.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
             //group32 is the operation char
-            String opType = varOperation.group(32); //TODO: Check
+            String opType = varOperation.group(19); //TODO: Check
             //group14 is the left operator
-            String op1 = varOperation.group(14);
+            String op1 = varOperation.group(1);
             //group33 is the right operator
-            String op2 = varOperation.group(33);
+            String op2 = varOperation.group(20);
 
             Expression op1Expression = getExpression(op1, methodMembers);
             Expression op2Expression = getExpression(op2, methodMembers);
@@ -359,7 +386,7 @@ public class SyntaxCompiler {
                 operationResultType =  Operation.Operate(op1Expression, opType, op2Expression);
             }
             if(op1Expression == null && op2Expression == null){ //both actual values
-                operationResultType =  Operation.Operate(VariableEnum.toEnum(op1), opType, VariableEnum.toEnum(op2));
+                operationResultType =  Operation.Operate(Utils.getValueEnum(op1), opType, Utils.getValueEnum(op2));
             }
             if(op1Expression == null && op2Expression != null){
                 operationResultType = Operation.Operate(VariableEnum.toEnum(op1), opType, op2Expression);
@@ -369,13 +396,22 @@ public class SyntaxCompiler {
             }
             return operationResultType;
         }
-        else{ //normal assignment - either function call, member call or value
-            Expression ex = getExpression(valueExpression, methodMembers);
-            if(ex == null){
-                return Utils.getValueEnum(valueExpression);
+        else{ //normal assignment - either function call, member call, value or array
+            //check if it is an array
+            int indexOfBrackets = valueExpression.indexOf("{");
+            if(indexOfBrackets != -1){ //Return array type and deal with it "higher up"
+                return VariableEnum.ARRAY_TYPE;
             }
             else{
-                return ex.getType();
+                Expression ex = getExpression(valueExpression, methodMembers);
+                if(ex == null){
+                    return Utils.getValueEnum(valueExpression);
+                }
+                else{
+                    if(!ex.isInitialized())
+                        return VariableEnum.VOID;
+                    return ex.getType();
+                }
             }
         }
     }

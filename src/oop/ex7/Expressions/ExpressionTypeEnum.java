@@ -25,7 +25,7 @@ public enum ExpressionTypeEnum {
 
 
     public static final String MEMBER_DECLARATION_REGEX = VariableEnum.Types(false)+" "+NAME+"( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
-    public static final String METHOD_DECLARATION_REGEX = VariableEnum.Types(true) +" [a-zA-Z][_\\w]* ?\\(.*\\) ?\\" +
+    public static final String METHOD_DECLARATION_REGEX = VariableEnum.Types(true) +"(\\[\\])? [a-zA-Z][_\\w]* ?\\(.*\\) ?\\" +
             BLOCK_START_CHAR;
     //public static final String ARRAY_DECLARATION_REGEX = VariableEnum.Types(false) + " *[\\w\\<\\>\\[\\]]+\\s+" +NAME+
     //        "*( ?=.*)?\\{(.*?)\\};";

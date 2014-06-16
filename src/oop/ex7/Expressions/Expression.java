@@ -7,4 +7,5 @@ public interface Expression {
     public String getName();
     public VariableEnum getType();
     public boolean isInitialized();
+    public boolean isArray();
 }
