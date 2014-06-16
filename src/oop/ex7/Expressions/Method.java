@@ -53,8 +53,8 @@ public class Method implements Expression {
     public Method(Method method){
         type = method.getType();
         name = method.getName();
-        allExpressions = method.getAllExpressions();
-        headerExpressions = method.getParams();
+        allExpressions = new LinkedHashMap<>(method.getAllExpressions());
+        headerExpressions = new LinkedHashMap<>(method.getParams());
     }
 
     public Method (String returnType, String methodName, String args, LinkedHashMap<String ,
