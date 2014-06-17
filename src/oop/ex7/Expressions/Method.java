@@ -5,9 +5,8 @@ import oop.ex7.Expressions.Exceptions.MethodBadArgsException;
 import oop.ex7.Expressions.Exceptions.MethodTypeMismatchException;
 import oop.ex7.Expressions.Exceptions.VariableTypeException;
 import oop.ex7.Logic.Exceptions.ExistingVariableName;
-import oop.ex7.Logic.Exceptions.InvalidNameException;
-import oop.ex7.Logic.Exceptions.UnknownCodeLineException;
-import oop.ex7.Logic.Utils;
+import oop.ex7.Logic.Exceptions.InvalidArrayMembersDeclaration;
+import oop.ex7.Logic.Exceptions.InvalidMemberDeclaration;
 
 import java.util.LinkedHashMap;
 
@@ -34,7 +33,7 @@ public class Method implements Expression {
      * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
      */
     public Method (String returnType, String methodName, String args) throws VariableTypeException,
-            MethodBadArgsException, ExistingVariableName, InvalidNameException, UnknownCodeLineException {
+            MethodBadArgsException, ExistingVariableName, InvalidMemberDeclaration {
         type = VariableEnum.toEnum(returnType);
         name = methodName.trim();
         if(!args.equals("")){
@@ -70,7 +69,7 @@ public class Method implements Expression {
 
      */
     public Method(String returnType, String methodName, String args, boolean isReturnArray)
-            throws VariableTypeException, MethodBadArgsException, ExistingVariableName, InvalidNameException, UnknownCodeLineException {
+            throws VariableTypeException, MethodBadArgsException, ExistingVariableName, InvalidMemberDeclaration {
         this(returnType, methodName, args);
         m_isArray = true;
     }
@@ -84,7 +83,7 @@ public class Method implements Expression {
      * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
      */
     private LinkedHashMap<String, Expression> SetVariables(String args) throws VariableTypeException,
-            MethodBadArgsException, ExistingVariableName, InvalidNameException, UnknownCodeLineException {
+            MethodBadArgsException, ExistingVariableName, InvalidMemberDeclaration {
         if (args.trim().endsWith(",")) {
             throw new MethodBadArgsException();
         }
@@ -96,15 +95,18 @@ public class Method implements Expression {
             boolean isArray = false;
             argument = arg.replace("\\s+", " ").trim();
             argument = argument.replace(" []", "[] "); // TODO TESTER 137 best fix in the world
-            currentArgument = argument.split(" ");  //TODO this can be a lot cleaner but im getting lost in ExpressionTypeEnum
-                                                    //TODO instead of splitting by 'space', which is a bad idea, should look into matching patterns
-                                                    //TODO and dividing into groups of the match.
-            Utils.validateVariableName(argument+";");
-            String variableName = currentArgument[1];
-
             if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){
                 throw new MethodBadArgsException();
             }
+            currentArgument = argument.split(" ",2);  //TODO this can be a lot cleaner but im getting lost in ExpressionTypeEnum
+                                                    //TODO instead of splitting by 'space', which is a bad idea, should look into matching patterns
+                                                    //TODO and dividing into groups of the match.
+                                                    //TODO this breaks 424, at least.
+            String variableName = currentArgument[1];
+            if (variableName.trim().contains(" ")){
+                throw new InvalidMemberDeclaration();
+            }
+
             if(newVariables.containsKey(variableName)){ //
                 throw new ExistingVariableName();
             }
@@ -116,16 +118,6 @@ public class Method implements Expression {
             else{ //normal declaration
                 newVariables.put(variableName, new Variable(currentArgument[0], variableName, true));
             }
-            /*
-            if (argument.matches(VariableEnum.Types(false)+"\\s+([a-zA-Z_]+)([\\w]*)")) {
-                currentArgument = argument.split(" ");
-                if(newVariables.containsKey(currentArgument[1])) //Member with the same name already exists
-                    throw new ExistingVariableName();
-                newVariables.put(currentArgument[1], new Variable(currentArgument[0], currentArgument[1], true));
-            } else {
-                throw new MethodBadArgsException();
-            }
-            */
         }
         return newVariables;
     }

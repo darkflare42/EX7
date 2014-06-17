@@ -55,7 +55,7 @@ public class SyntaxCompiler {
      * @param reader The FileReader that reads through the current file
      */
     private static void compileMethods(FileReader reader) throws VariableTypeException, MethodBadArgsException,
-            ExistingMethodNameException, UnknownCodeLineException, ExistingVariableName, InvalidNameException {
+            ExistingMethodNameException, UnknownCodeLineException, ExistingVariableName, InvalidNameException, InvalidMemberDeclaration {
         String currLine;
         while(reader.hasNext()){
             currLine = reader.next();
@@ -99,7 +99,7 @@ public class SyntaxCompiler {
 
     //TODO: Implement
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
-            ExistingMethodNameException, ExistingVariableName, InvalidNameException, UnknownCodeLineException {
+            ExistingMethodNameException, ExistingVariableName, InvalidNameException, UnknownCodeLineException, InvalidMemberDeclaration {
         String[] methodDeclaration = line.split(" ", 2); //line.split(" "); //split type and method name+params
         //int foo(int b, int c);
         String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("(")).trim();
