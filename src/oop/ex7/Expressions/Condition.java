@@ -69,7 +69,7 @@ public class Condition {
             }
         }
 
-        if (condition.matches("([a-zA-Z_]+)([\\w]*)[(].*[)]")) {
+        if (condition.matches("([a-zA-Z_]+)([\\w]*)\\s*[(].*[)]")) {
             // Is the string a method. Assumes method are saved with parentheses in their names.
             Method method = (Method)expressions.get(condition.substring(0,condition.indexOf("(")).trim());
             if (method != null) {
