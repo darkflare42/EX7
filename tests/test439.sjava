@@ -1,9 +1,0 @@
-void foo() {
-while(true) {		
-}
-return;
-}
-
-void foo2(int a) {
-	return;
-}

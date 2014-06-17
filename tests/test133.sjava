@@ -1,4 +1,0 @@
-int[] foo()	{
-int b = 0;
-return {b,8};
-}

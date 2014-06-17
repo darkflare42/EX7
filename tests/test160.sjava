@@ -1,5 +1,0 @@
-int[] a = {9,0};
-void foo(){
-a[1+9] = 9;
-return;
-}

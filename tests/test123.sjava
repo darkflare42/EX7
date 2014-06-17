@@ -1,3 +1,0 @@
-char[] foo(char[] a)	{
-return a;
-}

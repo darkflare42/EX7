@@ -1,3 +1,0 @@
-String[] foo(String[] a)	{
-return a;
-}

@@ -1,8 +1,0 @@
-String foo(String a, boolean b, int c, char d) {
-
-	return a;
-
-}
-
-
-String t = foo("Hello",true,0,'a');

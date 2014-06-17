@@ -1,4 +1,0 @@
-int a = foo();
-int foo() {
-return 8;
-}

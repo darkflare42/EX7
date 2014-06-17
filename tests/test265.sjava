@@ -1,4 +1,0 @@
-double foo(double a) {
-a = 5;
-return a;
-}

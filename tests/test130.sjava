@@ -1,5 +1,0 @@
-double[] foo()	{
-
-return {8,7};
-
-}
