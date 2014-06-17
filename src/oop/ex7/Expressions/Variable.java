@@ -13,7 +13,6 @@ public class Variable implements Expression{
     private VariableEnum type;
     private String name;
     private boolean initialized;
-    private boolean array;
     private boolean m_isGlobal;
 
     /**
@@ -26,7 +25,6 @@ public class Variable implements Expression{
         type = VariableEnum.toEnum(varType);
         name = varName;
         initialized = false;
-        array = false;
     }
 
     /**
@@ -40,7 +38,8 @@ public class Variable implements Expression{
         type = VariableEnum.toEnum(varType);
         name = varName;
         initialized = isInitialized;
-        array = false;
+        type.setIsArray(false);
+
     }
 
     /**
@@ -55,7 +54,7 @@ public class Variable implements Expression{
         type = VariableEnum.toEnum(varType);
         name = varName;
         initialized = isInitialized;
-        array = isarray;
+        type.setIsArray(isarray);
     }
 
     /**
@@ -117,7 +116,7 @@ public class Variable implements Expression{
      * @return array
      */
     public boolean isArray () {
-        return array;
+        return type.isArray();
     }
 
     /**

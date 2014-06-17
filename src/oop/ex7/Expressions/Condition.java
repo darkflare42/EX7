@@ -35,7 +35,7 @@ public class Condition {
             // Is the string a variable.
             Variable variable = (Variable)expressions.get(condition);
             if (variable != null) {
-                if (variable.isArray()) {
+                if (variable.getType().isArray()) {
                     throw new ConditionArrayCallMismatch();
                 }
                 if (variable.isInitialized()) {
@@ -54,7 +54,7 @@ public class Condition {
             // Is the string an array.
             Variable variable = (Variable)expressions.get(condition.substring(0, condition.indexOf("[")));
             if (variable != null) {
-                if (!variable.isArray()) {
+                if (!variable.getType().isArray()) {
                     throw new ConditionArrayCallMismatch();
                 }
                 if (variable.isInitialized()) {

@@ -243,8 +243,6 @@ public class SyntaxCompiler {
                 variableMap.put(name,vr );
             }
         }
-
-
     }
 
 
@@ -305,13 +303,11 @@ public class SyntaxCompiler {
                 for(String arg:splitArguments){
                     arg = arg.trim();
                     VariableEnum argType = validateValueExpression(arg, method.getAllExpressions());
+
                     if(!VariableEnum.checkValidAssignment(method.getType(), argType))
                         throw new TypeMismatchException();
                 }
-                /*
-                if(!Utils.validateArrayTypes(arguments, method.getType()))
-                    throw new TypeMismatchException();
-                */
+
             }
             else{
                 if(!VariableEnum.checkValidAssignment(method.getType(), valueType))
