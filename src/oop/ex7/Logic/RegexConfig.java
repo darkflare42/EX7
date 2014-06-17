@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
  */
 public class RegexConfig {
 
+    //TODO maybe some values can be set as private?
 
     public static final String VALID_NAME = "(_?[a-zA-Z]+[\\w]*)";
     public static final String VALID_OPERATIONS= OperationEnum.operationRegexSet();
