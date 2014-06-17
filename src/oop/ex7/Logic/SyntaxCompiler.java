@@ -348,7 +348,7 @@ public class SyntaxCompiler {
             if(indexType != VariableEnum.INT) //Index is not a type value
                 throw new TypeMismatchException();
             else{ //check if it is a single non zero value
-                if(!index.matches(CONFIG.finalReg)){ //check only if value is a single digit
+                if(!index.matches(CONFIG.OPERATION_REGEX)){ //check only if value is a single digit
                     if(Utils.IntegerTryParse(index) && Integer.parseInt(index) < 0) //check if it is a non zero number
                         throw new InvalidArrayIndexException();
                 }
