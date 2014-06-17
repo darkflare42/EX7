@@ -96,6 +96,7 @@ public class Method implements Expression {
             currentArgument = argument.split(" ");  //TODO this can be a lot cleaner but im getting lost in ExpressionTypeEnum
                                                     //TODO instead of splitting by 'space', which is a bad idea, should look into matching patterns
                                                     //TODO and dividing into groups of the match.
+                                                    //TODO this breaks 424, at least.
             String variableName = currentArgument[1];
             if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){
                 throw new MethodBadArgsException();
@@ -111,16 +112,6 @@ public class Method implements Expression {
             else{ //normal declaration
                 newVariables.put(variableName, new Variable(currentArgument[0], variableName, true));
             }
-            /*
-            if (argument.matches(VariableEnum.Types(false)+"\\s+([a-zA-Z_]+)([\\w]*)")) {
-                currentArgument = argument.split(" ");
-                if(newVariables.containsKey(currentArgument[1])) //Member with the same name already exists
-                    throw new ExistingVariableName();
-                newVariables.put(currentArgument[1], new Variable(currentArgument[0], currentArgument[1], true));
-            } else {
-                throw new MethodBadArgsException();
-            }
-            */
         }
         return newVariables;
     }
