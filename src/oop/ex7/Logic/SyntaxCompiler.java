@@ -356,17 +356,20 @@ public class SyntaxCompiler {
                         throw new InvalidArrayIndexException();
                 }
             }
-
+            //TODO: Call validateValueExpression
+            Variable array = (Variable)getExpression(name, method.getAllExpressions());
+            Variable arrayElementVar = new Variable(array.getType().toString(),
+                    "", array.isInitialized());
+            validateValueExpression(value, method.getAllExpressions(), arrayElementVar);
+            return;
         }
         else{
             if(!m_MemberMap.containsKey(name) && !method.getAllExpressions().containsKey(name))  //if the member is not defined
                 throw new UnknownVariableException();
         }
 
-        VariableEnum valueType =  validateValueExpression(value, method.getAllExpressions(),
+        validateValueExpression(value, method.getAllExpressions(),
                 getExpression(name, method.getAllExpressions()));
-
-        //VariableEnum.checkValidAssignment(getExpression(name, method.getAllExpressions()).getType(), valueType);
     }
 
     /**
@@ -426,11 +429,19 @@ public class SyntaxCompiler {
                 if(ex == null){
                     return Utils.getValueEnum(valueExpression.trim());
                 }
-                else{
-                    if(!ex.isInitialized())
+                else if(!ex.isInitialized()){
                         return VariableEnum.VOID;
+                }
+                else if(valueExpression.contains("[")){ //we are sending an element of an array
+                    Variable vr = new Variable(ex.getType().toString(), "", true);
+                    insertInto.Assign(vr.getType());
+                    return vr.getType();
+                }
+                else{
+                    insertInto.Assign(ex.getType());
                     return ex.getType();
                 }
+
             }
         }
     }

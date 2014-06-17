@@ -68,7 +68,7 @@ public class Method implements Expression {
     public Method(String returnType, String methodName, String args, boolean isReturnArray)
             throws VariableTypeException, MethodBadArgsException, ExistingVariableName, InvalidMemberDeclaration {
         this(returnType, methodName, args);
-        type.setIsArray(isReturnArray);
+        m_isArray = isReturnArray;
     }
 
     /**

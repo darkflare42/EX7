@@ -14,6 +14,7 @@ public class Variable implements Expression{
     private String name;
     private boolean initialized;
     private boolean m_isGlobal;
+    public boolean m_isArray;
 
     /**
      * Constructor for a variable declaration without a value.
@@ -25,6 +26,7 @@ public class Variable implements Expression{
         type = VariableEnum.toEnum(varType);
         name = varName;
         initialized = false;
+        m_isGlobal = false;
     }
 
     /**
@@ -38,7 +40,7 @@ public class Variable implements Expression{
         type = VariableEnum.toEnum(varType);
         name = varName;
         initialized = isInitialized;
-        type.setIsArray(false);
+        m_isGlobal = false;
 
     }
 
@@ -54,7 +56,7 @@ public class Variable implements Expression{
         type = VariableEnum.toEnum(varType);
         name = varName;
         initialized = isInitialized;
-        type.setIsArray(isarray);
+        m_isArray = isarray;
     }
 
     /**
@@ -65,17 +67,14 @@ public class Variable implements Expression{
     // TODO there is a redundant method of the same functionality in VariableEnum.
     public void Assign (VariableEnum assign) throws VariableAssignMismatchException{
 
+
         if(type != assign){
             if(type == VariableEnum.DOUBLE && assign != VariableEnum.INT)
                 throw new VariableAssignMismatchException();
         }
-        //if(member == value) return true;
-        //if(member == DOUBLE && value == INT) return true;
-        //return false
+        else if(m_isArray)
+            throw new VariableAssignMismatchException();
 
-        //if (assign!=type) {
-        //    throw new VariableAssignMismatchException();
-        //}
         initialized = true;
     }
 
@@ -125,7 +124,7 @@ public class Variable implements Expression{
      * @return array
      */
     public boolean isArray () {
-        return type.isArray();
+        return m_isArray;
     }
 
     /**

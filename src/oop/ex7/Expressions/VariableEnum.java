@@ -16,7 +16,6 @@ public enum VariableEnum {
 
     private final String nameString;
     private static String TYPES = null;
-    private boolean m_isArray = false;
 
     /**
      * Private constructor.
@@ -24,15 +23,6 @@ public enum VariableEnum {
      */
     VariableEnum(String name) {
         nameString = name;
-        this.setIsArray(false);
-    }
-
-    public void setIsArray(boolean isArray){
-        m_isArray = isArray;
-    }
-
-    public boolean isArray(){
-        return m_isArray;
     }
 
     /**
