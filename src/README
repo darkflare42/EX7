@@ -25,8 +25,8 @@ Answers to Questions:
 
 - How would we modify the code for new variable types:
    In order to add a new type of variables we would need to take care of 2 things:
-   1. Add an Enum of their type, and name of their type, to VariableEnum Enum class.
-   2. Add the way they are represented as a String to ExpressionTypeEnum Enum class. (e.g. float type has digits,
+   1. Add an Enum of their type, and name of their type, to VariableEnum class.
+   2. Add the way they are represented as a String to ExpressionTypeEnum class. (e.g. float type has digits,
       a preiod and then some more digits).
    TODO DID I MISS ANYTHING?
 
@@ -40,3 +40,6 @@ Answers to Questions:
     "(int|double|String|boolean|char)(_?[a-zA-Z][_\w]*)( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
     2. Expression for finding a method declaration:
     "(int|double|String|boolean|char|void)(\\[\\])? [a-zA-Z][_\\w]* ?\\(.*\\) ?\\{"
+
+    Note: both of these expressions are located in ExpressionTypeEnum class, and some of their parts are generated
+    dynamically in case new types will be added.
