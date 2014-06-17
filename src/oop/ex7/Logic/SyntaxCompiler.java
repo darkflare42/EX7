@@ -203,11 +203,11 @@ public class SyntaxCompiler {
             else{ //This isn't an array
                 String value = matcher.group(3).replaceAll("=", "").trim();
                 String type = splitDeclaration[0];
-                VariableEnum valueType =  validateValueExpression(value,
+                validateValueExpression(value,
                         variableMap, new Variable(type, name, true));
 
-                if(!VariableEnum.checkValidAssignment(VariableEnum.toEnum(type), valueType))
-                    throw new TypeMismatchException();
+                //if(!VariableEnum.checkValidAssignment(VariableEnum.toEnum(type), valueType))
+                //    throw new TypeMismatchException();
                 if(isGlobal){ //we are defining a global variable
                     if(variableMap.containsKey(name))
                         throw new ExistingVariableName();
@@ -279,12 +279,12 @@ public class SyntaxCompiler {
                     return;
                 }
                 String[] splitArguments = arguments.split(",");
+                //TODO: Add constructor for member which receives ENUM
+                Variable arrayMember = new Variable(method.getType().toString(),"", true);
                 for(String arg:splitArguments){
                     arg = arg.trim();
-                    VariableEnum argType = validateValueExpression(arg, method.getAllExpressions(), method);
 
-                    if(!VariableEnum.checkValidAssignment(method.getType(), argType))
-                        throw new TypeMismatchException();
+                    validateValueExpression(arg, method.getAllExpressions(), arrayMember);
                 }
 
             }
@@ -380,7 +380,8 @@ public class SyntaxCompiler {
     private static VariableEnum validateValueExpression(String valueExpression, LinkedHashMap<String,
             Expression> methodMembers, Expression insertInto)
             throws OperationMismatchException,
-            OperationTypeException, VariableUninitializedException, VariableTypeException, VariableAssignMismatchException {
+            OperationTypeException, VariableUninitializedException, VariableTypeException, VariableAssignMismatchException
+            , TypeMismatchException {
         Matcher varOperation = CONFIG.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
             //group32 is the operation char
@@ -421,15 +422,20 @@ public class SyntaxCompiler {
         else{ //normal assignment - either function call, member call, value or array
             //check if it is an array
             int indexOfBrackets = valueExpression.indexOf("{");
+
             if(indexOfBrackets != -1){ //Return array type and deal with it "higher up"
+                if(!insertInto.isArray()) // we are declaring an array inside a non array variable
+                    throw new TypeMismatchException();
                 return VariableEnum.ARRAY_TYPE;
             }
             else{
                 Expression ex = getExpression(valueExpression, methodMembers);
                 if(ex == null){
+                    insertInto.Assign(Utils.getValueEnum(valueExpression.trim()));
                     return Utils.getValueEnum(valueExpression.trim());
-                }
+                } //TODO: Some of these checks are done inside variable.Assign
                 else if(!ex.isInitialized()){
+                    insertInto.Assign(VariableEnum.VOID); //Uninitialized member
                         return VariableEnum.VOID;
                 }
                 else if(valueExpression.contains("[")){ //we are sending an element of an array
@@ -523,12 +529,9 @@ public class SyntaxCompiler {
     private static void validateArrayInitialization(String[] params, Expression arrayType,
                                                     LinkedHashMap<String, Expression> expressions)
             throws TypeMismatchException, OperationTypeException, VariableUninitializedException,
-            OperationMismatchException, VariableTypeException, VariableAssignMismatchException {
-        VariableEnum paramType;
+            OperationMismatchException, VariableTypeException, VariableAssignMismatchException, InvalidArrayMembersDeclaration {
         for(String value: params){
-            VariableEnum argumentType = validateValueExpression(value, expressions, arrayType);
-            if(!VariableEnum.checkValidAssignment(arrayType.getType(), argumentType))
-                throw new TypeMismatchException();
+            validateValueExpression(value, expressions, arrayType);
 
         }
     }
