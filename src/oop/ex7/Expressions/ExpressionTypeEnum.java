@@ -31,7 +31,7 @@ public enum ExpressionTypeEnum {
             case RegexConfig.BLOCK_START_CHAR: //Method declaration/while, if block
                 if(line.matches(RegexConfig.METHOD_DECLARATION_REGEX))
                     return METHOD_DECLARATION;
-                else if(line.matches(RegexConfig.BLOCK_REGEX))
+                else if(line.matches(RegexConfig.BLOCK_CALL_REGEX))
                     return BLOCK_START;
                 else{
                     return UNKNOWN;

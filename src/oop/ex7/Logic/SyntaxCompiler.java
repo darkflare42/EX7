@@ -166,7 +166,7 @@ public class SyntaxCompiler {
 
             }
             //TODO: DOUBLE CHECK Matcher already checks if its an array declaration - can use it
-            if(splitDeclaration[0].matches(RegexConfig.ARRAY_TYPE_REGEX)){ //This is an array
+            if(splitDeclaration[0].matches(RegexConfig.ARRAY_TYPE_CALL_REGEX)){ //This is an array
                String type = splitDeclaration[0].substring(0, splitDeclaration[0].indexOf("["));
                Variable vr = new Variable(type, name, false, true);
                vr.setGlobal(isGlobal);

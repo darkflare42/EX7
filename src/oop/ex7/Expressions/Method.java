@@ -2,7 +2,6 @@ package oop.ex7.Expressions;
 
 import oop.ex7.Expressions.Exceptions.*;
 import oop.ex7.Logic.Exceptions.ExistingVariableName;
-import oop.ex7.Logic.Exceptions.InvalidArrayMembersDeclaration;
 import oop.ex7.Logic.Exceptions.InvalidMemberDeclaration;
 import oop.ex7.Logic.RegexConfig;
 
@@ -96,10 +95,9 @@ public class Method implements Expression {
             if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){
                 throw new MethodBadArgsException();
             }
-            currentArgument = argument.split(" ",2);  //TODO this can be a lot cleaner but im getting lost in ExpressionTypeEnum
+            currentArgument = argument.split(" ",2);//TODO this can be a lot cleaner.
                                                     //TODO instead of splitting by 'space', which is a bad idea, should look into matching patterns
                                                     //TODO and dividing into groups of the match.
-                                                    //TODO this breaks 424, at least.
             String variableName = currentArgument[1];
             if (variableName.trim().contains(" ")){
                 throw new InvalidMemberDeclaration();
@@ -109,7 +107,7 @@ public class Method implements Expression {
                 throw new ExistingVariableName();
             }
             //check if it is an array
-            if(currentArgument[0].matches(RegexConfig.ARRAY_TYPE_REGEX)){ //this is an array
+            if(currentArgument[0].matches(RegexConfig.ARRAY_TYPE_CALL_REGEX)){ //this is an array
                 String type = currentArgument[0].substring(0, currentArgument[0].indexOf("["));
                 newVariables.put(variableName, new Variable(type, variableName, true, true));
             }

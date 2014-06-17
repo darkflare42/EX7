@@ -76,12 +76,7 @@ public class Operation {
                 case CHAR:
                     throw new OperationMismatchException();
                 case STRING:
-                    throw new OperationMismatchException(); // Java supports String addition, but s-java does not.
-//                    if (operation == OperationEnum.ADD) {
-//                        return VariableEnum.STRING;
-//                    } else {
-//                        throw new OperationMismatchException();
-//                    }
+                    throw new OperationMismatchException();
             }
         } else if ((var1 == VariableEnum.INT || var2 == VariableEnum.INT)
                    && (var1 == VariableEnum.DOUBLE || var2 == VariableEnum.DOUBLE)) {

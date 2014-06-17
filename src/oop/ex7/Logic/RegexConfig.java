@@ -29,23 +29,24 @@ public class RegexConfig {
     public static final String COMMENT_TYPE_REGEX = "(//.*)";
 
 
-    public static final String VARIABLE_REGEX = MINUS_OR_NOT + VALID_NAME;
+    public static final String VARIABLE_CALL_REGEX = MINUS_OR_NOT + VALID_NAME;
     public static final String METHOD_REGEX = MINUS_OR_NOT + VALID_NAME + PARENTHESES_BLOCK;
-    public static final String DOUBLE_REGEX = MINUS_OR_NOT + "(\\d+\\.\\d+)";
-    public static final String INT_REGEX = MINUS_OR_NOT + "(\\d+)";
-    public static final String STRING_REGEX = MINUS_OR_NOT + "[\"][\\w]+[\"]";
-    public static final String ARRAY_TYPE_REGEX = VariableEnum.Types(false) + "\\[\\]";
-    public static final String BLOCK_REGEX = BLOCK_TYPES + " ?\\(.*\\) ?\\"+ BLOCK_START_CHAR;
+    public static final String DOUBLE_CALL_REGEX = MINUS_OR_NOT + "(\\d+\\.\\d+)";
+    public static final String INT_CALL_REGEX = MINUS_OR_NOT + "(\\d+)";
+    public static final String STRING_CALL_REGEX = MINUS_OR_NOT + "[\"][\\w]+[\"]";
+    public static final String ARRAY_TYPE_CALL_REGEX = VariableEnum.Types(false) + "\\[\\]";
+    public static final String BLOCK_CALL_REGEX = BLOCK_TYPES + " ?\\(.*\\) ?\\"+ BLOCK_START_CHAR;
 
 
     public static final String MEMBER_DECLARATION_REGEX = VariableEnum.Types(false)+" "+ VALID_NAME+"( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
     public static final String METHOD_DECLARATION_REGEX = VariableEnum.Types(true) +"(\\[\\])? [a-zA-Z][_\\w]* ?\\(.*\\) ?\\" + BLOCK_START_CHAR;
     public static final String ARRAY_DECLARATION_REGEX = VariableEnum.Types(false) + " *\\[ *\\] *(_?[a-zA-Z][_\\w]*)(\\s?=\\s?\\{\\s?.*\\})?;";
     public static final String METHOD_CALL_REGEX = VALID_NAME + "\\(.*\\);"; // TODO why cant i change it to use PARENTHESES_BLOCK? the addition of a set seems to break it, but can't find out why.
-    public static final String ARRAY_CALL_REGEX = MINUS_OR_NOT + VALID_NAME + "\\s*(\\[" + SET_START + INT_REGEX + OR + VARIABLE_REGEX + SET_END +"])";
+                                                                             // TODO this should serve the same purpose as METHOD_REGEX, but they are called in different places and behave differently.
+    public static final String ARRAY_CALL_REGEX = MINUS_OR_NOT + VALID_NAME + "\\s*(\\[" + SET_START + INT_CALL_REGEX + OR + VARIABLE_CALL_REGEX + SET_END +"])";
 
 
-    private static final String ValidOperationTypes = SET_START + VARIABLE_REGEX + OR + METHOD_REGEX + OR + DOUBLE_REGEX + OR + INT_REGEX + OR + ARRAY_CALL_REGEX + OR + STRING_REGEX + SET_END;
+    private static final String ValidOperationTypes = SET_START + VARIABLE_CALL_REGEX + OR + METHOD_REGEX + OR + DOUBLE_CALL_REGEX + OR + INT_CALL_REGEX + OR + ARRAY_CALL_REGEX + OR + STRING_CALL_REGEX + SET_END;
     private static final String Operators = SPACES + VALID_OPERATIONS + SPACES;
 
 
@@ -61,7 +62,7 @@ public class RegexConfig {
         }
         forbiddenWords = VariableEnum.Types(true);
         forbiddenWords = forbiddenWords.substring(0,forbiddenWords.length()-1);
-        forbiddenWords += "|if|while|return)";
+        forbiddenWords += "|if|while|return|true|false)";
         return (string.matches(forbiddenWords));
     }
 }

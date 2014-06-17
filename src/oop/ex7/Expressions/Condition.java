@@ -4,6 +4,7 @@ import oop.ex7.Expressions.Exceptions.ConditionArrayCallMismatch;
 import oop.ex7.Expressions.Exceptions.ConditionExpressionNotBooleanException;
 import oop.ex7.Expressions.Exceptions.ConditionUnknownExpressionException;
 import oop.ex7.Expressions.Exceptions.VariableUninitializedException;
+import oop.ex7.Logic.RegexConfig;
 
 import java.util.LinkedHashMap;
 
@@ -26,12 +27,12 @@ public class Condition {
             throws ConditionExpressionNotBooleanException, ConditionUnknownExpressionException, VariableUninitializedException, ConditionArrayCallMismatch {
         condition = condition.trim();
 
-        if (condition.matches("\\b(true|false)\\b")) {
+        if (condition.matches("(true|false)")) {
             // Is the string a boolean.
             return true;
         }
 
-        if (condition.matches("\\b([a-zA-Z_]+)([\\w]*)\\b")) {
+        if (condition.matches(RegexConfig.VALID_NAME)) {
             // Is the string a variable.
             Variable variable = (Variable)expressions.get(condition);
             if (variable != null) {
@@ -50,7 +51,7 @@ public class Condition {
             }
         }
 
-        if (condition.matches("(([a-zA-Z_]+)([\\w]*))\\s*\\[((\\d+)|(([a-zA-Z_]+)([\\w]*)))]")) {
+        if (condition.matches(RegexConfig.ARRAY_CALL_REGEX)) {
             // Is the string an array.
             Variable variable = (Variable)expressions.get(condition.substring(0, condition.indexOf("[")));
             if (variable != null) {
@@ -69,8 +70,7 @@ public class Condition {
             }
         }
 
-        if (condition.matches("([a-zA-Z_]+)([\\w]*)\\s*[(].*[)]")) {
-            // Is the string a method. Assumes method are saved with parentheses in their names.
+        if (condition.matches(RegexConfig.METHOD_REGEX)) {
             Method method = (Method)expressions.get(condition.substring(0,condition.indexOf("(")).trim());
             if (method != null) {
                 if (method.getType() == VariableEnum.BOOLEAN) {
@@ -79,9 +79,7 @@ public class Condition {
                     throw new ConditionExpressionNotBooleanException();
                 }
             }
-
         }
-
         throw new ConditionUnknownExpressionException();
     }
 }
