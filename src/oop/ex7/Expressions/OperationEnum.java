@@ -53,13 +53,13 @@ public enum OperationEnum {
      *
      * @return String of the regex set of all possible operations.
      */
-    public static String operationValues() {
+    public static String operationRegexSet() {
         if (OPERATIONS != null) {
             return OPERATIONS;
         }
         OPERATIONS = "(";
         for (OperationEnum type : OperationEnum.values()) {
-            OPERATIONS += type.toString() + "|";
+            OPERATIONS += "\\" +type.toString() + "|";
         }
         OPERATIONS = OPERATIONS.substring(0, OPERATIONS.length() - 1) + ")";
         return OPERATIONS;

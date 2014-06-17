@@ -17,7 +17,7 @@ public class Utils {
 
     public static boolean IntegerTryParse(String value){
         try{
-            if(!value.matches(RegexConfig.INT_REG))
+            if(!value.matches(RegexConfig.INT_REGEX))
                 return false;
             Integer.parseInt(value);
             return true;

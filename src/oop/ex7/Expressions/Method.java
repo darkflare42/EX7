@@ -4,6 +4,7 @@ import oop.ex7.Expressions.Exceptions.*;
 import oop.ex7.Logic.Exceptions.ExistingVariableName;
 import oop.ex7.Logic.Exceptions.InvalidArrayMembersDeclaration;
 import oop.ex7.Logic.Exceptions.InvalidMemberDeclaration;
+import oop.ex7.Logic.RegexConfig;
 
 import java.util.LinkedHashMap;
 
@@ -108,7 +109,7 @@ public class Method implements Expression {
                 throw new ExistingVariableName();
             }
             //check if it is an array
-            if(currentArgument[0].matches(ExpressionTypeEnum.ARRAY_TYPE_REGEX)){ //this is an array
+            if(currentArgument[0].matches(RegexConfig.ARRAY_TYPE_REGEX)){ //this is an array
                 String type = currentArgument[0].substring(0, currentArgument[0].indexOf("["));
                 newVariables.put(variableName, new Variable(type, variableName, true, true));
             }
