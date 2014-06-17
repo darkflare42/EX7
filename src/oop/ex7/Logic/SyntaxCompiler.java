@@ -102,13 +102,17 @@ public class SyntaxCompiler {
 
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
             ExistingMethodNameException, ExistingVariableName, InvalidNameException, UnknownCodeLineException, InvalidMemberDeclaration {
-        String[] methodDeclaration = line.split(" ", 2); //line.split(" "); //split type and method name+params
-        //int foo(int b, int c);
+
+        String[] methodDeclaration = line.split(" ", 2); //split type and method name+params
         String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("(")).trim();
+
         if(!Utils.checkValidVariableName(methodName))
             throw new InvalidNameException();
+
+
         String methodArgs = methodDeclaration[1].substring(methodDeclaration[1].indexOf("(")+1,
                 methodDeclaration[1].lastIndexOf(")"));
+
         String type = methodDeclaration[0];
         Method method;
         int indexOfBrackets = type.indexOf("[");
@@ -116,11 +120,11 @@ public class SyntaxCompiler {
         if(indexOfBrackets == -1){ //The return type is not an array
             method = new Method(methodDeclaration[0], methodName, methodArgs);
         }
-        else{
+        else{ //The return type is an array
             type = type.substring(0, indexOfBrackets);
             method = new Method(type, methodName, methodArgs, true);
         }
-        if(m_MethodMap.containsKey(methodName))
+        if(m_MethodMap.containsKey(methodName)) //If there is another global member with this name - exception
             throw new ExistingMethodNameException();
         m_MethodMap.put(methodName, method);
 
@@ -178,13 +182,12 @@ public class SyntaxCompiler {
             //TODO DOUBLE CHECK, Matcher already checks if its an array declaration
             if(splitDeclaration[0].contains("[")){ //this is an array
                 String type = splitDeclaration[0].substring(0, splitDeclaration[0].indexOf("["));
-                boolean initialized = false;
+                boolean initialized;
                 if(variableMap.containsKey(name))
                     throw new ExistingVariableName();
 
                 //check types of values
                 int indexOfCurly = line.indexOf("{");
-                if(indexOfCurly == -1) initialized = false;
                 int lastIndexOfCurly = line.lastIndexOf("}");
                 String arrayValues = line.substring(indexOfCurly + 1, lastIndexOfCurly);
                 arrayValues = arrayValues.trim();
@@ -203,8 +206,6 @@ public class SyntaxCompiler {
                 validateValueExpression(value,
                         variableMap, new Variable(type, name, true));
 
-                //if(!VariableEnum.checkValidAssignment(VariableEnum.toEnum(type), valueType))
-                //    throw new TypeMismatchException();
                 if(isGlobal){ //we are defining a global variable
                     if(variableMap.containsKey(name))
                         throw new ExistingVariableName();
@@ -259,6 +260,7 @@ public class SyntaxCompiler {
 
     private static void validateReturnStatement(String line, Method method) throws TypeMismatchException,
             OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException, VariableAssignMismatchException {
+
         String[] splitReturn = line.split(" ", 2);
         if(splitReturn.length != 2){ //we have a return, with no value returned
             if(method.getType() != VariableEnum.VOID)
@@ -280,7 +282,6 @@ public class SyntaxCompiler {
                 Variable arrayMember = new Variable(method.getType().toString(),"", true);
                 for(String arg:splitArguments){
                     arg = arg.trim();
-
                     validateValueExpression(arg, method.getAllExpressions(), arrayMember);
                 }
 
@@ -314,7 +315,6 @@ public class SyntaxCompiler {
         ((Method)method.getAllExpressions().get(methodName)).ValidateHeader(paramTypes);
     }
 
-    //TODO: Check if needs to deal with multiple math operations, Oded: no
 
     /**
      * Several options - normal assignment of a member
@@ -381,11 +381,11 @@ public class SyntaxCompiler {
             , TypeMismatchException {
         Matcher varOperation = CONFIG.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
-            //group32 is the operation char
-            String opType = varOperation.group(19); //TODO: Check
-            //group14 is the left operator
+            //group19 is the operation char
+            String opType = varOperation.group(19);
+            //group1 is the left operator
             String op1 = varOperation.group(1);
-            //group33 is the right operator
+            //group20 is the right operator
             String op2 = varOperation.group(20); 
 
             //Check if it is a method call
