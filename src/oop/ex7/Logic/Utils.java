@@ -133,7 +133,7 @@ public class Utils {
         }
         else{
             matcher = ExpressionTypeEnum.ARRAY_DECLARATION_PATTERN.matcher(variable);
-            if(matcher.lookingAt()){
+            if(matcher.lookingAt()){ //This is an array declaration
 
                 value = matcher.group(3);
             }
@@ -145,5 +145,18 @@ public class Utils {
 
         if(!value.equals("") && !value.contains("=")) throw new InvalidNameException();
         return matcher;
+    }
+
+    public static String stripName(String name){
+        name = name.replace("-", "");
+        int indexOfBracket = name.indexOf("(");
+        if(indexOfBracket != -1){
+            name = name.substring(0, indexOfBracket);
+        }
+        indexOfBracket = name.indexOf("[");
+        if(indexOfBracket != -1){
+            name = name.substring(0, indexOfBracket);
+        }
+        return name;
     }
 }

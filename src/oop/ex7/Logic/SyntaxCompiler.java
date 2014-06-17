@@ -29,9 +29,9 @@ public class SyntaxCompiler {
         m_MemberMap = new LinkedHashMap<String, Expression>();
         m_MethodMap = new LinkedHashMap<String, Expression>();
         
-        compileMethods(reader);  //Call for methods first so that we can check variable assignment during this phase
+        compileMethodDeclaration(reader);  //Call for methods first so that we can check variable assignment during this phase
         reader.reset();  //Move "pointer" to start of file
-        compileMembers(reader); //Call for member compilation
+        compileMemberDeclaration(reader); //Call for member compilation
 
 
         //If we have declared methods - run a deep check
@@ -39,10 +39,16 @@ public class SyntaxCompiler {
             reader.reset();
 
             reader.moveToFirstMethodDeclaration();
+            //Create a hashmap of all the global values
             LinkedHashMap<String, Expression> globalValues = Utils.mergeExpressions(m_MemberMap, m_MethodMap);
+
             for(String methodName: m_MethodMap.keySet()){
+                //First merge all method members with global members
                 ((Method)m_MethodMap.get(methodName)).mergeAllExpressions(globalValues);
-                 validateMethodBlock(reader, methodName, (Method) m_MethodMap.get(methodName));
+
+                //Validate the method block
+                validateMethodBlock(reader, methodName, (Method) m_MethodMap.get(methodName));
+
                 reader.moveToEndOfMethod();
                 if(reader.hasNext())reader.next();
             }
@@ -54,7 +60,7 @@ public class SyntaxCompiler {
      * This method runs over all the file and checks methods only for compilation errors
      * @param reader The FileReader that reads through the current file
      */
-    private static void compileMethods(FileReader reader) throws VariableTypeException, MethodBadArgsException,
+    private static void compileMethodDeclaration(FileReader reader) throws VariableTypeException, MethodBadArgsException,
             ExistingMethodNameException, UnknownCodeLineException, ExistingVariableName, InvalidNameException, InvalidMemberDeclaration {
         String currLine;
         while(reader.hasNext()){
@@ -66,8 +72,6 @@ public class SyntaxCompiler {
                     break;
                 case UNKNOWN:
                     throw new UnknownCodeLineException();
-
-
             }
         }
     }
@@ -77,16 +81,15 @@ public class SyntaxCompiler {
      * @param reader The FileReader that reads through the current file
      * @throws CompilationException
      */
-    private static void compileMembers(FileReader reader) throws CompilationException{
+    private static void compileMemberDeclaration(FileReader reader) throws CompilationException{
         String currLine;
         while(reader.hasNext()){
             currLine = reader.next();
             switch (ExpressionTypeEnum.checkType(currLine)){
                 case MEM_DECLARATION:
                     validateMemberDeclaration(currLine, m_MemberMap, true);
-                     //move to the end of the function block, we don't do a deep check now
                     break;
-                case METHOD_DECLARATION:
+                case METHOD_DECLARATION: //If its a method declaration - jump to the end of the method
                     reader.moveToEndOfMethod();
                     break;
                 case COMMENT:
@@ -97,7 +100,6 @@ public class SyntaxCompiler {
         }
     }
 
-    //TODO: Implement
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
             ExistingMethodNameException, ExistingVariableName, InvalidNameException, UnknownCodeLineException, InvalidMemberDeclaration {
         String[] methodDeclaration = line.split(" ", 2); //line.split(" "); //split type and method name+params
@@ -139,15 +141,9 @@ public class SyntaxCompiler {
             InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException, InvalidNameException,
             UnknownCodeLineException, VariableAssignMismatchException {
 
-
-        //TODO: Check redundancy
-        if(line.charAt(line.length()-1) != ';') //if the line doesn't end with a semicolon
-            throw new InvalidMemberDeclaration();
-
-        String name, assignedValue;
+        String name;
         Matcher matcher = Utils.validateVariableName(line);
         name = matcher.group(2);
-
 
         String[] splitDeclaration = line.split(" "); //split type and expression
 
@@ -155,7 +151,7 @@ public class SyntaxCompiler {
 
         int index = line.indexOf('=');
 
-        if(index == -1){ //No initialization
+        if(index == -1){ //No initialization, just definition
             if(isGlobal){ //we are defining a global variable
                 if(variableMap.containsKey(name))
                     throw new ExistingVariableName();
@@ -165,20 +161,21 @@ public class SyntaxCompiler {
                     throw new ExistingVariableName();
 
             }
-           if(splitDeclaration[0].matches(ExpressionTypeEnum.ARRAY_TYPE_REGEX)){ //This is an array
+            //TODO: DOUBLE CHECK Matcher already checks if its an array declaration - can use it
+            if(splitDeclaration[0].matches(ExpressionTypeEnum.ARRAY_TYPE_REGEX)){ //This is an array
                String type = splitDeclaration[0].substring(0, splitDeclaration[0].indexOf("["));
                Variable vr = new Variable(type, name, false, true);
                vr.setGlobal(isGlobal);
                variableMap.put(name, vr);
-           }
-           else{
+            }
+            else{
                 Variable vr = new Variable(splitDeclaration[0], name, false);
                 vr.setGlobal(isGlobal);
                 variableMap.put(name, vr);
-           }
-
+            }
         }
         else{ //Initialization of the member
+            //TODO DOUBLE CHECK, Matcher already checks if its an array declaration
             if(splitDeclaration[0].contains("[")){ //this is an array
                 String type = splitDeclaration[0].substring(0, splitDeclaration[0].indexOf("["));
                 boolean initialized = false;
@@ -452,60 +449,21 @@ public class SyntaxCompiler {
         }
     }
 
+
     private static Expression getExpression(String name, LinkedHashMap<String, Expression> methodMembers){
-        name = name.replace("-", "");
-        int indexOfBracket = name.indexOf("(");
-        if(indexOfBracket != -1){
-            name = name.substring(0, indexOfBracket);
-        }
-        indexOfBracket = name.indexOf("[");
-        if(indexOfBracket != -1){
-            name = name.substring(0, indexOfBracket);
-        }
-        Expression ex = getExpression(name);
+        name = Utils.stripName(name);
+        Expression ex = getGlobalExpression(name);
         if(ex == null && !methodMembers.isEmpty())
             ex = methodMembers.get(name);
         return ex;
     }
 
-    private static Expression getExpression(String name){
-        name = name.replace("-", "");
-        int indexOfBracket = name.indexOf("(");
-        if(indexOfBracket != -1){
-            name = name.substring(0, indexOfBracket);
-        }
-        indexOfBracket = name.indexOf("[");
-        if(indexOfBracket != -1){
-            name = name.substring(0, indexOfBracket);
-        }
+    private static Expression getGlobalExpression(String name){
         Expression ex = m_MemberMap.get(name);
         if(ex == null)
             ex = m_MethodMap.get(name);
         return ex;
     }
-
-    private static VariableEnum getValueOfExpression(String expression){
-        VariableEnum type;
-        Expression ex = getExpression(expression);
-        if(ex == null)
-            type = Utils.getValueEnum(expression);
-        else
-            type = ex.getType();
-        return type;
-    }
-
-    private static VariableEnum getValueOfExpression(String expression, LinkedHashMap<String, Expression> methodMembers){
-        VariableEnum type;
-        Expression ex = getExpression(expression, methodMembers);
-        if(ex == null)
-            type = Utils.getValueEnum(expression);
-        else
-            type = ex.getType();
-        return type;
-    }
-
-
-
 
     private static VariableEnum[] getParameterTypes(String line, LinkedHashMap<String, Expression> methodMembers){
         String[] params = line.split(",");
@@ -525,14 +483,12 @@ public class SyntaxCompiler {
     }
 
 
-    //TODO: Expand to use expressionMap
     private static void validateArrayInitialization(String[] params, Expression arrayType,
                                                     LinkedHashMap<String, Expression> expressions)
             throws TypeMismatchException, OperationTypeException, VariableUninitializedException,
             OperationMismatchException, VariableTypeException, VariableAssignMismatchException, InvalidArrayMembersDeclaration {
         for(String value: params){
             validateValueExpression(value, expressions, arrayType);
-
         }
     }
 
