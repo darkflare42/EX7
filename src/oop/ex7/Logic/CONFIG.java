@@ -20,7 +20,7 @@ public class CONFIG {
 
     public static final String variableReg = minusOrNot + VALID_NAME;
     //public static final String methodReg2 = minusOrNot + "(([a-zA-Z_]+)([\\w]*)[(].*[)])"; //TODO wanted to make this more dynamic by adding the VALID_NAME string before the () suffix.
-    public static final String methodReg = minusOrNot + "(" +VALID_NAME + "[(].*[)])";
+    public static final String methodReg = minusOrNot + VALID_NAME + "([(].*[)])";
 
     public static final String doubleReg = minusOrNot + "(\\d+\\.\\d+)";
     public static final String intReg = minusOrNot + "(\\d+)";
