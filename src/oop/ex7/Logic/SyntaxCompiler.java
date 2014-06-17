@@ -364,7 +364,7 @@ public class SyntaxCompiler {
                 throw new TypeMismatchException();
             else{ //check if it is a single non zero value
                 if(!index.matches(CONFIG.finalReg)){ //check only if value is a single digit
-                    if(Integer.parseInt(index) < 0)
+                    if(Utils.IntegerTryParse(index) && Integer.parseInt(index) < 0) //check if it is a non zero number
                         throw new InvalidArrayIndexException();
                 }
             }

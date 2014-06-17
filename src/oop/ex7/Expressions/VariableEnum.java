@@ -62,6 +62,8 @@ public enum VariableEnum {
         return false;
     }
 
+
+
     /**
      * Return a String of all possible VariableEnums.
      * @param withVoid boolean to include "Void" as part of the set.
