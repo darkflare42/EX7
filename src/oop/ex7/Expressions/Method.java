@@ -1,9 +1,6 @@
 package oop.ex7.Expressions;
 
-import oop.ex7.Expressions.Exceptions.MethodBadArgsCountException;
-import oop.ex7.Expressions.Exceptions.MethodBadArgsException;
-import oop.ex7.Expressions.Exceptions.MethodTypeMismatchException;
-import oop.ex7.Expressions.Exceptions.VariableTypeException;
+import oop.ex7.Expressions.Exceptions.*;
 import oop.ex7.Logic.Exceptions.ExistingVariableName;
 import oop.ex7.Logic.Exceptions.InvalidArrayMembersDeclaration;
 import oop.ex7.Logic.Exceptions.InvalidMemberDeclaration;
@@ -190,6 +187,35 @@ public class Method implements Expression {
      */
     public LinkedHashMap<String, Expression> getAllExpressions() {
         return allExpressions;
+    }
+
+    /**
+     * Assign a value to a Variable. Initializes the Variable (if it was not initialized).
+     * @param assign VariableEnum to assign to the variable.
+     * @throws oop.ex7.Expressions.Exceptions.VariableAssignMismatchException if assign is a type that mismatches the type of the Variable.
+     */
+    // TODO there is a redundant method of the same functionality in VariableEnum.
+    public void Assign (VariableEnum assign) throws VariableAssignMismatchException {
+        if(type != assign){
+            if(type == VariableEnum.DOUBLE && assign != VariableEnum.INT)
+                throw new VariableAssignMismatchException();
+        }
+    }
+
+    /**
+     * Assign the value of an expression to a Variable. Initializes the Variable (if it was not initialized).
+     * @param assign Expression to assign its' value to the variable.
+     * @throws VariableAssignMismatchException if assign is a type that mismatches the type of the Variable.
+     * @throws VariableUninitializedException if assign is not an initialized Expression.
+     */
+    // TODO there is a redundant method of the same functionality in VariableEnum.
+    public void Assign (Expression assign) throws VariableAssignMismatchException, VariableUninitializedException {
+        if (!assign.isInitialized()) {
+            throw new VariableUninitializedException();
+        }
+        if (assign.getType()!=type) {
+            throw new VariableAssignMismatchException();
+        }
     }
 
     /**

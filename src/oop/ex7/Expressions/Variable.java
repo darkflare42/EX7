@@ -64,9 +64,18 @@ public class Variable implements Expression{
      */
     // TODO there is a redundant method of the same functionality in VariableEnum.
     public void Assign (VariableEnum assign) throws VariableAssignMismatchException{
-        if (assign!=type) {
-            throw new VariableAssignMismatchException();
+
+        if(type != assign){
+            if(type == VariableEnum.DOUBLE && assign != VariableEnum.INT)
+                throw new VariableAssignMismatchException();
         }
+        //if(member == value) return true;
+        //if(member == DOUBLE && value == INT) return true;
+        //return false
+
+        //if (assign!=type) {
+        //    throw new VariableAssignMismatchException();
+        //}
         initialized = true;
     }
 

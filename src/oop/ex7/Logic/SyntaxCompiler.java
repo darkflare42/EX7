@@ -137,7 +137,7 @@ public class SyntaxCompiler {
             throws InvalidMemberDeclaration, VariableTypeException,
             ExistingVariableName, TypeMismatchException, UnknownMethodCallException, VariableUninitializedException,
             InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException, InvalidNameException,
-            UnknownCodeLineException {
+            UnknownCodeLineException, VariableAssignMismatchException {
 
 
         //TODO: Check redundancy
@@ -230,7 +230,7 @@ public class SyntaxCompiler {
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
             OperationTypeException, OperationMismatchException, MethodBadArgsCountException, MethodTypeMismatchException,
             ConditionUnknownExpressionException, ConditionExpressionNotBooleanException, ConditionArrayCallMismatch,
-            InvalidArrayIndexException, InvalidArrayMembersDeclaration, InvalidNameException {
+            InvalidArrayIndexException, InvalidArrayMembersDeclaration, InvalidNameException, VariableAssignMismatchException {
         FileReader methodCode = reader.getMethodBlock();
         String currLine;
         while(methodCode.hasNext()){
@@ -261,7 +261,7 @@ public class SyntaxCompiler {
     }
 
     private static void validateReturnStatement(String line, Method method) throws TypeMismatchException,
-            OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException {
+            OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException, VariableAssignMismatchException {
         String[] splitReturn = line.split(" ", 2);
         if(splitReturn.length != 2){ //we have a return, with no value returned
             if(method.getType() != VariableEnum.VOID)
@@ -333,7 +333,7 @@ public class SyntaxCompiler {
      */
     private static void validateAssignment(String line, Method method) throws UnknownVariableException,
             VariableTypeException, TypeMismatchException, VariableUninitializedException, OperationTypeException,
-            OperationMismatchException, InvalidArrayIndexException {
+            OperationMismatchException, InvalidArrayIndexException, VariableAssignMismatchException {
         String[] splitLine = line.split("="); //get variable, and operation string
         String name = splitLine[0].trim(); //get the name of the variable initialized
         String value = splitLine[1].substring(0, splitLine[1].length()-1).replaceAll(" ", "");
@@ -377,7 +377,7 @@ public class SyntaxCompiler {
     private static VariableEnum validateValueExpression(String valueExpression, LinkedHashMap<String,
             Expression> methodMembers, Expression insertInto)
             throws OperationMismatchException,
-            OperationTypeException, VariableUninitializedException, VariableTypeException {
+            OperationTypeException, VariableUninitializedException, VariableTypeException, VariableAssignMismatchException {
         Matcher varOperation = CONFIG.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
             //group32 is the operation char
@@ -412,7 +412,7 @@ public class SyntaxCompiler {
             if(op1Expression != null && op2Expression == null){
                 operationResultType = Operation.Operate(Utils.getValueEnum(op2), opType, op1Expression);
             }
-
+            insertInto.Assign(operationResultType);
             return operationResultType;
         }
         else{ //normal assignment - either function call, member call, value or array
@@ -512,7 +512,7 @@ public class SyntaxCompiler {
     private static void validateArrayInitialization(String[] params, Expression arrayType,
                                                     LinkedHashMap<String, Expression> expressions)
             throws TypeMismatchException, OperationTypeException, VariableUninitializedException,
-            OperationMismatchException, VariableTypeException {
+            OperationMismatchException, VariableTypeException, VariableAssignMismatchException {
         VariableEnum paramType;
         for(String value: params){
             VariableEnum argumentType = validateValueExpression(value, expressions, arrayType);
