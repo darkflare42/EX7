@@ -9,7 +9,6 @@ public class CONFIG {
 
     //TODO consider merging this file with ExpressionTypeEnum
     public static final String VALID_NAME = "(([a-zA-Z_]+)([\\w]*))";
-    //                                       (([a-zA-Z_]+)([\\w]*)
 
     public static final String operations = "(\\+|\\-|\\*|\\/)";
     public static final String SPACES = "\\s*";
