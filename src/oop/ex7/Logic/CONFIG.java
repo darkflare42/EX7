@@ -25,7 +25,7 @@ public class CONFIG {
 
     public static final String doubleReg = minusOrNot + "(\\d+\\.\\d+)";
     public static final String intReg = minusOrNot + "(\\d+)";
-    public static final String variableArrayReg = minusOrNot + "(([a-zA-Z_]+)([\\w]*))\\s*(\\[" + START + intReg + OR + variableReg + END +"])";
+    public static final String variableArrayReg = minusOrNot + VALID_NAME + "\\s*(\\[" + START + intReg + OR + variableReg + END +"])";
     public static final String stringReg = minusOrNot + "[\"][\\w]+[\"]";
 
     public static final String VALUE_REGEX = "[-]?\\d*(\\.\\d+)?";
