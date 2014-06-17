@@ -99,7 +99,7 @@ public class SyntaxCompiler {
 
     //TODO: Implement
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
-            ExistingMethodNameException, ExistingVariableName, InvalidNameException {
+            ExistingMethodNameException, ExistingVariableName, InvalidNameException, UnknownCodeLineException {
         String[] methodDeclaration = line.split(" ", 2); //line.split(" "); //split type and method name+params
         //int foo(int b, int c);
         String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("(")).trim();
@@ -144,7 +144,10 @@ public class SyntaxCompiler {
         if(line.charAt(line.length()-1) != ';') //if the line doesn't end with a semicolon
             throw new InvalidMemberDeclaration();
 
-        String name, value2;
+        String name;
+        Matcher matcher = Utils.validateVariableName(line);
+        name = matcher.group(2);
+        /*
         Matcher matcher = ExpressionTypeEnum.MEMBER_DECLARATION_PATTERN.matcher(line);
         if(matcher.lookingAt()){ //this is a member declaration
             name = matcher.group(2);
@@ -160,15 +163,16 @@ public class SyntaxCompiler {
                 throw new UnknownCodeLineException();
             }
         }
+        */
 
         String[] splitDeclaration = line.split(" "); //split type and expression
 
         //TODO: Check name against saved expressions
 
         int index = line.indexOf('=');
-        if(value2 == null) value2 = "";
+        //if(value2 == null) value2 = "";
 
-        if(!value2.equals("") && !value2.contains("=")) throw new InvalidNameException();
+        //if(!value2.equals("") && !value2.contains("=")) throw new InvalidNameException();
         if(index == -1){ //No initialization
             if(isGlobal){ //we are defining a global variable
                 if(variableMap.containsKey(name))
@@ -530,5 +534,8 @@ public class SyntaxCompiler {
 
         }
     }
+
+
+
 
 }

@@ -1,11 +1,15 @@
 package oop.ex7.Logic;
 
 import oop.ex7.Expressions.Expression;
+import oop.ex7.Expressions.ExpressionTypeEnum;
 import oop.ex7.Expressions.VariableEnum;
 import oop.ex7.Logic.Exceptions.InvalidArrayMembersDeclaration;
+import oop.ex7.Logic.Exceptions.InvalidNameException;
+import oop.ex7.Logic.Exceptions.UnknownCodeLineException;
 import sun.security.krb5.Config;
 
 import java.util.LinkedHashMap;
+import java.util.regex.Matcher;
 
 /**
  * Created by Or Keren on 15/06/14.
@@ -118,5 +122,28 @@ public class Utils {
         if(!variableName.matches(CONFIG.VALID_NAME))
             return  false;
         return true;
+    }
+
+    public static Matcher validateVariableName(String variable) throws UnknownCodeLineException, InvalidNameException {
+        String value;
+        Matcher matcher = ExpressionTypeEnum.MEMBER_DECLARATION_PATTERN.matcher(variable);
+        if(matcher.lookingAt()){ //this is a member declaration
+
+            value = matcher.group(3);
+        }
+        else{
+            matcher = ExpressionTypeEnum.ARRAY_DECLARATION_PATTERN.matcher(variable);
+            if(matcher.lookingAt()){
+
+                value = matcher.group(3);
+            }
+            else{
+                throw new UnknownCodeLineException();
+            }
+        }
+        if(value == null) value = "";
+
+        if(!value.equals("") && !value.contains("=")) throw new InvalidNameException();
+        return matcher;
     }
 }

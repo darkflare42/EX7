@@ -5,6 +5,9 @@ import oop.ex7.Expressions.Exceptions.MethodBadArgsException;
 import oop.ex7.Expressions.Exceptions.MethodTypeMismatchException;
 import oop.ex7.Expressions.Exceptions.VariableTypeException;
 import oop.ex7.Logic.Exceptions.ExistingVariableName;
+import oop.ex7.Logic.Exceptions.InvalidNameException;
+import oop.ex7.Logic.Exceptions.UnknownCodeLineException;
+import oop.ex7.Logic.Utils;
 
 import java.util.LinkedHashMap;
 
@@ -31,7 +34,7 @@ public class Method implements Expression {
      * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
      */
     public Method (String returnType, String methodName, String args) throws VariableTypeException,
-            MethodBadArgsException, ExistingVariableName {
+            MethodBadArgsException, ExistingVariableName, InvalidNameException, UnknownCodeLineException {
         type = VariableEnum.toEnum(returnType);
         name = methodName.trim();
         if(!args.equals("")){
@@ -67,7 +70,7 @@ public class Method implements Expression {
 
      */
     public Method(String returnType, String methodName, String args, boolean isReturnArray)
-            throws VariableTypeException, MethodBadArgsException, ExistingVariableName {
+            throws VariableTypeException, MethodBadArgsException, ExistingVariableName, InvalidNameException, UnknownCodeLineException {
         this(returnType, methodName, args);
         m_isArray = true;
     }
@@ -81,7 +84,7 @@ public class Method implements Expression {
      * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
      */
     private LinkedHashMap<String, Expression> SetVariables(String args) throws VariableTypeException,
-            MethodBadArgsException, ExistingVariableName {
+            MethodBadArgsException, ExistingVariableName, InvalidNameException, UnknownCodeLineException {
         if (args.trim().endsWith(",")) {
             throw new MethodBadArgsException();
         }
@@ -96,7 +99,9 @@ public class Method implements Expression {
             currentArgument = argument.split(" ");  //TODO this can be a lot cleaner but im getting lost in ExpressionTypeEnum
                                                     //TODO instead of splitting by 'space', which is a bad idea, should look into matching patterns
                                                     //TODO and dividing into groups of the match.
+            Utils.validateVariableName(argument+";");
             String variableName = currentArgument[1];
+
             if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){
                 throw new MethodBadArgsException();
             }
