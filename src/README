@@ -1,0 +1,27 @@
+// TODO OR WHATS YOUR NAME?!
+odedab
+
+File Description:
+README - This file.
+Main Package        - Sjavac.java  - Main class, calls SJavaValidator.java to start the process.
+
+Logic Package       - SJavaValidator.java - Class to attempt reading from the file given, and print the output
+                                            after the complication check is completed.
+                    - SyntaxCompiler.java - Manager class for the project. Separately compile methods and then variables.
+
+                    <-- TODO NEED TO COMPLETE BASED ON THE CLASSES AFTER REMOVING REDUNDANCY -->
+
+Design:
+        <-- TODO NEED TO WRITE THIS -->
+
+Answers to Questions:
+- Handling errors:
+   To handle the different types of errors, we created a parent CompilationException class that all compilation related
+   exceptions need to inherit from. We did this in order to differentiate between an IOException (I.E. reading the given
+   file) and compilation exceptions, the ones we expected to catch as a part of the exercise.
+   In order to answer the requirement to post an error message regarding the error in question, should we encounter one,
+   every CompilationException sub class calls the super constructor with a String, explaining the error caught.
+   If and when a CompilationException is caught, it can be accessed
+- Date structure used:
+  For every type of an array, I used an ArrayList because they were overall the best Collection for me (for adding,
+  removing and iterating on).
