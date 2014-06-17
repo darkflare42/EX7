@@ -18,6 +18,7 @@ public enum ExpressionTypeEnum {
 
     //TODO: Add string values and change throughout code
     //TODO: FIXES
+    //TODO consider merging this file with CONFIG
 
     public static final char BLOCK_START_CHAR = '{';  //Has to be constant expression
     public static final char BLOCK_END_CHAR = '}';
