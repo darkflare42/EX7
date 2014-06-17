@@ -382,11 +382,11 @@ public class SyntaxCompiler {
         Matcher varOperation = CONFIG.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
             //group19 is the operation char
-            String opType = varOperation.group(19);
+            String opType = varOperation.group(20);
             //group1 is the left operator
             String op1 = varOperation.group(1);
             //group20 is the right operator
-            String op2 = varOperation.group(20); 
+            String op2 = varOperation.group(21);
 
             //Check if it is a method call
             int indexOfBrackets = op1.indexOf("(");

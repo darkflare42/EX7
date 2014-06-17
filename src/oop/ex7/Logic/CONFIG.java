@@ -9,6 +9,7 @@ public class CONFIG {
 
     //TODO consider merging this file with ExpressionTypeEnum
     public static final String VALID_NAME = "(([a-zA-Z_]+)([\\w]*))";
+    //                                       (([a-zA-Z_]+)([\\w]*)
 
     public static final String operations = "(\\+|\\-|\\*|\\/)";
     public static final String SPACES = "\\s*";
@@ -19,8 +20,9 @@ public class CONFIG {
     public static final String minusOrNot = "[-]?";
 
     public static final String variableReg = minusOrNot + VALID_NAME;
-    public static final String methodReg = minusOrNot + "(([a-zA-Z_]+)([\\w]*)[(].*[)])"; //TODO wanted to make this more dynamic by adding the VALID_NAME string before the () suffix.
-//    public static final String methodReg = minusOrNot + VALID_NAME + "([(].*[)])";
+    //public static final String methodReg2 = minusOrNot + "(([a-zA-Z_]+)([\\w]*)[(].*[)])"; //TODO wanted to make this more dynamic by adding the VALID_NAME string before the () suffix.
+    public static final String methodReg = minusOrNot + "(" +VALID_NAME + "[(].*[)])";
+
     public static final String doubleReg = minusOrNot + "(\\d+\\.\\d+)";
     public static final String intReg = minusOrNot + "(\\d+)";
     public static final String variableArrayReg = minusOrNot + "(([a-zA-Z_]+)([\\w]*))\\s*(\\[" + START + intReg + OR + variableReg + END +"])";
