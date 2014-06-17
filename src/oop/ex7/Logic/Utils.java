@@ -112,6 +112,7 @@ public class Utils {
         return true;
     }
 
+    //TODO shouldnt this be a static method in Variable? or in config?
     public static boolean checkValidVariableName(String variableName){
 
         if(!variableName.matches(CONFIG.VALID_NAME))
