@@ -9,19 +9,34 @@ Logic Package       - SJavaValidator.java - Class to attempt reading from the fi
                                             after the complication check is completed.
                     - SyntaxCompiler.java - Manager class for the project. Separately compile methods and then variables.
 
-                    <-- TODO NEED TO COMPLETE BASED ON THE CLASSES AFTER REMOVING REDUNDANCY -->
+                    TODO NEED TO COMPLETE BASED ON THE CLASSES AFTER REMOVING REDUNDANCY, AND POTENTIALLY CHANGING STUFF
 
 Design:
-        <-- TODO NEED TO WRITE THIS -->
+        TODO NEED TO WRITE THIS
 
 Answers to Questions:
 - Handling errors:
    To handle the different types of errors, we created a parent CompilationException class that all compilation related
-   exceptions need to inherit from. We did this in order to differentiate between an IOException (I.E. reading the given
+   exceptions need to inherit from. We did this in order to differentiate between an IOException (i.e. reading the given
    file) and compilation exceptions, the ones we expected to catch as a part of the exercise.
    In order to answer the requirement to post an error message regarding the error in question, should we encounter one,
    every CompilationException sub class calls the super constructor with a String, explaining the error caught.
-   If and when a CompilationException is caught, it can be accessed
-- Date structure used:
-  For every type of an array, I used an ArrayList because they were overall the best Collection for me (for adding,
-  removing and iterating on).
+   If and when a CompilationException is caught, the specific message will be accessed by the SJavaValidator and printed.
+
+- How would we modify the code for new variable types:
+   In order to add a new type of variables we would need to take care of 2 things:
+   1. Add an Enum of their type, and name of their type, to VariableEnum Enum class.
+   2. Add the way they are represented as a String to ExpressionTypeEnum Enum class. (e.g. float type has digits,
+      a preiod and then some more digits).
+   TODO DID I MISS ANYTHING?
+
+- How would we implement if-else block: TODO NEED TO PICK EITHER THIS QUESTION OR THE NEXT
+    TODO I THINK IS IS FAR SIMPLER TO ANSWER, BUT NOT 100% ON HOW YOU IMPLEMENTED IT.
+    TODO STRUCTURE SHOULD BE SIMILAR TO THE WAY THE EXISTING CODE LOOKS FOR THE END OF A METHOD AFTER FINDING A METHOD.
+- How would we implement cross classes compilation: TODO NEED TO PICK EITHER THIS QUESTION ON THE PREVIOUS ONE
+
+- Two most used regular expressions:
+    1. Expression for finding a member declaration:
+    "(int|double|String|boolean|char)(_?[a-zA-Z][_\w]*)( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
+    2. Expression for finding a method declaration:
+    "(int|double|String|boolean|char|void)(\\[\\])? [a-zA-Z][_\\w]* ?\\(.*\\) ?\\{"
