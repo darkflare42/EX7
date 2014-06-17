@@ -348,7 +348,7 @@ public class SyntaxCompiler {
             if(indexType != VariableEnum.INT) //Index is not a type value
                 throw new TypeMismatchException();
             else{ //check if it is a single non zero value
-                if(!index.matches(CONFIG.OPERATION_REGEX)){ //check only if value is a single digit
+                if(!index.matches(RegexConfig.OPERATION_REGEX)){ //check only if value is a single digit
                     if(Utils.IntegerTryParse(index) && Integer.parseInt(index) < 0) //check if it is a non zero number
                         throw new InvalidArrayIndexException();
                 }
@@ -379,14 +379,15 @@ public class SyntaxCompiler {
             throws OperationMismatchException,
             OperationTypeException, VariableUninitializedException, VariableTypeException, VariableAssignMismatchException
             , TypeMismatchException {
-        Matcher varOperation = CONFIG.VAR_MATH_OP.matcher(valueExpression);
+        Matcher varOperation = RegexConfig.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
-            //group19 is the operation char
-            String opType = varOperation.group(20);
+            // TODO oded: i just realized how shitty this is because of the super complex pattern. maybe it can be simplified?
+            //group12 is the operation char
+            String opType = varOperation.group(12);
             //group1 is the left operator
             String op1 = varOperation.group(1);
-            //group20 is the right operator
-            String op2 = varOperation.group(21);
+            //group13 is the right operator
+            String op2 = varOperation.group(13);
 
             //Check if it is a method call
             int indexOfBrackets = op1.indexOf("(");

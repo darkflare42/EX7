@@ -1,5 +1,7 @@
 package oop.ex7.Expressions;
 
+import oop.ex7.Logic.RegexConfig;
+
 import java.util.regex.Pattern;
 
 /**
@@ -24,20 +26,13 @@ public enum ExpressionTypeEnum {
     public static final char BLOCK_END_CHAR = '}';
     public static final char END_OF_LINE_CHAR = ';';
 
-    public static final String NAME="(_?[a-zA-Z][_\\w]*)";
-    //*( ?\s*?=\s*?\w.*)?;$ - new
-    //( ?=\w.*)?;$"
 
-
-    public static final String MEMBER_DECLARATION_REGEX = VariableEnum.Types(false)+" "+NAME+"( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
+    public static final String MEMBER_DECLARATION_REGEX = VariableEnum.Types(false)+" "+ RegexConfig.VALID_NAME+"( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
     public static final String METHOD_DECLARATION_REGEX = VariableEnum.Types(true) +"(\\[\\])? [a-zA-Z][_\\w]* ?\\(.*\\) ?\\" +
             BLOCK_START_CHAR;
-    //public static final String ARRAY_DECLARATION_REGEX = VariableEnum.Types(false) + " *[\\w\\<\\>\\[\\]]+\\s+" +NAME+
-    //        "*( ?=.*)?\\{(.*?)\\};";
-    public static final String ARRAY_DECLARATION_REGEX = "(int|String|char|boolean|double) *\\[ *\\] *(_?[a-zA-Z][_\\w]*)(\\s?=\\s?\\{\\s?.*\\})?;";
-            //"int|double|String|boolean|char) *[\w\<\>\[\]]+\s+_?[a-zA-Z][_\w]*( ?=.*)?;";
+    public static final String ARRAY_DECLARATION_REGEX = VariableEnum.Types(false) + " *\\[ *\\] *(_?[a-zA-Z][_\\w]*)(\\s?=\\s?\\{\\s?.*\\})?;";
     public static final String RETURN_REGEX = "return.*;";
-    public static final String METHOD_CALL_REGEX = NAME + "\\(.*\\);";
+    public static final String METHOD_CALL_REGEX = RegexConfig.VALID_NAME + "\\(.*\\);";
     public static final String OPERATION_REGEX =  "\\w.*=.*;";
     public static final String BLOCK_TYPES = "(if|while)";
     public static final String BLOCK_REGEX = BLOCK_TYPES + " ?\\(.*\\) ?\\"+BLOCK_START_CHAR;
@@ -46,22 +41,6 @@ public enum ExpressionTypeEnum {
 
     public static final Pattern MEMBER_DECLARATION_PATTERN = Pattern.compile(MEMBER_DECLARATION_REGEX);
     public static final Pattern ARRAY_DECLARATION_PATTERN = Pattern.compile(ARRAY_DECLARATION_REGEX);
-
-
-
-
-
-    // array regex - (int|double|String|boolean|char) *[\w\<\>\[\]]+\s+(\w+)
-    // array regex including brackets :(int|double|String|boolean|char) *[\w\<\>\[\]]+\s+(\w+) ( ?=.*)?;
-
-    //regex for everything - (int|double|String|boolean|char)*[\w\<\>\[\]]+\s+(\w+)
-    //regex for methods - (int|double|String|boolean|char)*[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\) *(\{?|[^;])
-    //regex for all members  -(int|double|String|boolean|char)*[\w\<\>\[\]]+\s+(\w+) *( ?=.*)?;
-    //public static final String METHOD_DEC = "(int|double|String|boolean|char) " +
-    //        "*[\\w\\<\\>\\[\\]]+\\s+(\\w+) *\\([^\\)]*\\) *(\\{?|[^;])"; //Remove last part if we don't want {
-
-
-
 
 
     public static ExpressionTypeEnum checkType(String line){

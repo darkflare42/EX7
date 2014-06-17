@@ -6,7 +6,6 @@ import oop.ex7.Expressions.VariableEnum;
 import oop.ex7.Logic.Exceptions.InvalidArrayMembersDeclaration;
 import oop.ex7.Logic.Exceptions.InvalidNameException;
 import oop.ex7.Logic.Exceptions.UnknownCodeLineException;
-import sun.security.krb5.Config;
 
 import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
@@ -18,7 +17,7 @@ public class Utils {
 
     public static boolean IntegerTryParse(String value){
         try{
-            if(!value.matches(CONFIG.VALUE_REGEX))
+            if(!value.matches(RegexConfig.INT_REG))
                 return false;
             Integer.parseInt(value);
             return true;
@@ -118,7 +117,7 @@ public class Utils {
 
     //TODO shouldnt this be a static method in Variable? or in config?
     public static boolean checkValidVariableName(String variableName){
-        return  (variableName.matches(CONFIG.VALID_NAME) && !CONFIG.isForbiddenWord(variableName));
+        return  (variableName.matches(RegexConfig.VALID_NAME) && !RegexConfig.isForbiddenWord(variableName));
     }
 
     public static Matcher validateVariableName(String variable) throws UnknownCodeLineException, InvalidNameException {
