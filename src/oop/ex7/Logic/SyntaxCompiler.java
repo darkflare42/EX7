@@ -144,9 +144,11 @@ public class SyntaxCompiler {
         if(line.charAt(line.length()-1) != ';') //if the line doesn't end with a semicolon
             throw new InvalidMemberDeclaration();
 
-        String name;
+        String name, assignedValue;
         Matcher matcher = Utils.validateVariableName(line);
         name = matcher.group(2);
+        //if(assignedValue.contains(" ") && (!assignedValue.contains("\"") || !assignedValue.contains("{")))
+        //    throw new UnknownCodeLineException();
         /*
         Matcher matcher = ExpressionTypeEnum.MEMBER_DECLARATION_PATTERN.matcher(line);
         if(matcher.lookingAt()){ //this is a member declaration
@@ -220,7 +222,7 @@ public class SyntaxCompiler {
                 variableMap.put(name, vr);
             }
             else{ //This isn't an array
-                String value = line.substring(index+2, line.length()-1).replaceAll(" ", ""); //TODO: Check indexes
+                String value = matcher.group(3).replaceAll("=", "").trim();
                 String type = splitDeclaration[0];
                 VariableEnum valueType =  validateValueExpression(value,
                         variableMap);
