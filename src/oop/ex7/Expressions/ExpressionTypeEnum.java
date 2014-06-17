@@ -41,7 +41,7 @@ public enum ExpressionTypeEnum {
     public static final String OPERATION_REGEX =  "\\w.*=.*;";
     public static final String BLOCK_TYPES = "(if|while)";
     public static final String BLOCK_REGEX = BLOCK_TYPES + " ?\\(.*\\) ?\\"+BLOCK_START_CHAR;
-    public static final String ARRAY_TYPE_REGEX = "(int|String|char|boolean|double)\\[\\]";
+    public static final String ARRAY_TYPE_REGEX = VariableEnum.Types(false) + "\\[\\]";
     public static final String COMMENT_TYPE_REGEX = "(//.*)";
 
     public static final Pattern MEMBER_DECLARATION_PATTERN = Pattern.compile(MEMBER_DECLARATION_REGEX);
