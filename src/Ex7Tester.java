@@ -14,11 +14,11 @@ public class Ex7Tester {
 	 * The location of the test files
 	 * TODO change to oop home dir
 	 */
-	private static final String TEST_INPUT_DIR = 
+	private static final String TEST_INPUT_DIR = System.getProperty("user.dir") + "\\src\\oop\\ex7\\testers\\tests\\";
 			//"/cs/course/2013/oop/scripts/ex7/tests/"; 
-			"C:\\EX7_Testers\\tests\\";
+			//"/src/oop/ex7/testers/tests";
 
-	private static final String TEST_SOL_DIR = "C:\\EX7_Testers\\sjavac_tests.txt";
+	private static final String TEST_SOL_DIR = System.getProperty("user.dir") + "\\src\\sjavac_tests.txt";
 	//private static final String TEST_SOL_DIR = "/cs/course/2013/oop/scripts/ex7/sjavac_tests.txt";
 
 	
