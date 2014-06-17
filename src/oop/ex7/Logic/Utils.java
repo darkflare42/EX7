@@ -118,9 +118,7 @@ public class Utils {
 
     //TODO shouldnt this be a static method in Variable? or in config?
     public static boolean checkValidVariableName(String variableName){
-        if(!variableName.matches(CONFIG.VALID_NAME))
-            return  false;
-        return true;
+        return  (variableName.matches(CONFIG.VALID_NAME));
     }
 
     public static Matcher validateVariableName(String variable) throws UnknownCodeLineException, InvalidNameException {
