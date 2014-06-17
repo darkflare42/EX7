@@ -16,9 +16,9 @@ public class SJavaValidator {
     public static void validate(String filename){
 
         try{
-            File file = new File(filename);
+            File file = new File(filename); //Throws FileNotFound
             FileReader reader = new FileReader(file); //throws filenotfound
-            SyntaxCompiler.compile(reader);
+            SyntaxCompiler.compile(reader); //Throws CompilationException
             System.out.println(0);
         }
         catch (FileNotFoundException ex){
@@ -26,9 +26,11 @@ public class SJavaValidator {
         }
         catch (CompilationException ex){
             System.out.println(1);
+            System.err.println(ex.getMessage());
         }
         catch (IOException ex){
             System.out.println(2);
+            System.err.println(ex.getMessage());
         }
 
     }
