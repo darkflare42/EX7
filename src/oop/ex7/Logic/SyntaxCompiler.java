@@ -208,8 +208,10 @@ public class SyntaxCompiler {
                 if(indexOfCurly == -1) initialized = false;
                 int lastIndexOfCurly = line.lastIndexOf("}");
                 String arrayValues = line.substring(indexOfCurly + 1, lastIndexOfCurly);
+                arrayValues = arrayValues.trim();
                 String[] splitArrayValues = arrayValues.split(",");
-                if((lastIndexOfCurly - indexOfCurly) > 1){
+                //if((lastIndexOfCurly - indexOfCurly) > 1 || !arrayValues.equals("")){ //non empty init of array
+                if(!arrayValues.equals("")){ //non empty init of array
                     validateArrayInitialization(splitArrayValues, VariableEnum.toEnum(type), variableMap);
                 }
                 Utils.ValidArrayDeclaration(arrayValues);
@@ -509,6 +511,7 @@ public class SyntaxCompiler {
         VariableEnum[] types = new VariableEnum[params.length];
         int index = 0;
         for(String param: params){
+            param = param.trim();
             Expression ex = getExpression(param, methodMembers);
             if(ex!=null)
                 types[index] = ex.getType();

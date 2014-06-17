@@ -60,6 +60,8 @@ public class FileReader {
         do{
             //temp = scanner.nextLine().replace("=", " = ").replaceAll("(//.*$)", " ").replaceAll("\\s+", " ").trim();
             temp = scanner.nextLine().replace("=", " = ").replaceAll("\\s+", " ").trim();
+            temp = temp.replaceAll("\\s(?=[\\[\\]\\(])", ""); //replace all spaces before and after parentheses
+            temp = temp.replaceAll("\\](?=[\\w.*])", "] "); //add zero after []{char}
         }while(temp.length() < 1);
         m_currLine = temp;
         return temp;
