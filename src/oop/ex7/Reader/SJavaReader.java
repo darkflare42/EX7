@@ -27,7 +27,7 @@ public class SJavaReader {
 
     /**
      * Block constructor - Create a FileReader for a specific block (e.g. of a method), instead of a whole file.
-     * @param methodBlock String of the method block. Assumes, lines are separated by '\n'. TODO right?
+     * @param methodBlock String of the method block. Assumes, lines are separated by '\n'.
      */
     public SJavaReader(String methodBlock){
         scanner = new Scanner(methodBlock);

@@ -141,7 +141,6 @@ public class Variable implements Expression{
      * Set the global status of the Variable.
      * @param isGlobal true if the Variable is a global, false if not.
      */
-    // TODO consider moving this to the constructor?
     public void setGlobal(boolean isGlobal){
         m_isGlobal = isGlobal;
     }

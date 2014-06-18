@@ -118,13 +118,6 @@ public class Method implements Expression {
         return newVariables;
     }
 
-    // TODO might be redundant.
-    public void AddVariable (Variable variable) {
-        if (!allExpressions.containsValue(variable)) {
-            allExpressions.put(variable.getName(), variable);
-        }
-    }
-
     /**
      * Given an array of VariableEnums, checks its' validity, in order, against the headerExpressions LinkedHashMap.
      * @param headerTypes an array of VariableEnums.
