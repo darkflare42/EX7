@@ -1,17 +1,20 @@
 odedab
 okeren
 
-File Description:
+
+=====================
+    File Description:
+=====================
 README - This file.
 Main Package        - Sjavac.java  - Main class, calls SJavaValidator.java to start the process.
 
 Logic Package       - SJavaValidator.java - Class to attempt reading from the file given, and print the output
                                             after the compilation check is completed.
-                    - SyntaxCompiler.java - Manager class for the project. Separately compile methods and then variables.
+                    - SyntaxCompiler.java - Manager class for the project. Separately compile methods and then variables
                     - Utils.java          - Utility class that holds most validity checks used by the project.
                     - RegexConfig.java    - Class to hold and handle all Regex "Magic Numbers" and properties.
 
-Reader Package      - FileReader.java     - Wrapper class to Java's scanner. Used to read from the given file.
+Reader Package      - SJavaReader.java    - Wrapper class to Java's scanner. Used to read from the given file.
                     - IOException.java    - Exception class for when the reader can't properly read from the given file.
 
 Expressions Package - Expression.java     - Interface Class that both Variable and Method implement.
@@ -21,7 +24,8 @@ Expressions Package - Expression.java     - Interface Class that both Variable a
                       Condition.java      - Class to handle and check the validity of boolean conditions.
                       VariableEnum.java   - Class to handle all the known variable types.
                       OperationEnum.java  - Class to handle all the known math operations.
-                      ExpressionTypeEnum.java - Class to handle all the valid types of expressions (e.g. a method invocation)
+                      ExpressionTypeEnum.java - Class to handle all the valid types of expressions
+                                                (e.g. a method invocation)
 
 All exceptions have self explanatory names, and inherit from CompilationException.
 Logic Package Exceptions    - CompilationException.java - Main exception.
@@ -47,50 +51,136 @@ Expressions Package Exceptions
                             - OperationTypeException
                             - VariableTypeException
                             - VariableUninitializedException
+Reader Package Exceptions
+                            - IOException
 
 
-                    TODO overview and make changes in case any changes were made in the project.
+==============
+    Design:
+==============
+    The project has three main packages - Expressions, Logic & Reader.
 
-Design:
-    The way we chose to implement this exercise was to create a Scanner wrapper that will traverse a given file twice:
-    - Once for all the method declarations
-    - Second time for all the global declarations, outside the methods.
-    We chose to do this because, considering the global scope of a given file was supposed to be a standard Class definition.
-    As such, a method can be invoked in no specific order in a class definition, as long as it exists, yet members
-    must be declared in order.
-    The result is that we hold 2 LinkedHashMaps collection during the runtime, one for methods and one for members,
-    where in each assignment we check the validity of the assignments against these 2 collections.
+Reader -
+    Reader holds the SJavaReader which wraps a Scanner object and allows us to read an sjava file. The reader normalizes
+    the lines read from the file (removes excess whitespaces, skips comments etc.) It allows us to traverse the
+    sjava file more easily and without too much hassle in the logic classes
 
-    Of course, during each step of the process, we checked the validity of each line using Regular Expressions.
-    If at any point of the process, we would encounter any type of problem (e.g. unknown syntax, bad syntax, bad
-    variable or methods calls etc..), an appropriate exception would be thrown, caught by the SJavaValidator and
-    an error message will be printed.
+Expressions -
+    Expressions hold classes that represent certain lines of code as objects. The two main classes Method and Variable
+    Represent methods and variables which are declared in the sjava code. Method holds all the expressions that it
+    currently "knows" of. Both Method and Variable have a function which checks the validity of assigning a value to it
+    In terms of a Variable this is self explanatory - we check if the value being assigned to it is a valid assignment
+    as in.
+    In terms of a Method we use this function to determine if the value we are returning from the function is in fact
+    valid compared to the declaration, for example: If we declare a method which returns String, and within that method
+    have a line which is Return 4; This is an invalid "assignment" since we are returning an int when we should be
+    assigning a string.
 
-    If the entire process would run successfully without throwing any exception, we would treat a file as valid.
-            TODO overview
+    ExpressionTypeEnum, OperationTypeEnum and VariableTypeEnum hold enums that define for us the different expressions,
+    mathematical operations and Variable Types accordingly. They also have several helper methods which convert a string
+    to an enum, define the enum according to a string etc.
+
+    Condition is class that validates a condition which is inside a certain while of if statement. We decided to
+    make this class, and not insert the method inside SyntaxCompiler because of the complexity of checking a certain
+    condition, and also to allow easier expansion if another condition is to be added (for instance a for loop, foreach,
+    etc.) If a user wants to add support for either of these - he only needs to add support for them in this class
+    and add the keyword for said statement in the appropriate RegexConfig member
 
 
-Answers to Questions:
+Logic -
+    SyntaxCompiler: is the main class which checks the validation of the sjava file. We do three passes over the sjava
+    class.
+    First pass - Runs over the sjava class and validates method declarations only
+    Second pass - runs over the sjava class and validates the global member declarations only
+    Third pass - runs over each method block and validates the method itself
+
+    We save the global members and the methods in two LinkedHashMaps, in the first pass we create our method map, in the
+    second pass we create our member map, and before moving on to the third pass we merge both maps - and send it to
+    the method we are currently iterating (the method saves it as the expressions that it currently "sees")
+
+    In the third pass we pass over each line in the method block and - according to the type of line code it is, send it
+    to the the appropriate method which will validate it.
+    In short there is a method that validates each type of line of code (which is defined in ExpressionTypeEnum) and
+    also more general methods such as validateValueExpression which validates whether a certain expression can be
+    assigned to another
+
+    This implementation allows us to be dynamic if we want to add support to another type of line of code:
+    In this way, if there is another type of line of code, all we need to do is add another enum to ExpressionTypeEnum
+    which defines the type of line it is, and then add an appropriate method which validates it.
+
+    We use REGEX a lot during the passes, as they help us decide which line we are currently dealing with, and also we
+    use it to replace and trim certain lines of code
+
+    Utils: is a class which holds several helper functions which are not directly involved with sjava particularly,
+    such as TryParseInt, TryParseString etc.
+
+    RegexConfig: Holds all regexes and constant char & string values used within the project
+
+    SJavaValidator: Is our Manager class which runs SyntaxCompiler and deals with the exceptions thrown
+
+
+==============
+Thought Process & Alternatives
+==============
+    We tried to look at the problem in parsing the s-java file as a collection of smaller problems: We understood that
+    there are several lines of code which are shared, i.e - a member declaration inside a method, inside an if\while
+    block and outside (as a global variable). Another example is an assignment of a variable - which can be done
+    during the declaration of a member or during a normal line of code within a function.
+
+    We thought of two options - The first consisted of creating a class for each and every type of line of code,
+    so a class for the declaration of a member, a class for the declaration of a method, a class for a method call etc.
+    The second option consisted of creating methods for each type, and dealing with each line of code there.
+
+    In the end we opted for the second option. It allows us more flexibility with minimum amount of work if we want to
+    expand the code (see adding else block above). This also allows us to keep a collection of known global expressions
+    in the Compiler class without sending it "outside". If we would have used classes instead of methods we would need
+    send each class the global collection.
+
+    The first option would also mean that each class would be a "dumb", static class with just one class (validate())
+    that would validate said expression - this is not a good OOP design and should be avoided (multiple static classes
+    with just one static function)
+
+    The advantage to the first option would be that the code would be more "readable" to the outsider, on first glance
+    it would be more easy to understand which expressions are supported and how they are treated.
+
+
+==============
+    Answers to Questions:
+==============
 - Handling errors:
    To handle the different types of errors, we created a parent CompilationException class that all compilation related
    exceptions need to inherit from. We did this in order to differentiate between an IOException (i.e. reading the given
    file) and compilation exceptions, the ones we expected to catch as a part of the exercise.
    In order to answer the requirement to post an error message regarding the error in question, should we encounter one,
    every CompilationException sub class calls the super constructor with a String, explaining the error caught.
-   If and when a CompilationException is caught, the specific message will be accessed by the SJavaValidator and printed.
+   If and when a CompilationException is caught, the specific message will be accessed by the SJavaValidator and printed
 
 - How would we modify the code for new variable types:
    In order to add a new type of variables we would need to take care of 2 things:
    1. Add an Enum of their type, and name of their type, to VariableEnum class.
-   2. Add the way they are represented as a String to ExpressionTypeEnum class. (e.g. float type has digits,
-      a period and then some more digits).
-   TODO DID I MISS ANYTHING?
+   2. Modify the Assign method in Method and Variable (if needed) to verify the assignment of said type
 
-- How would we implement if-else block: TODO NEED TO PICK EITHER THIS QUESTION OR THE NEXT
-    TODO I THINK IS IS FAR SIMPLER TO ANSWER, BUT NOT 100% ON HOW YOU IMPLEMENTED IT.
-    TODO STRUCTURE SHOULD BE SIMILAR TO THE WAY THE EXISTING CODE LOOKS FOR THE END OF A METHOD AFTER FINDING A METHOD.
-- How would we implement cross classes compilation: TODO NEED TO PICK EITHER THIS QUESTION ON THE PREVIOUS ONE
 
+- How would we implement if-else block:
+  In order to support an else block, we would need to add "else" to the member BLOCK_TYPES inside RegexConfig.
+  This would allow the SyntaxCompiler to accept an else{ line as a valid line of code.
+  We will need to make sure that the line comes right after the end of an "if" block - this will be done inside the
+  method validateBoolCondition which will need to make sure that there were no other lines of code between the end of
+  the "if" block and the declaration of the else. This might be done by adding a boolean to validateMethodBlock which
+  will change to true once we end an if block and immediately change to false once we reach another line of code that
+  isn't an else:
+
+  Explanation:
+  Reached an if block -> IfBlock = True
+  Run over "If" block until the end
+  If (line is "else" && IfBlock == True) continue checking else block and change IfBlock = false
+  Else (We reached any other line) IfBlock = false
+
+  In short, adding an else block can be done very easily and without changing too much code
+
+==============
+    REGEX
+==============
 - Two most used regular expressions:
     1. Expression for finding a member declaration:
     "(int|double|String|boolean|char) (_?[a-zA-Z]+[\w]*)( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
@@ -99,3 +189,46 @@ Answers to Questions:
 
     Note: both of these expressions are located in RegexConfig class, and some of their parts are generated
     dynamically in case new types will be added.
+
+
+==============
+Source Files
+==============
+Sjavac.java
+SJavaValidator.java
+SyntaxCompiler.java
+Utils.java
+RegexConfig.java
+SJavaReader.java
+IOException.java
+Expression.java
+Variable.java
+Method.java
+Operation.java
+Condition.java
+VariableEnum.java
+OperationEnum.java
+ExpressionTypeEnum.java
+CompilationException.java
+ExistingMethodNameException.java
+ExistingVariableName.java
+InvalidArrayMembersDeclaration.java
+InvalidMemberDeclaration.java
+InvalidNameException.java
+UnknownCodeLineException.java
+UnknownMethodCallException.java
+UnknownVariableException.java
+AssignMismatchException.java
+ConditionArrayCallMismatch.java
+ConditionExpressionNotBooleanException.java
+ConditionUnknownExpressionException.java
+InvalidArrayIndexException.java
+MethodBadArgsCountException.java
+MethodBadArgsException.java
+MethodTypeMismatchException.java
+OperationMismatchException.java
+OperationTypeException.java
+VariableTypeException.java
+VariableUninitializedException.java
+IOException.java
+README

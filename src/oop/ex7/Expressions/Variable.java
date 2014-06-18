@@ -73,7 +73,7 @@ public class Variable implements Expression{
      * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of
      * the Variable.
      */
-    // TODO there is a redundant method of the same functionality in VariableEnum.
+    @Override
     public void Assign (VariableEnum assign) throws AssignMismatchException {
         if(type != assign){
             if(type == VariableEnum.DOUBLE && assign == VariableEnum.INT) return;
@@ -92,7 +92,7 @@ public class Variable implements Expression{
      * the Variable.
      * @throws VariableUninitializedException if assign is not an initialized Expression.
      */
-    // TODO there is a redundant method of the same functionality in VariableEnum.
+    @Override
     public void Assign (Expression assign) throws AssignMismatchException, VariableUninitializedException {
         if (!assign.isInitialized()) {
             throw new VariableUninitializedException();
@@ -104,6 +104,7 @@ public class Variable implements Expression{
      * Return the Variable's name.
      * @return name
      */
+    @Override
     public String getName () {
         return name;
     }
@@ -112,6 +113,7 @@ public class Variable implements Expression{
      * Return the Variable's type.
      * @return type
      */
+    @Override
     public VariableEnum getType () {
         return type;
     }
@@ -120,6 +122,7 @@ public class Variable implements Expression{
      * Return a boolean if the Variable is initialized.
      * @return initialized
      */
+    @Override
     public boolean isInitialized () {
         return initialized;
     }
@@ -128,6 +131,7 @@ public class Variable implements Expression{
      * Return a boolean if the Variable is an array.
      * @return array
      */
+    @Override
     public boolean isArray () {
         return m_isArray;
     }
@@ -136,6 +140,7 @@ public class Variable implements Expression{
      * Return a boolean if the Variable is a global member.
      * @return m_isGlobal.
      */
+    @Override
     public boolean isGlobal(){
         return m_isGlobal;
     }

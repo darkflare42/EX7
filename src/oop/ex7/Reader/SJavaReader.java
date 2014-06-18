@@ -1,6 +1,8 @@
 package oop.ex7.Reader;
 
 import oop.ex7.Expressions.ExpressionTypeEnum;
+import oop.ex7.Logic.RegexConfig;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -10,6 +12,10 @@ import java.util.Scanner;
  * Wrapper class to Java's scanner.
  */
 public class SJavaReader {
+    private static final String SPACES_BEFORE_PARANTHESES = "\\s(?=[\\[\\]\\(])";
+    private static final String SPACES_BEFORE_SQUARE_BRACKETS = "\\](?=[\\w.*])";
+
+
     private Scanner scanner;
     private String m_filename;
     private String m_currLine;
@@ -49,9 +55,11 @@ public class SJavaReader {
     public String next() {
         String temp;
         do{
-            temp = scanner.nextLine().replace("=", " = ").replaceAll("\\s+", " ").trim();
+            temp = scanner.nextLine().replace("" + RegexConfig.EQUALS_CHAR, " " +
+                    RegexConfig.EQUALS_CHAR + " ").replaceAll("\\s+", " ").trim();
             //replace all spaces before and after parentheses
-            temp = temp.replaceAll("\\s(?=[\\[\\]\\(])", "").replaceAll("\\](?=[\\w.*])", "] ");
+            temp = temp.replaceAll(SPACES_BEFORE_PARANTHESES, "").replaceAll(SPACES_BEFORE_SQUARE_BRACKETS,
+                    "" + RegexConfig.SQUARE_BRACKETS_END + " ");
         }while(temp.length() < 1);
         m_currLine = temp;
         return temp;

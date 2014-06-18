@@ -144,6 +144,7 @@ public class Method implements Expression {
      * Returns the method's name.
      * @return name
      */
+    @Override
     public String getName () {
         return name;
     }
@@ -152,6 +153,7 @@ public class Method implements Expression {
      * Return the method's return type.
      * @return type
      */
+    @Override
     public VariableEnum getType () {
         return type;
     }
@@ -160,6 +162,7 @@ public class Method implements Expression {
      * Return if the method's is initialized. Always true since a declarated method can be called.
      * @return true
      */
+    @Override
     public boolean isInitialized () {
         return true;
     }
@@ -186,6 +189,7 @@ public class Method implements Expression {
      * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of
      * the Variable.
      */
+    @Override
     public void Assign (VariableEnum assign) throws AssignMismatchException{
         if (type == VariableEnum.VOID) {
             throw new AssignMismatchException();
@@ -206,6 +210,7 @@ public class Method implements Expression {
      * the Variable.
      * @throws VariableUninitializedException if assign is not an initialized Expression.
      */
+    @Override
     public void Assign (Expression assign) throws AssignMismatchException, VariableUninitializedException {
         if (!assign.isInitialized()) {
             throw new VariableUninitializedException();
@@ -225,6 +230,7 @@ public class Method implements Expression {
      * Return a boolean if the method returns an array.
      * @return m_isArray
      */
+    @Override
     public boolean isArray(){
         return m_isArray;
     }
@@ -233,5 +239,6 @@ public class Method implements Expression {
      * Return a boolean if the method can be accessed globally. Always true.
      * @return true
      */
+    @Override
     public boolean isGlobal(){return true;}
 }
