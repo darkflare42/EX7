@@ -12,10 +12,15 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 
 /**
- * Created by Or Keren on 15/06/14.
+ * This class holds several utility methods which are used throughout the code
  */
 public class Utils {
 
+    /**
+     * Tries to parse the value to an int
+     * @param value The value to try and parse
+     * @return True if it parses, False if it doesn't
+     */
     public static boolean IntegerTryParse(String value){
         try{
             if(!value.matches(RegexConfig.INT_CALL_REGEX))
@@ -28,6 +33,11 @@ public class Utils {
         }
     }
 
+    /**
+     * Tries to parse the value to a double
+     * @param value The value to try and parse
+     * @return True if it parses, False if it doesn't
+     */
     public static boolean DoubleTryParse(String value){
         try{
             Double.parseDouble(value);
@@ -38,6 +48,11 @@ public class Utils {
         }
     }
 
+    /**
+     * Tries to parse the value to an string
+     * @param value The value to try and parse
+     * @return True if it parses, False if it doesn't
+     */
     public static boolean StringTryParse(String value){
         try {
             value = value.substring(value.indexOf("\"") + 1, value.lastIndexOf("\""));
@@ -49,6 +64,11 @@ public class Utils {
 
     }
 
+    /**
+     * Tries to parse the value to an char
+     * @param value The value to try and parse
+     * @return True if it parses, False if it doesn't
+     */
     public static boolean CharTryParse(String value){
         try{
             value = value.substring(value.indexOf("'") + 1, value.lastIndexOf("'"));
@@ -59,11 +79,20 @@ public class Utils {
         }
     }
 
+    /**
+     * Tries to parse the value to a boolean
+     * @param value The value to try and parse
+     * @return True if it parses, False if it doesn't
+     */
     public static boolean BooleanTryParse(String value){
-        return !(!value.equals("false") && !value.equals("true"));
-
+        return (value.matches(RegexConfig.BOOLEAN_VALUES));
     }
 
+    /**
+     * This funcion receives an actual value and tries to parse it to the supported types
+     * @param value The actual value to parse
+     * @return The enum of the type of the value
+     */
     public static VariableEnum getValueEnum(String value){
         if(IntegerTryParse(value))
             return VariableEnum.INT;
@@ -78,6 +107,12 @@ public class Utils {
         return VariableEnum.VOID;
     }
 
+    /**
+     * This function merges between two LinkedHashMaps
+     * @param main The main linkedHashMap
+     * @param secondary The secondary Linked HashMap
+     * @return The merged linkedHashMap
+     */
     public static LinkedHashMap<String, Expression> mergeExpressions(LinkedHashMap<String, Expression> main,
                                                                      LinkedHashMap<String, Expression> secondary){
         LinkedHashMap<String, Expression> tempMap = new LinkedHashMap<String, Expression>();
@@ -86,25 +121,39 @@ public class Utils {
         return tempMap;
     }
 
-    public static boolean ValidArrayDeclaration(String string) throws InvalidArrayMembersDeclaration{
-        if (string.equals("")) {
+    /**
+     * This function "dumb" validates an array declaration - it checks if the string inside the {} is valid
+     * @param paramString The string of the parameters
+     * @return True if the param string is valid
+     * @throws InvalidArrayMembersDeclaration if the params are not in a valid format
+     */
+    public static boolean validArrayDeclaration(String paramString) throws InvalidArrayMembersDeclaration{
+        if (paramString.equals("")) {
             return true;
         }
-        if (string.trim().endsWith(",")) {
+        if (paramString.trim().endsWith(",")) {
             throw new InvalidArrayMembersDeclaration();
         }
         return true;
     }
 
-    public static Matcher validateVariableName(String variable) throws UnknownCodeLineException, InvalidNameException {
+    /**
+     * This function validates a variable declaration - it checks if it is a valid array or member declaration
+     * @param variableDeclaration The declaration line
+     * @return A regex Matcher that represents the declaration of the variable
+     * @throws UnknownCodeLineException If we encountered an invalid declaration
+     * @throws InvalidNameException If the name of the variable is not valid (i.e it has a whitespace in it)
+     */
+    public static Matcher validateVariableDeclaration(String variableDeclaration) throws UnknownCodeLineException,
+            InvalidNameException {
         String value;
-        Matcher matcher = ExpressionTypeEnum.MEMBER_DECLARATION_PATTERN.matcher(variable);
+        Matcher matcher = ExpressionTypeEnum.MEMBER_DECLARATION_PATTERN.matcher(variableDeclaration);
         if(matcher.lookingAt()){ //this is a member declaration
 
             value = matcher.group(3);
         }
         else{
-            matcher = ExpressionTypeEnum.ARRAY_DECLARATION_PATTERN.matcher(variable);
+            matcher = ExpressionTypeEnum.ARRAY_DECLARATION_PATTERN.matcher(variableDeclaration);
             if(matcher.lookingAt()){ //This is an array declaration
 
                 value = matcher.group(3);
@@ -119,6 +168,20 @@ public class Utils {
         return matcher;
     }
 
+    /**
+     * Check the validity of a variable or a method name.
+     * @param variableName String to check.
+     * @return true iff the string is valid in sjava.
+     */
+    public static boolean checkValidVariableName(String variableName){
+        return  (variableName.matches(RegexConfig.VALID_NAME) && !RegexConfig.isForbiddenWord(variableName));
+    }
+
+    /**
+     * This function strips a name (removes brackets)
+     * @param name The name of the member or function to strip
+     * @return The stripped name
+     */
     public static String stripName(String name){
         name = name.replace("-", "");
         int indexOfBracket = name.indexOf("(");
@@ -133,30 +196,42 @@ public class Utils {
         return name;
     }
 
-    public static String getArgsInBrackets(String line){
+    /**
+     * This function retrieves the values inside brackets {} () and [] are supported only
+     * @param paramsWithBrackets The parameters inside their brackets
+     * @return The params without the brackets
+     */
+    public static String getArgsInBrackets(String paramsWithBrackets){
         String arguments = "";
-        int indexOfBrackets = line.indexOf("(");
+        int indexOfBrackets = paramsWithBrackets.indexOf("(");
         if(indexOfBrackets != -1){ //This is a function call
-            arguments = line.substring(indexOfBrackets+1, line.lastIndexOf(")"));
+            arguments = paramsWithBrackets.substring(indexOfBrackets+1, paramsWithBrackets.lastIndexOf(")"));
             return arguments;
         }
-        indexOfBrackets = line.indexOf("{");
+        indexOfBrackets = paramsWithBrackets.indexOf("{");
         if(indexOfBrackets != -1){ //This is an array declaration
-            arguments = line.substring(indexOfBrackets+1, line.lastIndexOf("}"));
+            arguments = paramsWithBrackets.substring(indexOfBrackets+1, paramsWithBrackets.lastIndexOf("}"));
             return arguments;
         }
-        indexOfBrackets = line.indexOf("[");
+        indexOfBrackets = paramsWithBrackets.indexOf("[");
         if(indexOfBrackets != -1){
-            arguments = line.substring(indexOfBrackets+1, line.lastIndexOf("]"));
+            arguments = paramsWithBrackets.substring(indexOfBrackets+1, paramsWithBrackets.lastIndexOf("]"));
             return arguments;
         }
         return arguments;
     }
 
-    public static void checkValidIndexValue(String indexValue) throws InvalidArrayIndexException {
+    /**
+     * This function checks if an index value is a valid index value - it checks only math operations between direct
+     * values and single direct values. If it is a single direct value it also checks if it is zero
+     * @param indexValue
+     * @return true if it is a valid index, false if it isn't
+     */
+    public static boolean checkValidIndexValue(String indexValue) throws InvalidArrayIndexException {
         if(!indexValue.matches(RegexConfig.OPERATION_REGEX)){ //check only if value is a single digit
             if(Utils.IntegerTryParse(indexValue) && Integer.parseInt(indexValue) < 0) //check if it is a non zero number
-                throw new InvalidArrayIndexException();
+                return false;
         }
+        return true;
     }
 }

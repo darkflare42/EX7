@@ -1,7 +1,6 @@
 package oop.ex7.Reader;
 
 import oop.ex7.Expressions.ExpressionTypeEnum;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -50,10 +49,9 @@ public class SJavaReader {
     public String next() {
         String temp;
         do{
-            //temp = scanner.nextLine().replace("=", " = ").replaceAll("(//.*$)", " ").replaceAll("\\s+", " ").trim();
             temp = scanner.nextLine().replace("=", " = ").replaceAll("\\s+", " ").trim();
-            temp = temp.replaceAll("\\s(?=[\\[\\]\\(])", ""); //replace all spaces before and after parentheses
-            temp = temp.replaceAll("\\](?=[\\w.*])", "] "); //add zero after []{char}
+            //replace all spaces before and after parentheses
+            temp = temp.replaceAll("\\s(?=[\\[\\]\\(])", "").replaceAll("\\](?=[\\w.*])", "] ");
         }while(temp.length() < 1);
         m_currLine = temp;
         return temp;

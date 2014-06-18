@@ -26,6 +26,7 @@ public class RegexConfig {
     public static final String RETURN_REGEX = "return.*;";
     public static final String ASSIGNMENT_REGEX =  "\\w.*=.*;";
     public static final String BLOCK_TYPES = "(if|while)";
+    public static final String BOOLEAN_VALUES = "(true|false)";
     public static final String COMMENT_TYPE_REGEX = "(//.*)";
 
 
@@ -56,22 +57,14 @@ public class RegexConfig {
 
     private static String forbiddenWords = null;
 
-    /**
-     * Check the validity of a variable or a method name.
-     * @param variableName String to check.
-     * @return true iff the string is valid in sjava.
-     * TODO oded: you wanted to move this back to Utils
-     */
-    public static boolean checkValidVariableName(String variableName){
-        return  (variableName.matches(VALID_NAME) && !isForbiddenWord(variableName));
-    }
+
 
     /**
      * Given a string, check if it doesn't match a forbidden word by sjava.
      * @param string String to check.
      * @return true iff string matches exactly a forbidden word.
      */
-    private static boolean isForbiddenWord(String string) {
+    public static boolean isForbiddenWord(String string) {
         if (forbiddenWords != null) {
             return (string.matches(forbiddenWords));
         }

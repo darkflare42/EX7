@@ -16,14 +16,14 @@ import java.util.regex.Matcher;
  */
 public class SyntaxCompiler {
 
-    private static LinkedHashMap<String, Expression> m_MemberMap;
-    private static LinkedHashMap<String, Expression> m_MethodMap;
+    private static LinkedHashMap<String, Expression> m_MemberMap; //Holds all the global members
+    private static LinkedHashMap<String, Expression> m_MethodMap; //Holds all the methods
 
     /**
      * This method passes over the file and checks for any compilation errors
      * @param reader An SjavaReader which has been instantiated for a specific s-java file
-     * @throws CompilationException
-     * @throws IOException
+     * @throws CompilationException If there was a compilation error
+     * @throws IOException If there was some problem reading the file
      */
     public static void compile(SJavaReader reader) throws CompilationException, IOException{
         m_MemberMap = new LinkedHashMap<String, Expression>();
@@ -62,9 +62,17 @@ public class SyntaxCompiler {
     /**
      * This method runs over all the file and checks method declarations only for compilation errors
      * @param reader The SJavaReader that reads through the current file
+     * @throws VariableTypeException
+     * @throws MethodBadArgsException
+     * @throws ExistingMethodNameException
+     * @throws UnknownCodeLineException
+     * @throws ExistingVariableName
+     * @throws InvalidNameException
+     * @throws InvalidMemberDeclaration
      */
-    private static void compileMethodDeclaration(SJavaReader reader) throws VariableTypeException, MethodBadArgsException,
-            ExistingMethodNameException, UnknownCodeLineException, ExistingVariableName, InvalidNameException, InvalidMemberDeclaration {
+    private static void compileMethodDeclaration(SJavaReader reader) throws ExistingMethodNameException,
+            ExistingVariableName, VariableTypeException, UnknownCodeLineException, InvalidNameException,
+            MethodBadArgsException, InvalidMemberDeclaration {
 
         String currLine;
         while(reader.hasNext()){
@@ -123,7 +131,7 @@ public class SyntaxCompiler {
         String methodName = Utils.stripName(methodDeclaration[1]).trim();
 
         //Run validity check on the name first!
-        if(!RegexConfig.checkValidVariableName(methodName))
+        if(!Utils.checkValidVariableName(methodName))
             throw new InvalidNameException();
 
         String methodArgs = Utils.getArgsInBrackets(methodDeclaration[1]);
@@ -162,12 +170,15 @@ public class SyntaxCompiler {
             UnknownCodeLineException  {
 
         //Local variable declarations
-        Matcher matcher = Utils.validateVariableName(line);
+        Matcher matcher = Utils.validateVariableDeclaration(line);
         String name = matcher.group(2);
         String[] splitDeclaration = line.split(" "); //split type and expression
         String type = Utils.stripName(splitDeclaration[0]);
         boolean isArray = splitDeclaration[0].contains("[");
         boolean isInitialized = line.contains("=");
+
+        if(!Utils.checkValidVariableName(name))
+            throw new InvalidNameException();
 
         if(!checkMemberExists(name, variableMap, isGlobal))
             throw new ExistingVariableName();
@@ -181,7 +192,7 @@ public class SyntaxCompiler {
                 if(!arrayValues.equals("")){ //non empty init of array
                     validateArrayInitialization(splitArrayValues,  new Variable(type, name, true), variableMap);
                 }
-                Utils.ValidArrayDeclaration(arrayValues); //Validate the array declaration
+                Utils.validArrayDeclaration(arrayValues); //Validate the array declaration
             }
             else{ //This isn't an array
                 String value = matcher.group(3).replaceAll("=", "").trim(); //Get the value that is assigned
@@ -316,7 +327,9 @@ public class SyntaxCompiler {
             validateValueExpression(index, method.getAllExpressions(),
                     new Variable(VariableEnum.INT, "arrIndex", true));
 
-            Utils.checkValidIndexValue(index);
+            if(!Utils.checkValidIndexValue(index)){
+                    throw new InvalidArrayIndexException();
+            }
 
             Variable array = (Variable)getExpression(name, method.getAllExpressions());
             Variable arrayElementVar = new Variable(array.getType(),
