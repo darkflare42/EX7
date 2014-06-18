@@ -6,13 +6,69 @@ README - This file.
 Main Package        - Sjavac.java  - Main class, calls SJavaValidator.java to start the process.
 
 Logic Package       - SJavaValidator.java - Class to attempt reading from the file given, and print the output
-                                            after the compliation check is completed.
+                                            after the compilation check is completed.
                     - SyntaxCompiler.java - Manager class for the project. Separately compile methods and then variables.
+                    - Utils.java          - Utility class that holds most validity checks used by the project.
+                    - RegexConfig.java    - Class to hold and handle all Regex "Magic Numbers" and properties.
 
-                    TODO NEED TO COMPLETE BASED ON THE CLASSES AFTER REMOVING REDUNDANCY, AND POTENTIALLY CHANGING STUFF
+Reader Package      - FileReader.java     - Wrapper class to Java's scanner. Used to read from the given file.
+                    - IOException.java    - Exception class for when the reader can't properly read from the given file.
+
+Expressions Package - Expression.java     - Interface Class that both Variable and Method implement.
+                      Variable.java       - Class to represent global or function members.
+                      Method.java         - Class to represent a method.
+                      Operation.java      - Class to handle and check the validity of math operations.
+                      Condition.java      - Class to handle and check the validity of boolean conditions.
+                      VariableEnum.java   - Class to handle all the known variable types.
+                      OperationEnum.java  - Class to handle all the known math operations.
+                      ExpressionTypeEnum.java - Class to handle all the valid types of expressions (e.g. a method invocation)
+
+All exceptions have self explanatory names, and inherit from CompilationException.
+Logic Package Exceptions    - CompilationException.java - Main exception.
+                            - ExistingMethodNameException
+                            - ExistingVariableName
+                            - InvalidArrayMembersDeclaration
+                            - InvalidMemberDeclaration
+                            - InvalidNameException
+                            - UnknownCodeLineException
+                            - UnknownMethodCallException
+                            - UnknownVariableException
+
+Expressions Package Exceptions
+                            - AssignMismatchException
+                            - ConditionArrayCallMismatch
+                            - ConditionExpressionNotBooleanException
+                            - ConditionUnknownExpressionException
+                            - InvalidArrayIndexException
+                            - MethodBadArgsCountException
+                            - MethodBadArgsException
+                            - MethodTypeMismatchException
+                            - OperationMismatchException
+                            - OperationTypeException
+                            - VariableTypeException
+                            - VariableUninitializedException
+
+
+                    TODO overview and make changes in case any changes were made in the project.
 
 Design:
-        TODO NEED TO WRITE THIS
+    The way we chose to implement this exercise was to create a Scanner wrapper that will traverse a given file twice:
+    - Once for all the method declarations
+    - Second time for all the global declarations, outside the methods.
+    We chose to do this because, considering the global scope of a given file was supposed to be a standard Class definition.
+    As such, a method can be invoked in no specific order in a class definition, as long as it exists, yet members
+    must be declared in order.
+    The result is that we hold 2 LinkedHashMaps collection during the runtime, one for methods and one for members,
+    where in each assignment we check the validity of the assignments against these 2 collections.
+
+    Of course, during each step of the process, we checked the validity of each line using Regular Expressions.
+    If at any point of the process, we would encounter any type of problem (e.g. unknown syntax, bad syntax, bad
+    variable or methods calls etc..), an appropriate exception would be thrown, caught by the SJavaValidator and
+    an error message will be printed.
+
+    If the entire process would run successfully without throwing any exception, we would treat a file as valid.
+            TODO overview
+
 
 Answers to Questions:
 - Handling errors:
