@@ -194,7 +194,7 @@ public class SyntaxCompiler {
         variableMap.put(name,vr);
     }
 
-    
+
     private static void validateMethodBlock(SJavaReader reader, Method method) throws
             UnknownCodeLineException, AssignMismatchException, InvalidMemberDeclaration, ExistingVariableName,
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
@@ -275,13 +275,13 @@ public class SyntaxCompiler {
 
     private static void validateMethodCall(String line, Method method) throws MethodBadArgsCountException,
             MethodTypeMismatchException, UnknownMethodCallException {
-        String methodName = line.substring(0, line.indexOf("("));
-        if(!method.getAllExpressions().containsKey(methodName)){
+        String methodName = Utils.stripName(line);
+        if(!method.getAllExpressions().containsKey(methodName)){ //Check if we call a method that doesn't exist
             throw new UnknownMethodCallException();
         }
-        String params = line.substring(line.indexOf("(")+1, line.length()-2); //TODO: Check indexes
+        String params = Utils.getArgsInBrackets(line);
         VariableEnum[] paramTypes = getParameterTypes(params, method.getAllExpressions());
-        ((Method)method.getAllExpressions().get(methodName)).ValidateHeader(paramTypes);
+        ((Method)method.getAllExpressions().get(methodName)).ValidateHeader(paramTypes); //Validate the method call
     }
 
 
@@ -300,40 +300,37 @@ public class SyntaxCompiler {
     private static void validateAssignment(String line, Method method) throws UnknownVariableException,
             VariableTypeException, AssignMismatchException, VariableUninitializedException, OperationTypeException,
             OperationMismatchException, InvalidArrayIndexException  {
+
         String[] splitLine = line.split("="); //get variable, and operation string
         String name = splitLine[0].trim(); //get the name of the variable initialized
         String value = splitLine[1].substring(0, splitLine[1].length()-1).replaceAll(" ", "");
+
         //Check if it is an array
-        int indexOfBracket = name.indexOf("[");
-        if(indexOfBracket != -1){ //An array
-            String index = name.substring(indexOfBracket+1, name.length()-1);
-            name = name.substring(0, indexOfBracket);
-            //TODO: ARRAY CHECK
-            VariableEnum indexType = validateValueExpression(index, method.getAllExpressions(),
-                    new Variable("int", "arrIndex", true));
+        if(name.contains("[")){ //This is an array
 
+            String index = Utils.getArgsInBrackets(name); //Gets the index value
+            name = Utils.stripName(name); //Gets the name of the array
 
+            //First, validate the index value (a[index])
+            //Create a faux INT variable that we assign it to
+            validateValueExpression(index, method.getAllExpressions(),
+                    new Variable(VariableEnum.INT, "arrIndex", true));
 
-            if(indexType != VariableEnum.INT) //Index is not a type value
-                throw new AssignMismatchException();
-            else{ //check if it is a single non zero value
-                if(!index.matches(RegexConfig.OPERATION_REGEX)){ //check only if value is a single digit
-                    if(Utils.IntegerTryParse(index) && Integer.parseInt(index) < 0) //check if it is a non zero number
-                        throw new InvalidArrayIndexException();
-                }
-            }
-            //TODO: Call validateValueExpression
+            Utils.checkValidIndexValue(index);
+
             Variable array = (Variable)getExpression(name, method.getAllExpressions());
-            Variable arrayElementVar = new Variable(array.getType().toString(),
+            Variable arrayElementVar = new Variable(array.getType(),
                     "", array.isInitialized());
+
+            //Validate the value inserted into the element of the array
             validateValueExpression(value, method.getAllExpressions(), arrayElementVar);
-            return;
+            return; //All is well
         }
         else{
-            if(!m_MemberMap.containsKey(name) && !method.getAllExpressions().containsKey(name))  //if the member is not defined
+            //Check if the member does not exist
+            if(!m_MemberMap.containsKey(name) && !method.getAllExpressions().containsKey(name))
                 throw new UnknownVariableException();
         }
-
         validateValueExpression(value, method.getAllExpressions(),
                 getExpression(name, method.getAllExpressions()));
     }
@@ -348,9 +345,9 @@ public class SyntaxCompiler {
             throws OperationMismatchException,
             OperationTypeException, VariableUninitializedException, VariableTypeException
             , AssignMismatchException {
+
         Matcher varOperation = RegexConfig.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
-            // TODO oded: i just realized how shitty this is because of the super complex pattern. maybe it can be simplified?
             //group12 is the operation char
             String opType = varOperation.group(12);
             //group1 is the left operator
@@ -358,62 +355,33 @@ public class SyntaxCompiler {
             //group13 is the right operator
             String op2 = varOperation.group(13);
 
-            //Check if it is a method call
-            int indexOfBrackets = op1.indexOf("(");
-            if(indexOfBrackets != -1){
-                op1 = op1.substring(0, indexOfBrackets);
-            }
-            indexOfBrackets = op2.indexOf("(");
-            if(indexOfBrackets != -1){
-                op2 = op2.substring(0, indexOfBrackets);
-            }
-            Expression op1Expression = getExpression(op1, methodMembers);
-            Expression op2Expression = getExpression(op2, methodMembers);
-            VariableEnum operationResultType = VariableEnum.VOID;
+            op1 = Utils.stripName(op1);
+            op2 = Utils.stripName(op2);
 
-            if(op1Expression != null && op2Expression != null){  //both expressions
-                operationResultType =  Operation.Operate(op1Expression, opType, op2Expression);
-            }
-            if(op1Expression == null && op2Expression == null){ //both actual values
-                operationResultType =  Operation.Operate(Utils.getValueEnum(op1), opType, Utils.getValueEnum(op2));
-            }
-            if(op1Expression == null && op2Expression != null){
-                operationResultType = Operation.Operate(Utils.getValueEnum(op1), opType, op2Expression);
-            }
-            if(op1Expression != null && op2Expression == null){
-                operationResultType = Operation.Operate(Utils.getValueEnum(op2), opType, op1Expression);
-            }
+            VariableEnum operationResultType =  getOperationType(op1, op2, opType, methodMembers);
             insertInto.Assign(operationResultType);
             return operationResultType;
         }
         else{ //normal assignment - either function call, member call, value or array
             //check if it is an array
-            int indexOfBrackets = valueExpression.indexOf("{");
 
-            if(indexOfBrackets != -1){ //Return array type and deal with it "higher up"
+            if(valueExpression.contains("{")){ //Return array type and deal with it "higher up"
                 if(!insertInto.isArray()) // we are declaring an array inside a non array variable
                     throw new AssignMismatchException();
                 return VariableEnum.ARRAY_TYPE;
             }
-            else{
+            else{ //We are assigning a member, function or a direct value
+
                 Expression ex = getExpression(valueExpression, methodMembers);
-                if(ex == null){
+                if(ex == null){ //This means we assign a direct value
                     insertInto.Assign(Utils.getValueEnum(valueExpression.trim()));
                     return Utils.getValueEnum(valueExpression.trim());
-                } //TODO: Some of these checks are done inside variable.Assign
-                else if(!ex.isInitialized()){
-                    insertInto.Assign(VariableEnum.VOID); //Uninitialized member
-                        return VariableEnum.VOID;
                 }
-                else if(valueExpression.contains("[")){ //we are sending an element of an array
-                    Variable vr = new Variable(ex.getType().toString(), "", true);
-                    insertInto.Assign(vr.getType());
-                    return vr.getType();
+                if(valueExpression.contains("[")){ //we are sending an element of an array
+                    ex = new Variable(ex.getType(), "", true); //create a variable that represents the array element
                 }
-                else{
-                    insertInto.Assign(ex.getType());
-                    return ex.getType();
-                }
+                insertInto.Assign(ex);
+                return ex.getType();
 
             }
         }
@@ -461,7 +429,7 @@ public class SyntaxCompiler {
                                                                            // is of the type of the array
         for(String value: params){
             value = value.trim();
-            validateValueExpression(value, expressions, arrayMember); //validate the value of the param agains the type
+            validateValueExpression(value, expressions, arrayMember); //validate the value of the param against the type
                                                                       //of the array
         }
     }
@@ -478,10 +446,30 @@ public class SyntaxCompiler {
 
         }
         return true;
-
     }
 
+    private static VariableEnum getOperationType(String firstElement, String secondElement, String operator,
+                                                 LinkedHashMap<String, Expression> knownExpressions) throws
+            OperationMismatchException, OperationTypeException, VariableUninitializedException {
+        Expression firstExpression = getExpression(firstElement, knownExpressions);
+        Expression secondExpression = getExpression(secondElement, knownExpressions);
+        VariableEnum operationResultType = VariableEnum.VOID;
 
+        if(firstExpression != null && secondExpression != null){  //both expressions
+            operationResultType =  Operation.Operate(firstExpression, operator, secondExpression);
+        }
+        if(firstExpression == null && secondExpression == null){ //both actual values
+            operationResultType =  Operation.Operate(Utils.getValueEnum(firstElement), operator, Utils.getValueEnum(secondElement));
+        }
+        if(firstExpression == null && secondExpression != null){
+            operationResultType = Operation.Operate(Utils.getValueEnum(firstElement), operator, secondExpression);
+        }
+        if(firstExpression != null && secondExpression == null){
+            operationResultType = Operation.Operate(Utils.getValueEnum(secondElement), operator, firstExpression);
+        }
+        return  operationResultType;
+
+    }
 
 
 }

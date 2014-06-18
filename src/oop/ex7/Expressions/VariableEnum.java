@@ -12,7 +12,7 @@ public enum VariableEnum {
     BOOLEAN("boolean"),
     DOUBLE("double"),
     VOID("void"),
-    ARRAY_TYPE(""); //TODO wat
+    ARRAY_TYPE("");
 
     private final String nameString;
     private static String TYPES = null;
@@ -48,21 +48,6 @@ public enum VariableEnum {
         throw new VariableTypeException();
     }
 
-    /**
-     * This method checks if a value can be assigned to another value (e.g int can go in double, but not in string)
-     * @param member
-     * @param value
-     * @return
-     */
-    //TODO this exists in Variable's API and also makes more sense there.
-    public static boolean checkValidAssignment(VariableEnum member, VariableEnum value){
-
-        if(member == value) return true;
-        if(member == DOUBLE && value == INT) return true;
-        return false;
-    }
-
-
 
     /**
      * Return a String of all possible VariableEnums.
@@ -71,16 +56,15 @@ public enum VariableEnum {
      */
     public static String Types (boolean withVoid) {
         if (TYPES != null) {  //Modified by OR
-            if((withVoid == true && TYPES.contains("void")) ||
-                    withVoid == false && !TYPES.contains("void"))
+            if((withVoid && TYPES.contains("void")) ||
+                    !withVoid && !TYPES.contains("void"))
                 return TYPES;
         }
         TYPES = "(";
         for (VariableEnum type : VariableEnum.values()) {
             if (type == VariableEnum.VOID && !withVoid) continue;
 
-            //if(type == VariableEnum.VOID && !withVoid) //TODO: Check
-//                continue;
+
             TYPES += type.toString() + "|";
         }
         TYPES = TYPES.substring(0, TYPES.length()-1) + ")";

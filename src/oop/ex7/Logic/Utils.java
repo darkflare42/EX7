@@ -1,5 +1,6 @@
 package oop.ex7.Logic;
 
+import oop.ex7.Expressions.Exceptions.InvalidArrayIndexException;
 import oop.ex7.Expressions.Expression;
 import oop.ex7.Expressions.ExpressionTypeEnum;
 import oop.ex7.Expressions.VariableEnum;
@@ -51,10 +52,7 @@ public class Utils {
     public static boolean CharTryParse(String value){
         try{
             value = value.substring(value.indexOf("'") + 1, value.lastIndexOf("'"));
-            if(value.length() > 1){
-                return false;
-            }
-            return true;
+            return value.length() <= 1;
         }
         catch (IndexOutOfBoundsException ex){
             return false;
@@ -62,15 +60,11 @@ public class Utils {
     }
 
     public static boolean BooleanTryParse(String value){
-        if(!value.equals("false") && !value.equals("true")){//TODO: Check
-                    return false;
-        }
-        return true;
+        return !(!value.equals("false") && !value.equals("true"));
 
     }
 
     public static VariableEnum getValueEnum(String value){
-        // TODO this functionality is available at the VariableEnum class, without the "void" support.
         if(IntegerTryParse(value))
             return VariableEnum.INT;
         if(DoubleTryParse(value))
@@ -98,19 +92,6 @@ public class Utils {
         }
         if (string.trim().endsWith(",")) {
             throw new InvalidArrayMembersDeclaration();
-        }
-        return true;
-    }
-
-    public static boolean validateArrayTypes(String args, VariableEnum arrayType){
-        if(args.equals(""))
-            return true;
-        String[] arguments = args.split(",");
-        for(String argument: arguments){
-            argument = argument.trim();
-            VariableEnum argType = getValueEnum(argument);
-            if(!VariableEnum.checkValidAssignment(arrayType, argType))
-                return false;
         }
         return true;
     }
@@ -162,7 +143,20 @@ public class Utils {
         indexOfBrackets = line.indexOf("{");
         if(indexOfBrackets != -1){ //This is an array declaration
             arguments = line.substring(indexOfBrackets+1, line.lastIndexOf("}"));
+            return arguments;
+        }
+        indexOfBrackets = line.indexOf("[");
+        if(indexOfBrackets != -1){
+            arguments = line.substring(indexOfBrackets+1, line.lastIndexOf("]"));
+            return arguments;
         }
         return arguments;
+    }
+
+    public static void checkValidIndexValue(String indexValue) throws InvalidArrayIndexException {
+        if(!indexValue.matches(RegexConfig.OPERATION_REGEX)){ //check only if value is a single digit
+            if(Utils.IntegerTryParse(indexValue) && Integer.parseInt(indexValue) < 0) //check if it is a non zero number
+                throw new InvalidArrayIndexException();
+        }
     }
 }
