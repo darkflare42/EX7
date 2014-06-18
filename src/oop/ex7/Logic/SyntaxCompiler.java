@@ -123,7 +123,7 @@ public class SyntaxCompiler {
         String methodName = Utils.stripName(methodDeclaration[1]).trim();
 
         //Run validity check on the name first!
-        if(!Utils.checkValidVariableName(methodName))
+        if(!RegexConfig.checkValidVariableName(methodName))
             throw new InvalidNameException();
 
         String methodArgs = Utils.getArgsInBrackets(methodDeclaration[1]);
