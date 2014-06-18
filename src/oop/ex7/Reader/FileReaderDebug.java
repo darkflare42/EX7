@@ -20,7 +20,7 @@ public class FileReaderDebug {
         ExpressionTypeEnum expressionType;
         String test  = RegexConfig.MEMBER_DECLARATION_REGEX;
         try {
-            FileReader fileReader = new FileReader(file);
+            SJavaReader fileReader = new SJavaReader(file);
             while (fileReader.hasNext()) {
                 //System.in.read();
                 expressionType = ExpressionTypeEnum.checkType(fileReader.next());

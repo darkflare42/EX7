@@ -1,29 +1,26 @@
 package oop.ex7.Reader;
 
-import jdk.internal.jfr.events.FileReadEvent;
 import oop.ex7.Expressions.ExpressionTypeEnum;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOError;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 /**
  * Created by Oded on 10/6/2014.
  */
-public class FileReader {
+public class SJavaReader {
     private Scanner scanner;
     private String m_filename;
     private String m_currLine;
 
 
-    public FileReader (File file) throws FileNotFoundException{
+    public SJavaReader(File file) throws FileNotFoundException{
         scanner = new Scanner(file);
         m_filename = file.getAbsolutePath();
     }
 
-    public FileReader(String methodBlock){
+    public SJavaReader(String methodBlock){
         scanner = new Scanner(methodBlock);
         m_currLine = "";
         m_filename = "";
@@ -78,7 +75,7 @@ public class FileReader {
         }
     }
 
-    public FileReader getMethodBlock(){
+    public SJavaReader getMethodBlock(){
         next(); //Read start of method block
         String methodBlock = "";
         int counter = 1;
@@ -92,6 +89,6 @@ public class FileReader {
                 next();
             }
         }while(counter > 0 && hasNext());
-        return (new FileReader(methodBlock));
+        return (new SJavaReader(methodBlock));
     }
 }

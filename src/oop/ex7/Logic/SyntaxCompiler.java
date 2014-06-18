@@ -3,7 +3,7 @@ package oop.ex7.Logic;
 import oop.ex7.Expressions.*;
 import oop.ex7.Expressions.Exceptions.*;
 import oop.ex7.Logic.Exceptions.*;
-import oop.ex7.Reader.FileReader;
+import oop.ex7.Reader.SJavaReader;
 import oop.ex7.Reader.IOException;
 
 import java.util.LinkedHashMap;
@@ -20,27 +20,30 @@ public class SyntaxCompiler {
     private static LinkedHashMap<String, Expression> m_MethodMap;
 
     /**
-     * This method passes over the file and checks for compilation errors
-     * @param reader
+     * This method passes over the file and checks for any compilation errors
+     * @param reader An SjavaReader which has been instantiated for a specific s-java file
      * @throws CompilationException
      * @throws IOException
      */
-    public static void compile(FileReader reader) throws CompilationException, IOException{
+    public static void compile(SJavaReader reader) throws CompilationException, IOException{
         m_MemberMap = new LinkedHashMap<String, Expression>();
         m_MethodMap = new LinkedHashMap<String, Expression>();
-        
-        compileMethodDeclaration(reader);  //Call for methods first so that we can check variable assignment during this phase
-        reader.reset();  //Move "pointer" to start of file
-        compileMemberDeclaration(reader); //Call for member compilation
+
+        //First stage - read all global declarations - members and methods
+        compileMethodDeclaration(reader);  //Methods first so that we can check member assignment during this phase
+        reader.reset();  //Move "pointer" of file to the start
+        compileMemberDeclaration(reader); //Call for member declaration compilation
 
 
-        //If we have declared methods - run a deep check
+        //If we have declared methods - run a deep check, otherwise we finished
         if(!m_MethodMap.isEmpty()){
-            reader.reset();
 
+            reader.reset();  //Reset the location of the reader
             reader.moveToFirstMethodDeclaration();
+
             //Create a hashmap of all the global values
             LinkedHashMap<String, Expression> globalValues = Utils.mergeExpressions(m_MemberMap, m_MethodMap);
+
 
             for(String methodName: m_MethodMap.keySet()){
                 //First merge all method members with global members
@@ -48,8 +51,8 @@ public class SyntaxCompiler {
 
                 //Validate the method block
                 validateMethodBlock(reader, methodName, (Method) m_MethodMap.get(methodName));
-
                 reader.moveToEndOfMethod();
+
                 if(reader.hasNext())reader.next();
             }
         }
@@ -57,31 +60,32 @@ public class SyntaxCompiler {
     }
 
     /**
-     * This method runs over all the file and checks methods only for compilation errors
-     * @param reader The FileReader that reads through the current file
+     * This method runs over all the file and checks method declarations only for compilation errors
+     * @param reader The SJavaReader that reads through the current file
      */
-    private static void compileMethodDeclaration(FileReader reader) throws VariableTypeException, MethodBadArgsException,
+    private static void compileMethodDeclaration(SJavaReader reader) throws VariableTypeException, MethodBadArgsException,
             ExistingMethodNameException, UnknownCodeLineException, ExistingVariableName, InvalidNameException, InvalidMemberDeclaration {
+
         String currLine;
         while(reader.hasNext()){
             currLine = reader.next();
             switch (ExpressionTypeEnum.checkType(currLine)){
                 case METHOD_DECLARATION:
                     validateMethodDeclaration(currLine);
-                    reader.moveToEndOfMethod();
+                    reader.moveToEndOfMethod(); //Jump to the end of the method block (we run a deep check later)
                     break;
-                case UNKNOWN:
+                case UNKNOWN: //We reached an unknown code line
                     throw new UnknownCodeLineException();
             }
         }
     }
 
     /**
-     * This method runs over all the file and checks members only for compilation errors
-     * @param reader The FileReader that reads through the current file
+     * This method runs over all the file and checks member declaration only for compilation errors
+     * @param reader The SJavaReader that reads through the current file
      * @throws CompilationException
      */
-    private static void compileMemberDeclaration(FileReader reader) throws CompilationException{
+    private static void compileMemberDeclaration(SJavaReader reader) throws CompilationException{
         String currLine;
         while(reader.hasNext()){
             currLine = reader.next();
@@ -92,41 +96,44 @@ public class SyntaxCompiler {
                 case METHOD_DECLARATION: //If its a method declaration - jump to the end of the method
                     reader.moveToEndOfMethod();
                     break;
-                case COMMENT:
+                case COMMENT: //If its a valid comment line - continue on in the file
                     continue;
-                default: //A line which is not compliant with code regulations (int[] a = 5;)
+                default: //A line which is not compliant with code regulations
                     throw new UnknownCodeLineException();
             }
         }
     }
 
+    /**
+     * This method 
+     * @param line
+     * @throws VariableTypeException
+     * @throws MethodBadArgsException
+     * @throws ExistingMethodNameException
+     * @throws ExistingVariableName
+     * @throws InvalidNameException
+     * @throws UnknownCodeLineException
+     * @throws InvalidMemberDeclaration
+     */
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
-            ExistingMethodNameException, ExistingVariableName, InvalidNameException, UnknownCodeLineException, InvalidMemberDeclaration {
+            ExistingMethodNameException, ExistingVariableName, InvalidNameException, UnknownCodeLineException,
+            InvalidMemberDeclaration {
 
         String[] methodDeclaration = line.split(" ", 2); //split type and method name+params
-        String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("(")).trim();
+        String methodName = Utils.stripName(methodDeclaration[1]).trim();
 
+        //Run validity check on the name first!
         if(!Utils.checkValidVariableName(methodName))
             throw new InvalidNameException();
 
+        String methodArgs = Utils.getArgsInBrackets(methodDeclaration[1]);
+        String methodReturnType = Utils.stripName(methodDeclaration[0]);
+        boolean isReturnArray = (methodDeclaration[0].contains("["));
 
-        String methodArgs = methodDeclaration[1].substring(methodDeclaration[1].indexOf("(")+1,
-                methodDeclaration[1].lastIndexOf(")"));
 
-        String type = methodDeclaration[0];
-        Method method;
-        int indexOfBrackets = type.indexOf("[");
-
-        if(indexOfBrackets == -1){ //The return type is not an array
-            method = new Method(methodDeclaration[0], methodName, methodArgs);
-        }
-        else{ //The return type is an array
-            type = type.substring(0, indexOfBrackets);
-            method = new Method(type, methodName, methodArgs, true);
-        }
         if(m_MethodMap.containsKey(methodName)) //If there is another global member with this name - exception
             throw new ExistingMethodNameException();
-        m_MethodMap.put(methodName, method);
+        m_MethodMap.put(methodName, new Method(methodReturnType, methodName, methodArgs, isReturnArray));
 
     }
 
@@ -136,13 +143,14 @@ public class SyntaxCompiler {
      * @throws InvalidMemberDeclaration
      * @throws VariableTypeException
      * @throws ExistingVariableName
+     * @throws AssignMismatchException
      * @throws UnknownMethodCallException
      */
     private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap, boolean isGlobal)
             throws InvalidMemberDeclaration, VariableTypeException,
-            ExistingVariableName, UnknownMethodCallException, VariableUninitializedException,
+            ExistingVariableName, AssignMismatchException, UnknownMethodCallException, VariableUninitializedException,
             InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException, InvalidNameException,
-            UnknownCodeLineException, AssignMismatchException {
+            UnknownCodeLineException  {
 
         String name;
         Matcher matcher = Utils.validateVariableName(line);
@@ -222,13 +230,13 @@ public class SyntaxCompiler {
     }
 
 
-    private static void validateMethodBlock(FileReader reader, String methodName, Method method) throws
-            UnknownCodeLineException, InvalidMemberDeclaration, ExistingVariableName,
+    private static void validateMethodBlock(SJavaReader reader, String methodName, Method method) throws
+            UnknownCodeLineException, AssignMismatchException, InvalidMemberDeclaration, ExistingVariableName,
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
             OperationTypeException, OperationMismatchException, MethodBadArgsCountException, MethodTypeMismatchException,
             ConditionUnknownExpressionException, ConditionExpressionNotBooleanException, ConditionArrayCallMismatch,
-            InvalidArrayIndexException, InvalidArrayMembersDeclaration, InvalidNameException, AssignMismatchException {
-        FileReader methodCode = reader.getMethodBlock();
+            InvalidArrayIndexException, InvalidArrayMembersDeclaration, InvalidNameException  {
+        SJavaReader methodCode = reader.getMethodBlock();
         String currLine;
         while(methodCode.hasNext()){
             currLine = methodCode.next();
@@ -257,8 +265,8 @@ public class SyntaxCompiler {
         }
     }
 
-    private static void validateReturnStatement(String line, Method method) throws
-            OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException, AssignMismatchException {
+    private static void validateReturnStatement(String line, Method method) throws AssignMismatchException,
+            OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException  {
 
         String[] splitReturn = line.split(" ", 2);
         if(splitReturn.length != 2){ //we have a return, with no value returned
@@ -286,7 +294,8 @@ public class SyntaxCompiler {
 
             }
             else{ //TODO voos de fooken we need to assign to a method?
-                method.Assign(valueType);
+                if(!VariableEnum.checkValidAssignment(method.getType(), valueType))
+                    throw new AssignMismatchException();
             }
         }
 
@@ -321,13 +330,14 @@ public class SyntaxCompiler {
      * @param method
      * @throws UnknownVariableException
      * @throws VariableTypeException
+     * @throws AssignMismatchException
      * @throws VariableUninitializedException
      * @throws OperationTypeException
      * @throws OperationMismatchException
      */
     private static void validateAssignment(String line, Method method) throws UnknownVariableException,
-            VariableTypeException, VariableUninitializedException, OperationTypeException,
-            OperationMismatchException, InvalidArrayIndexException, AssignMismatchException {
+            VariableTypeException, AssignMismatchException, VariableUninitializedException, OperationTypeException,
+            OperationMismatchException, InvalidArrayIndexException  {
         String[] splitLine = line.split("="); //get variable, and operation string
         String name = splitLine[0].trim(); //get the name of the variable initialized
         String value = splitLine[1].substring(0, splitLine[1].length()-1).replaceAll(" ", "");
@@ -374,7 +384,8 @@ public class SyntaxCompiler {
     private static VariableEnum validateValueExpression(String valueExpression, LinkedHashMap<String,
             Expression> methodMembers, Expression insertInto)
             throws OperationMismatchException,
-            OperationTypeException, VariableUninitializedException, VariableTypeException, AssignMismatchException {
+            OperationTypeException, VariableUninitializedException, VariableTypeException
+            , AssignMismatchException {
         Matcher varOperation = RegexConfig.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
             // TODO oded: i just realized how shitty this is because of the super complex pattern. maybe it can be simplified?
@@ -482,8 +493,8 @@ public class SyntaxCompiler {
 
     private static void validateArrayInitialization(String[] params, Expression arrayType,
                                                     LinkedHashMap<String, Expression> expressions)
-            throws OperationTypeException, VariableUninitializedException,
-            OperationMismatchException, VariableTypeException, AssignMismatchException, InvalidArrayMembersDeclaration {
+            throws AssignMismatchException, OperationTypeException, VariableUninitializedException,
+            OperationMismatchException, VariableTypeException , InvalidArrayMembersDeclaration {
         for(String value: params){
             validateValueExpression(value, expressions, arrayType);
         }

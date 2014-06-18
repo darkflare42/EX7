@@ -18,8 +18,6 @@ public enum ExpressionTypeEnum {
     COMMENT,
     UNKNOWN;
 
-    //TODO: Add string values and change throughout code. oded: VAS DE FOOKEN
-
     public static final Pattern MEMBER_DECLARATION_PATTERN = Pattern.compile(RegexConfig.MEMBER_DECLARATION_REGEX);
     public static final Pattern ARRAY_DECLARATION_PATTERN = Pattern.compile(RegexConfig.ARRAY_DECLARATION_REGEX);
 

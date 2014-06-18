@@ -148,11 +148,26 @@ public class Utils {
         int indexOfBracket = name.indexOf("(");
         if(indexOfBracket != -1){
             name = name.substring(0, indexOfBracket);
+            return name;
         }
         indexOfBracket = name.indexOf("[");
         if(indexOfBracket != -1){
             name = name.substring(0, indexOfBracket);
         }
         return name;
+    }
+
+    public static String getArgsInBrackets(String line){
+        String arguments = "";
+        int indexOfBrackets = line.indexOf("(");
+        if(indexOfBrackets != -1){ //This is a function call
+            arguments = line.substring(indexOfBrackets+1, line.lastIndexOf(")"));
+            return arguments;
+        }
+        indexOfBrackets = line.indexOf("{");
+        if(indexOfBrackets != -1){ //This is an array declaration
+            arguments = line.substring(indexOfBrackets+1, line.lastIndexOf("}"));
+        }
+        return arguments;
     }
 }

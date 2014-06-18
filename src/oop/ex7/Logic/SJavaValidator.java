@@ -1,7 +1,7 @@
 package oop.ex7.Logic;
 
 import oop.ex7.Logic.Exceptions.CompilationException;
-import oop.ex7.Reader.FileReader;
+import oop.ex7.Reader.SJavaReader;
 import oop.ex7.Reader.IOException;
 
 import java.io.File;
@@ -17,7 +17,7 @@ public class SJavaValidator {
 
         try{
             File file = new File(filename); //Throws FileNotFound
-            FileReader reader = new FileReader(file); //throws filenotfound
+            SJavaReader reader = new SJavaReader(file); //throws filenotfound
             SyntaxCompiler.compile(reader); //Throws CompilationException
             System.out.println(0);
         }
