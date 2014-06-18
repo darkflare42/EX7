@@ -21,7 +21,11 @@ public enum ExpressionTypeEnum {
     public static final Pattern MEMBER_DECLARATION_PATTERN = Pattern.compile(RegexConfig.MEMBER_DECLARATION_REGEX);
     public static final Pattern ARRAY_DECLARATION_PATTERN = Pattern.compile(RegexConfig.ARRAY_DECLARATION_REGEX);
 
-
+    /**
+     * Given a string, check its' match against known expression types.
+     * @param line String to check.
+     * @return An ExpressionTypeEnum. UNKNOWN type for any unknown expression.
+     */
     public static ExpressionTypeEnum checkType(String line){
         if(line.startsWith("//"))
             return COMMENT;
