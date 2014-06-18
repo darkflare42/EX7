@@ -136,14 +136,13 @@ public class SyntaxCompiler {
      * @throws InvalidMemberDeclaration
      * @throws VariableTypeException
      * @throws ExistingVariableName
-     * @throws TypeMismatchException
      * @throws UnknownMethodCallException
      */
     private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap, boolean isGlobal)
             throws InvalidMemberDeclaration, VariableTypeException,
-            ExistingVariableName, TypeMismatchException, UnknownMethodCallException, VariableUninitializedException,
+            ExistingVariableName, UnknownMethodCallException, VariableUninitializedException,
             InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException, InvalidNameException,
-            UnknownCodeLineException, VariableAssignMismatchException {
+            UnknownCodeLineException, AssignMismatchException {
 
         String name;
         Matcher matcher = Utils.validateVariableName(line);
@@ -224,11 +223,11 @@ public class SyntaxCompiler {
 
 
     private static void validateMethodBlock(FileReader reader, String methodName, Method method) throws
-            UnknownCodeLineException, TypeMismatchException, InvalidMemberDeclaration, ExistingVariableName,
+            UnknownCodeLineException, InvalidMemberDeclaration, ExistingVariableName,
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
             OperationTypeException, OperationMismatchException, MethodBadArgsCountException, MethodTypeMismatchException,
             ConditionUnknownExpressionException, ConditionExpressionNotBooleanException, ConditionArrayCallMismatch,
-            InvalidArrayIndexException, InvalidArrayMembersDeclaration, InvalidNameException, VariableAssignMismatchException {
+            InvalidArrayIndexException, InvalidArrayMembersDeclaration, InvalidNameException, AssignMismatchException {
         FileReader methodCode = reader.getMethodBlock();
         String currLine;
         while(methodCode.hasNext()){
@@ -258,16 +257,16 @@ public class SyntaxCompiler {
         }
     }
 
-    private static void validateReturnStatement(String line, Method method) throws TypeMismatchException,
-            OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException, VariableAssignMismatchException {
+    private static void validateReturnStatement(String line, Method method) throws
+            OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException, AssignMismatchException {
 
         String[] splitReturn = line.split(" ", 2);
         if(splitReturn.length != 2){ //we have a return, with no value returned
             if(method.getType() != VariableEnum.VOID)
-                throw new TypeMismatchException();
+                throw new AssignMismatchException();
         }
         else if(method.getType() == VariableEnum.VOID) //Return with value but method is void
-            throw new TypeMismatchException();
+            throw new AssignMismatchException();
         else{
             String value = line.substring(line.indexOf("n")+1, line.length()-1).trim();
             VariableEnum valueType =  validateValueExpression(value, method.getAllExpressions(), method);
@@ -287,8 +286,7 @@ public class SyntaxCompiler {
 
             }
             else{ //TODO voos de fooken we need to assign to a method?
-                if(!VariableEnum.checkValidAssignment(method.getType(), valueType))
-                    throw new TypeMismatchException();
+                method.Assign(valueType);
             }
         }
 
@@ -323,14 +321,13 @@ public class SyntaxCompiler {
      * @param method
      * @throws UnknownVariableException
      * @throws VariableTypeException
-     * @throws TypeMismatchException
      * @throws VariableUninitializedException
      * @throws OperationTypeException
      * @throws OperationMismatchException
      */
     private static void validateAssignment(String line, Method method) throws UnknownVariableException,
-            VariableTypeException, TypeMismatchException, VariableUninitializedException, OperationTypeException,
-            OperationMismatchException, InvalidArrayIndexException, VariableAssignMismatchException {
+            VariableTypeException, VariableUninitializedException, OperationTypeException,
+            OperationMismatchException, InvalidArrayIndexException, AssignMismatchException {
         String[] splitLine = line.split("="); //get variable, and operation string
         String name = splitLine[0].trim(); //get the name of the variable initialized
         String value = splitLine[1].substring(0, splitLine[1].length()-1).replaceAll(" ", "");
@@ -346,7 +343,7 @@ public class SyntaxCompiler {
 
 
             if(indexType != VariableEnum.INT) //Index is not a type value
-                throw new TypeMismatchException();
+                throw new AssignMismatchException();
             else{ //check if it is a single non zero value
                 if(!index.matches(RegexConfig.OPERATION_REGEX)){ //check only if value is a single digit
                     if(Utils.IntegerTryParse(index) && Integer.parseInt(index) < 0) //check if it is a non zero number
@@ -377,8 +374,7 @@ public class SyntaxCompiler {
     private static VariableEnum validateValueExpression(String valueExpression, LinkedHashMap<String,
             Expression> methodMembers, Expression insertInto)
             throws OperationMismatchException,
-            OperationTypeException, VariableUninitializedException, VariableTypeException, VariableAssignMismatchException
-            , TypeMismatchException {
+            OperationTypeException, VariableUninitializedException, VariableTypeException, AssignMismatchException {
         Matcher varOperation = RegexConfig.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
             // TODO oded: i just realized how shitty this is because of the super complex pattern. maybe it can be simplified?
@@ -423,7 +419,7 @@ public class SyntaxCompiler {
 
             if(indexOfBrackets != -1){ //Return array type and deal with it "higher up"
                 if(!insertInto.isArray()) // we are declaring an array inside a non array variable
-                    throw new TypeMismatchException();
+                    throw new AssignMismatchException();
                 return VariableEnum.ARRAY_TYPE;
             }
             else{
@@ -486,8 +482,8 @@ public class SyntaxCompiler {
 
     private static void validateArrayInitialization(String[] params, Expression arrayType,
                                                     LinkedHashMap<String, Expression> expressions)
-            throws TypeMismatchException, OperationTypeException, VariableUninitializedException,
-            OperationMismatchException, VariableTypeException, VariableAssignMismatchException, InvalidArrayMembersDeclaration {
+            throws OperationTypeException, VariableUninitializedException,
+            OperationMismatchException, VariableTypeException, AssignMismatchException, InvalidArrayMembersDeclaration {
         for(String value: params){
             validateValueExpression(value, expressions, arrayType);
         }

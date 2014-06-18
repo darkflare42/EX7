@@ -1,6 +1,6 @@
 package oop.ex7.Expressions;
 
-import oop.ex7.Expressions.Exceptions.VariableAssignMismatchException;
+import oop.ex7.Expressions.Exceptions.AssignMismatchException;
 import oop.ex7.Expressions.Exceptions.VariableTypeException;
 import oop.ex7.Expressions.Exceptions.VariableUninitializedException;
 
@@ -62,16 +62,16 @@ public class Variable implements Expression{
     /**
      * Assign a value to a Variable. Initializes the Variable (if it was not initialized).
      * @param assign VariableEnum to assign to the variable.
-     * @throws VariableAssignMismatchException if assign is a type that mismatches the type of the Variable.
+     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of the Variable.
      */
     // TODO there is a redundant method of the same functionality in VariableEnum.
-    public void Assign (VariableEnum assign) throws VariableAssignMismatchException{
+    public void Assign (VariableEnum assign) throws AssignMismatchException {
         if(type != assign){
             if(type == VariableEnum.DOUBLE && assign == VariableEnum.INT) return;
-            throw new VariableAssignMismatchException();
+            throw new AssignMismatchException();
         }
         else if(m_isArray)
-            throw new VariableAssignMismatchException();
+            throw new AssignMismatchException();
 
         initialized = true;
     }
@@ -79,11 +79,11 @@ public class Variable implements Expression{
     /**
      * Assign the value of an expression to a Variable. Initializes the Variable (if it was not initialized).
      * @param assign Expression to assign its' value to the variable.
-     * @throws VariableAssignMismatchException if assign is a type that mismatches the type of the Variable.
+     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of the Variable.
      * @throws VariableUninitializedException if assign is not an initialized Expression.
      */
     // TODO there is a redundant method of the same functionality in VariableEnum.
-    public void Assign (Expression assign) throws VariableAssignMismatchException, VariableUninitializedException {
+    public void Assign (Expression assign) throws AssignMismatchException, VariableUninitializedException {
         if (!assign.isInitialized()) {
             throw new VariableUninitializedException();
         }
