@@ -19,7 +19,7 @@ public class RegexConfig {
     public static final char APOSTROPHE_CHAR = '\'';
     public static final char DOUBLE_APOSTROPHE_CHAR = '\"';
     public static final String COMMA_SEPERATOR_CHAR = ",";
-    private static final char OR = '|';
+    public static final char OR = '|';
     public static final char SQUARE_BRACKETS_START = '[';
     public static final char SQUARE_BRACKETS_END = ']';
     public static final char BLOCK_START_CHAR = '{';
