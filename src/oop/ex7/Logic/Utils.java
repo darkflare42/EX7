@@ -115,11 +115,6 @@ public class Utils {
         return true;
     }
 
-    //TODO shouldnt this be a static method in Variable? or in config?
-    public static boolean checkValidVariableName(String variableName){
-        return  (variableName.matches(RegexConfig.VALID_NAME) && !RegexConfig.isForbiddenWord(variableName));
-    }
-
     public static Matcher validateVariableName(String variable) throws UnknownCodeLineException, InvalidNameException {
         String value;
         Matcher matcher = ExpressionTypeEnum.MEMBER_DECLARATION_PATTERN.matcher(variable);

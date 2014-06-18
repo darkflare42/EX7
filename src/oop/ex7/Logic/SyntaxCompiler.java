@@ -106,7 +106,7 @@ public class SyntaxCompiler {
         String[] methodDeclaration = line.split(" ", 2); //split type and method name+params
         String methodName = methodDeclaration[1].substring(0, methodDeclaration[1].indexOf("(")).trim();
 
-        if(!Utils.checkValidVariableName(methodName))
+        if(!RegexConfig.checkValidVariableName(methodName))
             throw new InvalidNameException();
 
 

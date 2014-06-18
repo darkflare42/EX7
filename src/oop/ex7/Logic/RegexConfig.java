@@ -56,7 +56,11 @@ public class RegexConfig {
 
     private static String forbiddenWords = null;
 
-    public static boolean isForbiddenWord(String string) {
+    public static boolean checkValidVariableName(String variableName){
+        return  (variableName.matches(VALID_NAME) && !isForbiddenWord(variableName));
+    }
+
+    private static boolean isForbiddenWord(String string) {
         if (forbiddenWords != null) {
             return (string.matches(forbiddenWords));
         }
@@ -65,4 +69,6 @@ public class RegexConfig {
         forbiddenWords += "|if|while|return|true|false)";
         return (string.matches(forbiddenWords));
     }
+
+
 }
