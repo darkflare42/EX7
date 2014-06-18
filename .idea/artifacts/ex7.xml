@@ -1,0 +1,60 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ex7">
+    <output-path>$PROJECT_DIR$/out/artifacts/ex7</output-path>
+    <root id="archive" name="ex7.jar">
+      <element id="file-copy" path="$PROJECT_DIR$/src/README" />
+      <element id="directory" name="oop">
+        <element id="directory" name="ex7">
+          <element id="directory" name="Expressions">
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Condition.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Expression.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/ExpressionTypeEnum.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Method.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Operation.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/OperationEnum.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Variable.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/VariableEnum.java" />
+            <element id="directory" name="Exceptions">
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/AssignMismatchException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/ConditionArrayCallMismatch.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/ConditionExpressionNotBooleanException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/ConditionUnknownExpressionException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/InvalidArrayIndexException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/MethodBadArgsCountException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/MethodBadArgsException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/MethodTypeMismatchException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/OperationMismatchException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/OperationTypeException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/VariableTypeException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Expressions/Exceptions/VariableUninitializedException.java" />
+            </element>
+          </element>
+          <element id="directory" name="Logic">
+            <element id="directory" name="Exceptions">
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Exceptions/CompilationException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Exceptions/ExistingMethodNameException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Exceptions/ExistingVariableName.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Exceptions/InvalidArrayMembersDeclaration.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Exceptions/InvalidMemberDeclaration.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Exceptions/InvalidNameException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Exceptions/UnknownCodeLineException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Exceptions/UnknownMethodCallException.java" />
+              <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Exceptions/UnknownVariableException.java" />
+            </element>
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/RegexConfig.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/SJavaValidator.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/SyntaxCompiler.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Logic/Utils.java" />
+          </element>
+          <element id="directory" name="main">
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/main/Sjavac.java" />
+          </element>
+          <element id="directory" name="Reader">
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Reader/IOException.java" />
+            <element id="file-copy" path="$PROJECT_DIR$/src/oop/ex7/Reader/SJavaReader.java" />
+          </element>
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
