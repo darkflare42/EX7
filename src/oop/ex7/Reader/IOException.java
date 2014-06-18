@@ -1,7 +1,10 @@
 package oop.ex7.Reader;
 
 /**
- * Created by Or Keren on 13/06/14.
+ * Exception for when the reader encounters a problem reading from the given file.
  */
 public class IOException extends Exception {
+    public IOException () {
+        super("There was a problem reading from the file given");
+    }
 }
