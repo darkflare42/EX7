@@ -54,7 +54,7 @@ public enum VariableEnum {
      * @param withVoid boolean to include "Void" as part of the set.
      * @return String of a regex representation of all possible VariableEnums.
      */
-    public static String Types (boolean withVoid) {
+    public static String GetRegexSet(boolean withVoid) {
         if (TYPES != null) {  //Modified by OR
             if((withVoid && TYPES.contains("void")) ||
                     !withVoid && !TYPES.contains("void"))

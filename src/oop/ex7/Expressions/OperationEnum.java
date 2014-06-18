@@ -53,7 +53,7 @@ public enum OperationEnum {
      *
      * @return String of the regex set of all possible operations.
      */
-    public static String operationRegexSet() {
+    public static String GetRegexSet() {
         if (OPERATIONS != null) {
             return OPERATIONS;
         }

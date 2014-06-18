@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class RegexConfig {
 
     public static final String VALID_NAME = "(_?[a-zA-Z]+[\\w]*)";
-    public static final String VALID_OPERATIONS= OperationEnum.operationRegexSet();
+    public static final String VALID_OPERATIONS= OperationEnum.GetRegexSet();
     public static final String SPACES = "\\s*";
     public static final char END_OF_LINE = ';';
     public static final char SET_START = '(';
@@ -39,15 +39,15 @@ public class RegexConfig {
     public static final String DOUBLE_CALL_REGEX = MINUS_OR_NOT + "(\\d+\\.\\d+)";
     public static final String INT_CALL_REGEX = MINUS_OR_NOT + "(\\d+)";
     public static final String STRING_CALL_REGEX = MINUS_OR_NOT + "[\"][\\w]+[\"]";
-    public static final String ARRAY_TYPE_CALL_REGEX = VariableEnum.Types(false) + "\\[\\]";
+    public static final String ARRAY_TYPE_CALL_REGEX = VariableEnum.GetRegexSet(false) + "\\[\\]";
     public static final String BLOCK_CALL_REGEX = BLOCK_TYPES + " ?\\(.*\\) ?\\"+ BLOCK_START_CHAR;
 
 
-    public static final String MEMBER_DECLARATION_REGEX = VariableEnum.Types(false)+
+    public static final String MEMBER_DECLARATION_REGEX = VariableEnum.GetRegexSet(false)+
             " "+ VALID_NAME+"( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
-    public static final String METHOD_DECLARATION_REGEX = VariableEnum.Types(true) +
+    public static final String METHOD_DECLARATION_REGEX = VariableEnum.GetRegexSet(true) +
             "(\\[\\])? [a-zA-Z][_\\w]* ?\\(.*\\) ?\\" + BLOCK_START_CHAR;
-    public static final String ARRAY_DECLARATION_REGEX = VariableEnum.Types(false) +
+    public static final String ARRAY_DECLARATION_REGEX = VariableEnum.GetRegexSet(false) +
             " *\\[ *\\] *(_?[a-zA-Z][_\\w]*)(\\s?=\\s?\\{\\s?.*\\})?;";
     public static final String METHOD_CALL_REGEX = VALID_NAME + "\\(.*\\);";
     public static final String ARRAY_CALL_REGEX = MINUS_OR_NOT + VALID_NAME + "\\s*(\\[" +
@@ -80,7 +80,7 @@ public class RegexConfig {
         if (forbiddenWords != null) {
             return (string.matches(forbiddenWords));
         }
-        forbiddenWords = VariableEnum.Types(true);
+        forbiddenWords = VariableEnum.GetRegexSet(true);
         forbiddenWords = forbiddenWords.substring(0,forbiddenWords.length()-1);
         forbiddenWords += "|if|while|return|true|false)";
         return (string.matches(forbiddenWords));
