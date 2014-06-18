@@ -6,7 +6,7 @@ README - This file.
 Main Package        - Sjavac.java  - Main class, calls SJavaValidator.java to start the process.
 
 Logic Package       - SJavaValidator.java - Class to attempt reading from the file given, and print the output
-                                            after the complication check is completed.
+                                            after the compliation check is completed.
                     - SyntaxCompiler.java - Manager class for the project. Separately compile methods and then variables.
 
                     TODO NEED TO COMPLETE BASED ON THE CLASSES AFTER REMOVING REDUNDANCY, AND POTENTIALLY CHANGING STUFF
@@ -27,7 +27,7 @@ Answers to Questions:
    In order to add a new type of variables we would need to take care of 2 things:
    1. Add an Enum of their type, and name of their type, to VariableEnum class.
    2. Add the way they are represented as a String to ExpressionTypeEnum class. (e.g. float type has digits,
-      a preiod and then some more digits).
+      a period and then some more digits).
    TODO DID I MISS ANYTHING?
 
 - How would we implement if-else block: TODO NEED TO PICK EITHER THIS QUESTION OR THE NEXT
