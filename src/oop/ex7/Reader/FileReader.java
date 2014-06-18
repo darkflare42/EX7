@@ -23,15 +23,6 @@ public class FileReader {
         m_filename = file.getAbsolutePath();
     }
 
-    /*
-    public FileReader(String filename) throws FileNotFoundException{
-        File f = new File(filename);
-        scanner =  new Scanner(f);
-        m_filename = filename;
-    }
-    */
-
-
     public FileReader(String methodBlock){
         scanner = new Scanner(methodBlock);
         m_currLine = "";
@@ -40,14 +31,6 @@ public class FileReader {
 
     public boolean hasNext() {
         return scanner.hasNext();
-    }
-
-    public boolean hasNext(Pattern pattern) {
-        return scanner.hasNext(pattern);
-    }
-
-    public boolean hasNext (String pattern) {
-        return scanner.hasNext(pattern);
     }
 
     public String next() {
@@ -110,13 +93,5 @@ public class FileReader {
             }
         }while(counter > 0 && hasNext());
         return (new FileReader(methodBlock));
-    }
-
-    public String next(Pattern pattern) {
-        return scanner.next(pattern);
-    }
-
-    public String next (String pattern) {
-        return scanner.next(pattern);
     }
 }

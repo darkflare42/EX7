@@ -7,7 +7,7 @@ import oop.ex7.Logic.RegexConfig;
 import java.io.File;
 
 /**
- * Created by Oded on 10/6/2014.
+ * TODO delete this class
  */
 public class FileReaderDebug {
     public static void main(String[] args) {

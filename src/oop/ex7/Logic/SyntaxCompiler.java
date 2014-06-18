@@ -286,7 +286,7 @@ public class SyntaxCompiler {
                 }
 
             }
-            else{
+            else{ //TODO voos de fooken we need to assign to a method?
                 if(!VariableEnum.checkValidAssignment(method.getType(), valueType))
                     throw new TypeMismatchException();
             }

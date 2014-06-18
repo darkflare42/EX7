@@ -37,9 +37,9 @@ Answers to Questions:
 
 - Two most used regular expressions:
     1. Expression for finding a member declaration:
-    "(int|double|String|boolean|char)(_?[a-zA-Z][_\w]*)( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
+    "(int|double|String|boolean|char|void) (_?[a-zA-Z]+[\w]*)( ?\\s*?=?\\s*?\"?-?\\w?.*\"?)?;$";
     2. Expression for finding a method declaration:
     "(int|double|String|boolean|char|void)(\\[\\])? [a-zA-Z][_\\w]* ?\\(.*\\) ?\\{"
 
-    Note: both of these expressions are located in ExpressionTypeEnum class, and some of their parts are generated
+    Note: both of these expressions are located in RegexConfig class, and some of their parts are generated
     dynamically in case new types will be added.

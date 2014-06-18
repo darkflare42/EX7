@@ -189,6 +189,7 @@ public class Method implements Expression {
     }
 
     /**
+     * //TODO what is this copy pasta? why a method needs an assignment?
      * Assign a value to a Variable. Initializes the Variable (if it was not initialized).
      * @param assign VariableEnum to assign to the variable.
      * @throws oop.ex7.Expressions.Exceptions.VariableAssignMismatchException if assign is a type that mismatches the type of the Variable.
@@ -202,6 +203,7 @@ public class Method implements Expression {
     }
 
     /**
+     * //TODO what is this copy pasta? why a method needs an assignment?
      * Assign the value of an expression to a Variable. Initializes the Variable (if it was not initialized).
      * @param assign Expression to assign its' value to the variable.
      * @throws VariableAssignMismatchException if assign is a type that mismatches the type of the Variable.
