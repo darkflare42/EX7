@@ -161,78 +161,53 @@ public class SyntaxCompiler {
             InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException, InvalidNameException,
             UnknownCodeLineException  {
 
-        String name;
+        //Local variable declarations
         Matcher matcher = Utils.validateVariableName(line);
-        name = matcher.group(2);
+        String name = matcher.group(2);
         String[] splitDeclaration = line.split(" "); //split type and expression
         String type = Utils.stripName(splitDeclaration[0]);
-        int index = line.indexOf('='); //check if the is includes an assignment
+        boolean isArray = splitDeclaration[0].contains("[");
+        boolean isInitialized = line.contains("=");
 
-        if(index == -1){ //No assignment, just definition
-            if(!checkMemberExists(name, variableMap, isGlobal))
-                throw new ExistingVariableName();
-            boolean isArray = splitDeclaration[0].matches(RegexConfig.ARRAY_TYPE_CALL_REGEX);
-            //TODO: DOUBLE CHECK Matcher already checks if its an array declaration - can use it
-            Variable vr = new Variable(type, name, false, isArray);
-            vr.setGlobal(isGlobal);
-            variableMap.put(name, vr);
+        if(!checkMemberExists(name, variableMap, isGlobal))
+            throw new ExistingVariableName();
 
-        }
-        else{ //Initialization of the member
-            //TODO DOUBLE CHECK, Matcher already checks if its an array declaration
-            if(splitDeclaration[0].contains("[")){ //this is an array
-                boolean initialized;
-                if(variableMap.containsKey(name))
-                    throw new ExistingVariableName();
+        if(isInitialized){ //If the member is initialized we need to check the assignment value
+            if(isArray){ //this is an array
 
                 //check types of values
-                int indexOfCurly = line.indexOf("{");
-                int lastIndexOfCurly = line.lastIndexOf("}");
-                String arrayValues = line.substring(indexOfCurly + 1, lastIndexOfCurly);
-                arrayValues = arrayValues.trim();
+                String arrayValues = Utils.getArgsInBrackets(line).trim();
                 String[] splitArrayValues = arrayValues.split(",");
                 if(!arrayValues.equals("")){ //non empty init of array
                     validateArrayInitialization(splitArrayValues,  new Variable(type, name, true), variableMap);
                 }
-                Utils.ValidArrayDeclaration(arrayValues);
-                initialized = true;
-                Variable vr = new Variable(type, name, initialized, true);
-                variableMap.put(name, vr);
+                Utils.ValidArrayDeclaration(arrayValues); //Validate the array declaration
             }
             else{ //This isn't an array
-                String value = matcher.group(3).replaceAll("=", "").trim();
-
-                validateValueExpression(value,
-                        variableMap, new Variable(type, name, true));
-
-                if(isGlobal){ //we are defining a global variable
-                    if(variableMap.containsKey(name))
-                        throw new ExistingVariableName();
-                }
-                else{ //we are defining a local variable
-                    if(variableMap.containsKey(name) && !variableMap.get(name).isGlobal())
-                        throw new ExistingVariableName();
-
-                }
-                Variable vr = new Variable(type, name, true);
-                vr.setGlobal(isGlobal);
-                variableMap.put(name,vr );
+                String value = matcher.group(3).replaceAll("=", "").trim(); //Get the value that is assigned
+                validateValueExpression(value, variableMap, new Variable(type, name, true));
             }
         }
+        //Add the new variable to the variableMap
+        Variable vr = new Variable(type, name, isInitialized, isArray);
+        vr.setGlobal(isGlobal);
+        variableMap.put(name,vr);
     }
 
 
     private static void validateMethodBlock(SJavaReader reader, String methodName, Method method) throws
             UnknownCodeLineException, AssignMismatchException, InvalidMemberDeclaration, ExistingVariableName,
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
-            OperationTypeException, OperationMismatchException, MethodBadArgsCountException, MethodTypeMismatchException,
-            ConditionUnknownExpressionException, ConditionExpressionNotBooleanException, ConditionArrayCallMismatch,
-            InvalidArrayIndexException, InvalidArrayMembersDeclaration, InvalidNameException  {
+            OperationTypeException, OperationMismatchException, MethodBadArgsCountException,
+            MethodTypeMismatchException,ConditionUnknownExpressionException, ConditionExpressionNotBooleanException,
+            ConditionArrayCallMismatch, InvalidArrayIndexException, InvalidArrayMembersDeclaration,
+            InvalidNameException  {
+
         SJavaReader methodCode = reader.getMethodBlock();
         String currLine;
         while(methodCode.hasNext()){
-            currLine = methodCode.next();
-            switch (ExpressionTypeEnum.checkType(currLine)){
+            currLine = methodCode.next(); //Read the next line of the function
+            switch (ExpressionTypeEnum.checkType(currLine)){ //Determine the line type
                 case BLOCK_START: //If-while block
                     validateBoolCondition(currLine, method);
                     //Recursively check the inner if-while block
@@ -241,18 +216,18 @@ public class SyntaxCompiler {
                 case METHOD_CALL: //a single method call (no assignment)
                     validateMethodCall(currLine, method);
                     break;
-                case RETURN:
+                case RETURN: //The method's return statement
                     validateReturnStatement(currLine, method);
                     break;
-                case MEM_DECLARATION: //check member declaration with and without initialization
+                case MEM_DECLARATION: //check member declaration with and without initialization isGlobal - false
+                                      //Because it is a local variable declaration
                     validateMemberDeclaration(currLine, method.getAllExpressions(), false);
                     break;
-                case ASSIGNMENT:
+                case ASSIGNMENT: //Any assignment line (a = b+c)
                     validateAssignment(currLine, method);
                     break;
-                case UNKNOWN:
+                case UNKNOWN: //Unknown code line
                     throw new UnknownCodeLineException();
-
             }
         }
     }
