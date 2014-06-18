@@ -1,10 +1,6 @@
 package oop.ex7.Expressions;
 
 import oop.ex7.Expressions.Exceptions.*;
-import oop.ex7.Logic.Exceptions.ExistingVariableName;
-import oop.ex7.Logic.Exceptions.InvalidMemberDeclaration;
-import oop.ex7.Logic.RegexConfig;
-
 import java.util.LinkedHashMap;
 
 /**
@@ -20,29 +16,6 @@ public class Method implements Expression {
     private boolean m_isArray = false;
 
 
-    /**
-     * Standard constructor - Creates a method object be defining a return type, a name and the argumnts declared in
-     * it's header.
-     * @param returnType String of the type the method returns, "void" if none.
-     * @param methodName String of the name of the method.
-     * @param args String of the members declared in the method declaration.
-     * @throws VariableTypeException args contains a Variable declaration with an invalid Variable type.
-     * @throws MethodBadArgsException args has an invalid structure.
-     * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
-     */
-    public Method (String returnType, String methodName, String args) throws VariableTypeException,
-            MethodBadArgsException, ExistingVariableName, InvalidMemberDeclaration {
-        type = VariableEnum.toEnum(returnType);
-        name = methodName.trim();
-        if(!args.equals("")){
-            headerExpressions = SetVariables(args);
-            allExpressions = new LinkedHashMap<String, Expression>(headerExpressions);
-        }
-        else{
-            headerExpressions = new LinkedHashMap<String, Expression>();
-            allExpressions = new LinkedHashMap<String, Expression>();
-        }
-    }
 
     /**
      * Copy constructor.
@@ -56,67 +29,24 @@ public class Method implements Expression {
     }
 
     /**
-     * Overload constructor to determine if if the Method returns an array of it's return type.
-     * @param returnType String of the type the method returns, "void" if none.
-     * @param methodName String of the name of the method.
-     * @param args String of the members declared in the method declaration.
-     * @param isReturnArray boolean if the method returns an array of the returnType.
-     * @throws VariableTypeException args contains a Variable declaration with an invalid Variable type.
-     * @throws MethodBadArgsException args has an invalid structure.
-     * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
-
+     * This constructor is called during the creation of a method (when a method declaration is encountered)
+     * It sets all the relevant members according to the parameters
+     * @param returnType The return type of the method
+     * @param methodName The name of the method
+     * @param params The parameters that the method receives
+     * @param isReturnArray If this returns an array or not
+     * @throws VariableTypeException
      */
-    public Method(String returnType, String methodName, String args, boolean isReturnArray)
-            throws VariableTypeException, MethodBadArgsException, ExistingVariableName, InvalidMemberDeclaration {
-        this(returnType, methodName, args);
+    public Method(String returnType, String methodName, LinkedHashMap<String, Expression> params,
+                  boolean isReturnArray) throws VariableTypeException {
+        type = VariableEnum.toEnum(returnType);
+        name = methodName.trim();
+        headerExpressions = params;
         m_isArray = isReturnArray;
+        allExpressions = new LinkedHashMap<>(params);
+
     }
 
-    /**
-     * Set the collection of Variables from a string that represents Variables initializations.
-     * @param args String of of Variable declarations inside the parentheses in the method header.
-     * @return LinkedHashMap of all the header declared Variables.
-     * @throws VariableTypeException args contains a Variable declaration with an invalid Variable type.
-     * @throws MethodBadArgsException args has an invalid structure.
-     * @throws ExistingVariableName args is declaring a member with a name of an already existing member.
-     */
-    private LinkedHashMap<String, Expression> SetVariables(String args) throws VariableTypeException,
-            MethodBadArgsException, ExistingVariableName, InvalidMemberDeclaration {
-        if (args.trim().endsWith(",")) {
-            throw new MethodBadArgsException();
-        }
-        String[] arguments = args.split(",");
-        String[] currentArgument;
-        String argument;
-        boolean variableIsArray;
-        String variableType;
-        LinkedHashMap<String,Expression> newVariables= new LinkedHashMap<String, Expression>();
-        for (String arg: arguments) {
-            argument = arg.trim();
-            if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){
-                throw new MethodBadArgsException();
-            }
-            currentArgument = argument.split(" ",2);
-            if (currentArgument[1].trim().contains(" ")){
-                throw new InvalidMemberDeclaration();
-            }
-
-            if(newVariables.containsKey(currentArgument[1])){
-                throw new ExistingVariableName();
-            }
-
-            if(currentArgument[0].matches(RegexConfig.ARRAY_TYPE_CALL_REGEX)){ //this is an array
-                variableType = currentArgument[0].substring(0, currentArgument[0].indexOf("["));
-                variableIsArray = true;
-            }
-            else{ //this is a normal variable
-                variableType = currentArgument[0];
-                variableIsArray = false;
-            }
-            newVariables.put(currentArgument[1], new Variable(variableType, currentArgument[1], true, variableIsArray));
-        }
-        return newVariables;
-    }
 
     /**
      * Given an array of VariableEnums, checks its' validity, in order, against the headerExpressions LinkedHashMap.

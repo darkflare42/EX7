@@ -127,6 +127,10 @@ public class Variable implements Expression{
         return initialized;
     }
 
+    public void setIsInitialized(){
+       initialized = true;
+    }
+
     /**
      * Return a boolean if the Variable is an array.
      * @return array

@@ -71,7 +71,8 @@ public class SyntaxCompiler {
      */
     private static void compileMethodDeclaration(SJavaReader reader) throws ExistingMethodNameException,
             ExistingVariableName, VariableTypeException, UnknownCodeLineException, InvalidNameException,
-            MethodBadArgsException, InvalidMemberDeclaration {
+            MethodBadArgsException, InvalidMemberDeclaration, AssignMismatchException, OperationMismatchException,
+            VariableUninitializedException, UnknownMethodCallException, InvalidArrayMembersDeclaration, OperationTypeException {
 
         String currLine;
         while(reader.hasNext()){
@@ -134,10 +135,17 @@ public class SyntaxCompiler {
      * @throws InvalidNameException
      * @throws UnknownCodeLineException
      * @throws InvalidMemberDeclaration
+     * @throws AssignMismatchException
+     * @throws OperationMismatchException
+     * @throws VariableUninitializedException
+     * @throws UnknownMethodCallException
+     * @throws InvalidArrayMembersDeclaration
+     * @throws OperationTypeException
      */
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
             ExistingMethodNameException, ExistingVariableName, InvalidNameException, UnknownCodeLineException,
-            InvalidMemberDeclaration {
+            InvalidMemberDeclaration, AssignMismatchException, OperationMismatchException, VariableUninitializedException,
+            UnknownMethodCallException, InvalidArrayMembersDeclaration, OperationTypeException {
 
         String[] methodDeclaration = line.split(" ", 2); //split type and method name+params
         String methodName = Utils.stripName(methodDeclaration[1]).trim();
@@ -146,14 +154,26 @@ public class SyntaxCompiler {
         if(!Utils.checkValidVariableName(methodName))
             throw new InvalidNameException();
 
+
         String methodArgs = Utils.getArgsInBrackets(methodDeclaration[1]);
         String methodReturnType = Utils.stripName(methodDeclaration[0]);
         boolean isReturnArray = (methodDeclaration[0].contains(""+RegexConfig.SQUARE_BRACKETS_START));
+        String[] arguments = methodArgs.split(""+RegexConfig.COMMA_SEPERATOR_CHAR);
+        LinkedHashMap<String, Expression> params = new LinkedHashMap<>();
 
+        //Run a validation check on each of the parameters
+        if(!methodArgs.equals("")){ //If there are no parameters defined, no need to check
+            for(String arg: arguments){
+                arg = arg.trim();
+                Variable vr = validateMemberDeclaration(arg+";", params, false);
+                vr.setIsInitialized();
+            }
+        }
 
         if(m_MethodMap.containsKey(methodName)) //If there is another global member with this name - exception
             throw new ExistingMethodNameException();
-        m_MethodMap.put(methodName, new Method(methodReturnType, methodName, methodArgs, isReturnArray));
+        //m_MethodMap.put(methodName, new Method(methodReturnType, methodName, methodArgs, isReturnArray));
+        m_MethodMap.put(methodName, new Method(methodReturnType, methodName, params, isReturnArray));
 
     }
 
@@ -174,7 +194,7 @@ public class SyntaxCompiler {
      * @throws InvalidNameException
      * @throws UnknownCodeLineException
      */
-    private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap,
+    private static Variable validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap,
                                                   boolean isGlobal)
             throws InvalidMemberDeclaration, VariableTypeException,
             ExistingVariableName, AssignMismatchException, UnknownMethodCallException, VariableUninitializedException,
@@ -216,6 +236,7 @@ public class SyntaxCompiler {
         Variable vr = new Variable(type, name, isInitialized, isArray);
         vr.setGlobal(isGlobal);
         variableMap.put(name,vr);
+        return vr;
     }
 
 
@@ -305,7 +326,6 @@ public class SyntaxCompiler {
 
         else{ //Check the return type of the function and the type of the value that is returned
 
-            //TODO: See if we can split this using regex
             String value = line.substring(line.indexOf("n")+1, line.length()-1).trim(); //Get the value that is returned
 
             //Check the returned value against the return type of the function
