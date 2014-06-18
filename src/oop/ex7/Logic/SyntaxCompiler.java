@@ -50,7 +50,7 @@ public class SyntaxCompiler {
                 ((Method)m_MethodMap.get(methodName)).mergeAllExpressions(globalValues);
 
                 //Validate the method block
-                validateMethodBlock(reader, methodName, (Method) m_MethodMap.get(methodName));
+                validateMethodBlock(reader, (Method) m_MethodMap.get(methodName));
                 reader.moveToEndOfMethod();
 
                 if(reader.hasNext())reader.next();
@@ -194,8 +194,8 @@ public class SyntaxCompiler {
         variableMap.put(name,vr);
     }
 
-
-    private static void validateMethodBlock(SJavaReader reader, String methodName, Method method) throws
+    
+    private static void validateMethodBlock(SJavaReader reader, Method method) throws
             UnknownCodeLineException, AssignMismatchException, InvalidMemberDeclaration, ExistingVariableName,
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
             OperationTypeException, OperationMismatchException, MethodBadArgsCountException,
@@ -211,7 +211,7 @@ public class SyntaxCompiler {
                 case BLOCK_START: //If-while block
                     validateBoolCondition(currLine, method);
                     //Recursively check the inner if-while block
-                    validateMethodBlock(methodCode, methodName, new Method(method));
+                    validateMethodBlock(methodCode, new Method(method));
                     break;
                 case METHOD_CALL: //a single method call (no assignment)
                     validateMethodCall(currLine, method);
@@ -233,7 +233,8 @@ public class SyntaxCompiler {
     }
 
     private static void validateReturnStatement(String line, Method method) throws AssignMismatchException,
-            OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException  {
+            OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException,
+            InvalidArrayMembersDeclaration {
 
         String[] splitReturn = line.split(" ", 2);
         if(splitReturn.length != 2){ //we have a return, with no value returned
@@ -242,27 +243,23 @@ public class SyntaxCompiler {
         }
         else if(method.getType() == VariableEnum.VOID) //Return with value but method is void
             throw new AssignMismatchException();
-        else{
-            String value = line.substring(line.indexOf("n")+1, line.length()-1).trim();
+
+        else{ //Check the return type of the function and the type of the value that is returned
+
+            //TODO: See if we can split this using regex
+            String value = line.substring(line.indexOf("n")+1, line.length()-1).trim(); //Get the value that is returned
+
+            //Check the returned value against the return type of the function
             VariableEnum valueType =  validateValueExpression(value, method.getAllExpressions(), method);
+
+            //If we return an array - we check the values, otherwise the check is done within validateValueExpression
             if(valueType == VariableEnum.ARRAY_TYPE){ //validate array values
-                int indexOfBrackets = value.indexOf("{");
-                String arguments = value.substring(indexOfBrackets+1, value.lastIndexOf("}"));
-                if(arguments.equals("")){ //empty array is valid
+                String arguments = Utils.getArgsInBrackets(value);
+                if(arguments.equals("")){ //We have an empty array initialization - valid
                     return;
                 }
                 String[] splitArguments = arguments.split(",");
-                //TODO: Add constructor for member which receives ENUM
-                Variable arrayMember = new Variable(method.getType().toString(),"", true);
-                for(String arg:splitArguments){
-                    arg = arg.trim();
-                    validateValueExpression(arg, method.getAllExpressions(), arrayMember);
-                }
-
-            }
-            else{ //TODO voos de fooken we need to assign to a method?
-                if(!VariableEnum.checkValidAssignment(method.getType(), valueType))
-                    throw new AssignMismatchException();
+                validateArrayInitialization(splitArguments, method, method.getAllExpressions());
             }
         }
 
@@ -272,10 +269,8 @@ public class SyntaxCompiler {
     private static void validateBoolCondition(String line, Method method) throws ConditionExpressionNotBooleanException,
             ConditionUnknownExpressionException, VariableUninitializedException, ConditionArrayCallMismatch {
 
-        String condition = line.substring(line.indexOf("(")+1, line.lastIndexOf(")")); //TODO: Check indexes
-        LinkedHashMap allExpressions = Utils.mergeExpressions(m_MemberMap, m_MethodMap);
-        allExpressions = Utils.mergeExpressions(allExpressions, method.getAllExpressions());
-        Condition.isValid(condition, allExpressions);
+        String condition = Utils.getArgsInBrackets(line);
+        Condition.isValid(condition, method.getAllExpressions());
     }
 
     private static void validateMethodCall(String line, Method method) throws MethodBadArgsCountException,
@@ -462,8 +457,12 @@ public class SyntaxCompiler {
                                                     LinkedHashMap<String, Expression> expressions)
             throws AssignMismatchException, OperationTypeException, VariableUninitializedException,
             OperationMismatchException, VariableTypeException , InvalidArrayMembersDeclaration {
+        Variable arrayMember = new Variable(arrayType.getType(),"", true); //Create a faux variable member which
+                                                                           // is of the type of the array
         for(String value: params){
-            validateValueExpression(value, expressions, arrayType);
+            value = value.trim();
+            validateValueExpression(value, expressions, arrayMember); //validate the value of the param agains the type
+                                                                      //of the array
         }
     }
 

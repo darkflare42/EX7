@@ -17,16 +17,27 @@ public class Variable implements Expression{
     public boolean m_isArray;
 
     /**
+     * Constructor for a variable declaration with an assignment.
+     * @param varType VariableEnum of the type of the Variable.
+     * @param varName String of the name of the Variable.
+     * @param isInitialized boolean value if the Variable is initialized.
+     * @throws VariableTypeException if varType is an invalid Variable type.
+     */
+    public Variable(VariableEnum varType, String varName, boolean isInitialized) throws VariableTypeException{
+        type = varType;
+        name = varName;
+        initialized = isInitialized;
+        m_isGlobal = false;
+    }
+
+    /**
      * Constructor for a variable declaration without a value.
      * @param varType String of the type of the Variable.
      * @param varName String of the name of the Variable.
      * @throws VariableTypeException if varType is an invalid Variable type.
      */
     public Variable (String varType, String varName) throws VariableTypeException {
-        type = VariableEnum.toEnum(varType);
-        name = varName;
-        initialized = false;
-        m_isGlobal = false;
+        this(VariableEnum.toEnum(varType), varName, false);
     }
 
     /**
@@ -37,12 +48,10 @@ public class Variable implements Expression{
      * @throws VariableTypeException if varType is an invalid Variable type.
      */
     public Variable (String varType, String varName, boolean isInitialized) throws VariableTypeException {
-        type = VariableEnum.toEnum(varType);
-        name = varName;
-        initialized = isInitialized;
-        m_isGlobal = false;
-
+        this(VariableEnum.toEnum(varType), varName, isInitialized);
     }
+
+
 
     /**
      * Constructor for an array declaration.
@@ -53,9 +62,7 @@ public class Variable implements Expression{
      * @throws VariableTypeException if varType is an invalid Variable type.
      */
     public Variable (String varType, String varName, boolean isInitialized, boolean isarray) throws VariableTypeException {
-        type = VariableEnum.toEnum(varType);
-        name = varName;
-        initialized = isInitialized;
+        this(VariableEnum.toEnum(varType), varName, isInitialized);
         m_isArray = isarray;
     }
 
