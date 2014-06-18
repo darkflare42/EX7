@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 
 /**
  * This class holds runs the validation algorithm on an sjava class
- * Created by Or Keren on 13/06/14.
  */
 public class SJavaValidator {
 

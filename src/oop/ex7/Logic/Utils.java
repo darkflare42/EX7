@@ -55,7 +55,8 @@ public class Utils {
      */
     public static boolean StringTryParse(String value){
         try {
-            value = value.substring(value.indexOf("\"") + 1, value.lastIndexOf("\""));
+            value = value.substring(value.indexOf(RegexConfig.DOUBLE_APOSTROPHE_CHAR) + 1,
+                    value.lastIndexOf(RegexConfig.DOUBLE_APOSTROPHE_CHAR));
             return true;
         }
         catch (IndexOutOfBoundsException ex){
@@ -71,7 +72,8 @@ public class Utils {
      */
     public static boolean CharTryParse(String value){
         try{
-            value = value.substring(value.indexOf("'") + 1, value.lastIndexOf("'"));
+            value = value.substring(value.indexOf(RegexConfig.APOSTROPHE_CHAR) + 1,
+                    value.lastIndexOf(RegexConfig.APOSTROPHE_CHAR));
             return value.length() <= 1;
         }
         catch (IndexOutOfBoundsException ex){
@@ -150,13 +152,12 @@ public class Utils {
         Matcher matcher = ExpressionTypeEnum.MEMBER_DECLARATION_PATTERN.matcher(variableDeclaration);
         if(matcher.lookingAt()){ //this is a member declaration
 
-            value = matcher.group(3);
+            value = matcher.group(ExpressionTypeEnum.VALUE_GROUP);
         }
         else{
             matcher = ExpressionTypeEnum.ARRAY_DECLARATION_PATTERN.matcher(variableDeclaration);
             if(matcher.lookingAt()){ //This is an array declaration
-
-                value = matcher.group(3);
+                value = matcher.group(ExpressionTypeEnum.VALUE_GROUP);
             }
             else{
                 throw new UnknownCodeLineException();
@@ -164,7 +165,7 @@ public class Utils {
         }
         if(value == null) value = "";
 
-        if(!value.equals("") && !value.contains("=")) throw new InvalidNameException();
+        if(!value.equals("") && !value.contains(""+RegexConfig.EQUALS_CHAR)) throw new InvalidNameException();
         return matcher;
     }
 
@@ -183,13 +184,13 @@ public class Utils {
      * @return The stripped name
      */
     public static String stripName(String name){
-        name = name.replace("-", "");
-        int indexOfBracket = name.indexOf("(");
+        name = name.replace(""+RegexConfig.MINUS_CHAR, "");
+        int indexOfBracket = name.indexOf(RegexConfig.SET_START);
         if(indexOfBracket != -1){
             name = name.substring(0, indexOfBracket);
             return name;
         }
-        indexOfBracket = name.indexOf("[");
+        indexOfBracket = name.indexOf(RegexConfig.SQUARE_BRACKETS_START);
         if(indexOfBracket != -1){
             name = name.substring(0, indexOfBracket);
         }
@@ -203,19 +204,22 @@ public class Utils {
      */
     public static String getArgsInBrackets(String paramsWithBrackets){
         String arguments = "";
-        int indexOfBrackets = paramsWithBrackets.indexOf("(");
+        int indexOfBrackets = paramsWithBrackets.indexOf(RegexConfig.SET_START);
         if(indexOfBrackets != -1){ //This is a function call
-            arguments = paramsWithBrackets.substring(indexOfBrackets+1, paramsWithBrackets.lastIndexOf(")"));
+            arguments = paramsWithBrackets.substring(indexOfBrackets+1,
+                    paramsWithBrackets.lastIndexOf(RegexConfig.SET_END));
             return arguments;
         }
-        indexOfBrackets = paramsWithBrackets.indexOf("{");
+        indexOfBrackets = paramsWithBrackets.indexOf(RegexConfig.BLOCK_START_CHAR);
         if(indexOfBrackets != -1){ //This is an array declaration
-            arguments = paramsWithBrackets.substring(indexOfBrackets+1, paramsWithBrackets.lastIndexOf("}"));
+            arguments = paramsWithBrackets.substring(indexOfBrackets+1,
+                    paramsWithBrackets.lastIndexOf(RegexConfig.BLOCK_END_CHAR));
             return arguments;
         }
-        indexOfBrackets = paramsWithBrackets.indexOf("[");
+        indexOfBrackets = paramsWithBrackets.indexOf(RegexConfig.SQUARE_BRACKETS_START);
         if(indexOfBrackets != -1){
-            arguments = paramsWithBrackets.substring(indexOfBrackets+1, paramsWithBrackets.lastIndexOf("]"));
+            arguments = paramsWithBrackets.substring(indexOfBrackets+1,
+                    paramsWithBrackets.lastIndexOf(RegexConfig.SQUARE_BRACKETS_END));
             return arguments;
         }
         return arguments;

@@ -21,7 +21,8 @@ public class Method implements Expression {
 
 
     /**
-     * Standard constructor - Creates a method object be defining a return type, a name and the argumnts declared in it's header.
+     * Standard constructor - Creates a method object be defining a return type, a name and the argumnts declared in
+     * it's header.
      * @param returnType String of the type the method returns, "void" if none.
      * @param methodName String of the name of the method.
      * @param args String of the members declared in the method declaration.
@@ -89,15 +90,12 @@ public class Method implements Expression {
         String argument;
         LinkedHashMap<String,Expression> newVariables= new LinkedHashMap<String, Expression>();
         for (String arg: arguments) {
-            boolean isArray = false;
             argument = arg.replace("\\s+", " ").trim();
-            argument = argument.replace(" []", "[] "); // TODO TESTER 137 best fix in the world
+            argument = argument.replace(" []", "[] ");
             if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){
                 throw new MethodBadArgsException();
             }
-            currentArgument = argument.split(" ",2);//TODO this can be a lot cleaner.
-                                                    //TODO instead of splitting by 'space', which is a bad idea, should look into matching patterns
-                                                    //TODO and dividing into groups of the match.
+            currentArgument = argument.split(" ",2);
             String variableName = currentArgument[1];
             if (variableName.trim().contains(" ")){
                 throw new InvalidMemberDeclaration();
@@ -125,7 +123,8 @@ public class Method implements Expression {
      * @throws MethodBadArgsCountException headerTypes has an invalid amount of values.
      * @throws MethodTypeMismatchException headerTypes has a value that mismatches headerExpressions.
      */
-    public boolean ValidateHeader (VariableEnum[] headerTypes) throws MethodBadArgsCountException, MethodTypeMismatchException {
+    public boolean ValidateHeader (VariableEnum[] headerTypes) throws MethodBadArgsCountException,
+            MethodTypeMismatchException {
         if(headerTypes[0] == VariableEnum.VOID && headerExpressions.size() == 0) //no params
             return true;
         if (headerExpressions.size() != headerTypes.length) {
@@ -182,12 +181,11 @@ public class Method implements Expression {
     }
 
     /**
-     * //TODO what is this copy pasta? why a method needs an assignment?
      * Assign a value to a Variable. Initializes the Variable (if it was not initialized).
      * @param assign VariableEnum to assign to the variable.
-     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of the Variable.
+     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of
+     * the Variable.
      */
-    // TODO there is a redundant method of the same functionality in VariableEnum.
     public void Assign (VariableEnum assign) throws AssignMismatchException{
         if (type == VariableEnum.VOID) {
             throw new AssignMismatchException();
@@ -202,13 +200,12 @@ public class Method implements Expression {
     }
 
     /**
-     * //TODO what is this copy pasta? why a method needs an assignment?
      * Assign the value of an expression to a Variable. Initializes the Variable (if it was not initialized).
      * @param assign Expression to assign its' value to the variable.
-     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of the Variable.
+     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of
+     * the Variable.
      * @throws VariableUninitializedException if assign is not an initialized Expression.
      */
-    // TODO there is a redundant method of the same functionality in VariableEnum.
     public void Assign (Expression assign) throws AssignMismatchException, VariableUninitializedException {
         if (!assign.isInitialized()) {
             throw new VariableUninitializedException();

@@ -61,7 +61,8 @@ public class Variable implements Expression{
      * @param isarray boolean value if the Variable is an array.
      * @throws VariableTypeException if varType is an invalid Variable type.
      */
-    public Variable (String varType, String varName, boolean isInitialized, boolean isarray) throws VariableTypeException {
+    public Variable (String varType, String varName, boolean isInitialized, boolean isarray)
+            throws VariableTypeException {
         this(VariableEnum.toEnum(varType), varName, isInitialized);
         m_isArray = isarray;
     }
@@ -69,7 +70,8 @@ public class Variable implements Expression{
     /**
      * Assign a value to a Variable. Initializes the Variable (if it was not initialized).
      * @param assign VariableEnum to assign to the variable.
-     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of the Variable.
+     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of
+     * the Variable.
      */
     // TODO there is a redundant method of the same functionality in VariableEnum.
     public void Assign (VariableEnum assign) throws AssignMismatchException {
@@ -86,7 +88,8 @@ public class Variable implements Expression{
     /**
      * Assign the value of an expression to a Variable. Initializes the Variable (if it was not initialized).
      * @param assign Expression to assign its' value to the variable.
-     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of the Variable.
+     * @throws oop.ex7.Expressions.Exceptions.AssignMismatchException if assign is a type that mismatches the type of
+     * the Variable.
      * @throws VariableUninitializedException if assign is not an initialized Expression.
      */
     // TODO there is a redundant method of the same functionality in VariableEnum.

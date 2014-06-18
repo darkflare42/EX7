@@ -20,6 +20,9 @@ public enum ExpressionTypeEnum {
 
     public static final Pattern MEMBER_DECLARATION_PATTERN = Pattern.compile(RegexConfig.MEMBER_DECLARATION_REGEX);
     public static final Pattern ARRAY_DECLARATION_PATTERN = Pattern.compile(RegexConfig.ARRAY_DECLARATION_REGEX);
+    public static final int NAME_GROUP = 2; //This is the group that holds the name after using the matcher
+    public static final int VALUE_GROUP = 3; //This is the group that holds the value after using matcher
+                                            //This needs to change if the pattern above changes
 
     /**
      * Given a string, check its' match against known expression types.

@@ -5,7 +5,7 @@ import oop.ex7.Expressions.Exceptions.OperationTypeException;
 import oop.ex7.Expressions.Exceptions.VariableUninitializedException;
 
 /**
- * Class to handle an operation of 2 Expressions.
+ * Class to handle an operation between 2 Expressions.
  */
 public class Operation {
 
@@ -16,9 +16,11 @@ public class Operation {
      * @param var2 VariableEnum of the RIGHT Expressions in the operation.
      * @return VariableEnum of the result of the operation.
      * @throws OperationTypeException if op is not a string of a valid operation.
-     * @throws OperationMismatchException if the operation was attempted on 2 Expressions that can't have the operation performed on them.
+     * @throws OperationMismatchException if the operation was attempted on 2 Expressions that can't have the operation
+     * performed on them.
      */
-    public static VariableEnum Operate(VariableEnum var1, String op, VariableEnum var2) throws OperationTypeException, OperationMismatchException {
+    public static VariableEnum Operate(VariableEnum var1, String op, VariableEnum var2) throws OperationTypeException,
+            OperationMismatchException {
         return ReturnType(var1, OperationEnum.toEnum(op), var2);
     }
 
@@ -29,10 +31,12 @@ public class Operation {
      * @param var2 Expression RIGHT to the operation.
      * @return VariableEnum of the result of the operation.
      * @throws OperationTypeException if op is not a string of a valid operation.
-     * @throws OperationMismatchException if the operation was attempted on 2 Expressions that can't have the operation performed on them.
+     * @throws OperationMismatchException if the operation was attempted on 2 Expressions that can't have the operation
+     * performed on them.
      * @throws VariableUninitializedException if var2 is not initialized.
      */
-    public static VariableEnum Operate(VariableEnum var1, String op, Expression var2) throws OperationTypeException, OperationMismatchException, VariableUninitializedException {
+    public static VariableEnum Operate(VariableEnum var1, String op, Expression var2) throws OperationTypeException,
+            OperationMismatchException, VariableUninitializedException {
         if (var2.isInitialized()) {
             return Operate(var1, op, var2.getType());
         }
@@ -46,10 +50,12 @@ public class Operation {
      * @param var2 VariableEnum of the RIGHT Expressions in the operation.
      * @return VariableEnum of the result of the operation.
      * @throws OperationTypeException if op is not a string of a valid operation.
-     * @throws OperationMismatchException if the operation was attempted on 2 Expressions that can't have the operation performed on them.
+     * @throws OperationMismatchException if the operation was attempted on 2 Expressions that can't have the operation
+     * performed on them.
      * @throws VariableUninitializedException if var1 or var2 are not initialized.
      */
-    public static VariableEnum Operate(Expression var1, String op, Expression var2) throws OperationTypeException, OperationMismatchException, VariableUninitializedException {
+    public static VariableEnum Operate(Expression var1, String op, Expression var2) throws OperationTypeException,
+            OperationMismatchException, VariableUninitializedException {
         if (var1.isInitialized() && var2.isInitialized()) {
             return Operate(var1.getType(), op, var2.getType());
         }
@@ -62,9 +68,11 @@ public class Operation {
      * @param op String of the operation.
      * @param var2 VariableEnum of the RIGHT Expressions in the operation.
      * @return VariableEnum of the result of the operation.
-     * @throws OperationMismatchException if the operation was attempted on 2 Expressions that can't have the operation performed on them.
+     * @throws OperationMismatchException if the operation was attempted on 2 Expressions that can't have the
+     * operation performed on them.
      */
-    private static VariableEnum ReturnType (VariableEnum var1, OperationEnum op, VariableEnum var2) throws OperationMismatchException {
+    private static VariableEnum ReturnType (VariableEnum var1, OperationEnum op, VariableEnum var2)
+            throws OperationMismatchException {
         if (var1 == var2) {
             switch (var1) {
                 case INT:

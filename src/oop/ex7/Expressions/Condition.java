@@ -18,13 +18,14 @@ public class Condition {
      * @param condition Condition string of a if / while block, excluding parentheses
      * @param expressions A LinkedHashMap collection of all the expressions the condition is supposed to know.
      * @return true if the condition is a valid boolean condition. Throws an exception otherwise.
-     * @throws oop.ex7.Expressions.Exceptions.ConditionExpressionNotBooleanException Condition represents a VariableType which is not boolean.
-     * @throws oop.ex7.Expressions.Exceptions.ConditionUnknownExpressionException Condition call an expression that does not exist.
-     * @throws oop.ex7.Expressions.Exceptions.VariableUninitializedException Condition contains a variable which is uninitialized.
-     * @throws oop.ex7.Expressions.Exceptions.ConditionArrayCallMismatch Condition refers to a variable as an array or vice versa.
+     * @throws oop.ex7.Expressions.Exceptions.ConditionExpressionNotBooleanException
+     * @throws oop.ex7.Expressions.Exceptions.ConditionUnknownExpressionException
+     * @throws oop.ex7.Expressions.Exceptions.VariableUninitializedException
+     * @throws oop.ex7.Expressions.Exceptions.ConditionArrayCallMismatch
      */
     public static boolean isValid (String condition, LinkedHashMap<String, Expression> expressions)
-            throws ConditionExpressionNotBooleanException, ConditionUnknownExpressionException, VariableUninitializedException, ConditionArrayCallMismatch {
+            throws ConditionExpressionNotBooleanException, ConditionUnknownExpressionException,
+            VariableUninitializedException, ConditionArrayCallMismatch {
         condition = condition.trim();
 
         if (condition.matches("(true|false)")) {

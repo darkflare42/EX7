@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 
 /**
  * This class passes over the s-java class, line by line and checks for valid method and member declarations only
- * Created by Or Keren on 13/06/14.
  */
 public class SyntaxCompiler {
 
@@ -32,7 +31,7 @@ public class SyntaxCompiler {
         //First stage - read all global declarations - members and methods
         compileMethodDeclaration(reader);  //Methods first so that we can check member assignment during this phase
         reader.reset();  //Move "pointer" of file to the start
-        compileMemberDeclaration(reader); //Call for member declaration compilation
+        compileGlobalMemberDeclaration(reader); //Call for member declaration compilation
 
 
         //If we have declared methods - run a deep check, otherwise we finished
@@ -91,9 +90,22 @@ public class SyntaxCompiler {
     /**
      * This method runs over all the file and checks member declaration only for compilation errors
      * @param reader The SJavaReader that reads through the current file
-     * @throws CompilationException
+     * @throws OperationTypeException
+     * @throws AssignMismatchException
+     * @throws VariableTypeException
+     * @throws OperationMismatchException
+     * @throws InvalidNameException
+     * @throws InvalidMemberDeclaration
+     * @throws InvalidArrayMembersDeclaration
+     * @throws VariableUninitializedException
+     * @throws UnknownCodeLineException
+     * @throws ExistingVariableName
+     * @throws UnknownMethodCallException
      */
-    private static void compileMemberDeclaration(SJavaReader reader) throws CompilationException{
+    private static void compileGlobalMemberDeclaration(SJavaReader reader) throws OperationTypeException,
+            AssignMismatchException, VariableTypeException, OperationMismatchException, InvalidNameException,
+            InvalidMemberDeclaration, InvalidArrayMembersDeclaration, VariableUninitializedException,
+            UnknownCodeLineException, ExistingVariableName, UnknownMethodCallException {
         String currLine;
         while(reader.hasNext()){
             currLine = reader.next();
@@ -136,7 +148,7 @@ public class SyntaxCompiler {
 
         String methodArgs = Utils.getArgsInBrackets(methodDeclaration[1]);
         String methodReturnType = Utils.stripName(methodDeclaration[0]);
-        boolean isReturnArray = (methodDeclaration[0].contains("["));
+        boolean isReturnArray = (methodDeclaration[0].contains(""+RegexConfig.SQUARE_BRACKETS_START));
 
 
         if(m_MethodMap.containsKey(methodName)) //If there is another global member with this name - exception
@@ -171,11 +183,11 @@ public class SyntaxCompiler {
 
         //Local variable declarations
         Matcher matcher = Utils.validateVariableDeclaration(line);
-        String name = matcher.group(2);
+        String name = matcher.group(ExpressionTypeEnum.NAME_GROUP);
         String[] splitDeclaration = line.split(" "); //split type and expression
         String type = Utils.stripName(splitDeclaration[0]);
-        boolean isArray = splitDeclaration[0].contains("[");
-        boolean isInitialized = line.contains("=");
+        boolean isArray = splitDeclaration[0].contains(""+RegexConfig.SQUARE_BRACKETS_START);
+        boolean isInitialized = line.contains(""+RegexConfig.EQUALS_CHAR);
 
         if(!Utils.checkValidVariableName(name))
             throw new InvalidNameException();
@@ -188,14 +200,15 @@ public class SyntaxCompiler {
 
                 //check types of values
                 String arrayValues = Utils.getArgsInBrackets(line).trim();
-                String[] splitArrayValues = arrayValues.split(",");
+                String[] splitArrayValues = arrayValues.split(RegexConfig.COMMA_SEPERATOR_CHAR);
                 if(!arrayValues.equals("")){ //non empty init of array
                     validateArrayInitialization(splitArrayValues,  new Variable(type, name, true), variableMap);
                 }
                 Utils.validArrayDeclaration(arrayValues); //Validate the array declaration
             }
             else{ //This isn't an array
-                String value = matcher.group(3).replaceAll("=", "").trim(); //Get the value that is assigned
+                String value = matcher.group(ExpressionTypeEnum.VALUE_GROUP).replaceAll(""+RegexConfig.EQUALS_CHAR,
+                        "").trim(); //Get the value that is assigned
                 validateValueExpression(value, variableMap, new Variable(type, name, true));
             }
         }
@@ -206,6 +219,30 @@ public class SyntaxCompiler {
     }
 
 
+    /**
+     * This function validates a method block - it goes over every line in the method block and calls the appropriate
+     * sub method which validates said line
+     * @param reader The SJavaReader that reads through the current file
+     * @param method The current method that is being validated
+     * @throws UnknownCodeLineException
+     * @throws AssignMismatchException
+     * @throws InvalidMemberDeclaration
+     * @throws ExistingVariableName
+     * @throws UnknownMethodCallException
+     * @throws VariableTypeException
+     * @throws VariableUninitializedException
+     * @throws UnknownVariableException
+     * @throws OperationTypeException
+     * @throws OperationMismatchException
+     * @throws MethodBadArgsCountException
+     * @throws MethodTypeMismatchException
+     * @throws ConditionUnknownExpressionException
+     * @throws ConditionExpressionNotBooleanException
+     * @throws ConditionArrayCallMismatch
+     * @throws InvalidArrayIndexException
+     * @throws InvalidArrayMembersDeclaration
+     * @throws InvalidNameException
+     */
     private static void validateMethodBlock(SJavaReader reader, Method method) throws
             UnknownCodeLineException, AssignMismatchException, InvalidMemberDeclaration, ExistingVariableName,
             UnknownMethodCallException, VariableTypeException, VariableUninitializedException, UnknownVariableException,
@@ -243,6 +280,17 @@ public class SyntaxCompiler {
         }
     }
 
+    /**
+     * This function validates a return statement
+     * @param line The line with the return statement
+     * @param method The current method we are validating
+     * @throws AssignMismatchException
+     * @throws OperationTypeException
+     * @throws VariableUninitializedException
+     * @throws OperationMismatchException
+     * @throws VariableTypeException
+     * @throws InvalidArrayMembersDeclaration
+     */
     private static void validateReturnStatement(String line, Method method) throws AssignMismatchException,
             OperationTypeException, VariableUninitializedException, OperationMismatchException, VariableTypeException,
             InvalidArrayMembersDeclaration {
@@ -269,7 +317,7 @@ public class SyntaxCompiler {
                 if(arguments.equals("")){ //We have an empty array initialization - valid
                     return;
                 }
-                String[] splitArguments = arguments.split(",");
+                String[] splitArguments = arguments.split(RegexConfig.COMMA_SEPERATOR_CHAR);
                 validateArrayInitialization(splitArguments, method, method.getAllExpressions());
             }
         }
@@ -277,6 +325,15 @@ public class SyntaxCompiler {
 
     }
 
+    /**
+     * This method validates a boolean condition (an if or while block)
+     * @param line The line that holds the boolean condition
+     * @param method The current method that is being validated
+     * @throws ConditionExpressionNotBooleanException
+     * @throws ConditionUnknownExpressionException
+     * @throws VariableUninitializedException
+     * @throws ConditionArrayCallMismatch
+     */
     private static void validateBoolCondition(String line, Method method) throws ConditionExpressionNotBooleanException,
             ConditionUnknownExpressionException, VariableUninitializedException, ConditionArrayCallMismatch {
 
@@ -284,6 +341,14 @@ public class SyntaxCompiler {
         Condition.isValid(condition, method.getAllExpressions());
     }
 
+    /**
+     * This function validates a method call
+     * @param line The line that holds the method call
+     * @param method The current method that is being validated
+     * @throws MethodBadArgsCountException
+     * @throws MethodTypeMismatchException
+     * @throws UnknownMethodCallException
+     */
     private static void validateMethodCall(String line, Method method) throws MethodBadArgsCountException,
             MethodTypeMismatchException, UnknownMethodCallException {
         String methodName = Utils.stripName(line);
@@ -297,27 +362,27 @@ public class SyntaxCompiler {
 
 
     /**
-     * Several options - normal assignment of a member
-     * mathematical operation between members/methods/values
-     * @param line
-     * @param method
+     * This function validates an assignment into some variable
+     * @param line The line that holds the assignment
+     * @param method The current method that is being validated
      * @throws UnknownVariableException
      * @throws VariableTypeException
      * @throws AssignMismatchException
      * @throws VariableUninitializedException
      * @throws OperationTypeException
      * @throws OperationMismatchException
+     * @throws InvalidArrayIndexException
      */
     private static void validateAssignment(String line, Method method) throws UnknownVariableException,
             VariableTypeException, AssignMismatchException, VariableUninitializedException, OperationTypeException,
             OperationMismatchException, InvalidArrayIndexException  {
 
-        String[] splitLine = line.split("="); //get variable, and operation string
+        String[] splitLine = line.split(""+RegexConfig.EQUALS_CHAR); //get variable, and operation string
         String name = splitLine[0].trim(); //get the name of the variable initialized
         String value = splitLine[1].substring(0, splitLine[1].length()-1).replaceAll(" ", "");
 
         //Check if it is an array
-        if(name.contains("[")){ //This is an array
+        if(name.contains(""+RegexConfig.SQUARE_BRACKETS_START)){ //This is an array
 
             String index = Utils.getArgsInBrackets(name); //Gets the index value
             name = Utils.stripName(name); //Gets the name of the array
@@ -332,8 +397,7 @@ public class SyntaxCompiler {
             }
 
             Variable array = (Variable)getExpression(name, method.getAllExpressions());
-            Variable arrayElementVar = new Variable(array.getType(),
-                    "", array.isInitialized());
+            Variable arrayElementVar = new Variable(array.getType(), "", array.isInitialized());
 
             //Validate the value inserted into the element of the array
             validateValueExpression(value, method.getAllExpressions(), arrayElementVar);
@@ -351,7 +415,14 @@ public class SyntaxCompiler {
     /**
      * This function validates any expression that is assigned or returned
      * @param valueExpression - without ';'
-     * @return
+     * @param methodMembers The members that the method "sees"
+     * @param insertInto The expression that we are assigning into (a variable, or a method)
+     * @return The Enum that represents the type that the valueExpression is equal to
+     * @throws OperationMismatchException
+     * @throws OperationTypeException
+     * @throws VariableUninitializedException
+     * @throws VariableTypeException
+     * @throws AssignMismatchException
      */
     private static VariableEnum validateValueExpression(String valueExpression, LinkedHashMap<String,
             Expression> methodMembers, Expression insertInto)
@@ -362,11 +433,11 @@ public class SyntaxCompiler {
         Matcher varOperation = RegexConfig.VAR_MATH_OP.matcher(valueExpression);
         if(varOperation.lookingAt()){ //This means we have a math operation
             //group12 is the operation char
-            String opType = varOperation.group(12);
+            String opType = varOperation.group(RegexConfig.OPERATOR_GROUP);
             //group1 is the left operator
-            String op1 = varOperation.group(1);
+            String op1 = varOperation.group(RegexConfig.FIRST_ELEMENT);
             //group13 is the right operator
-            String op2 = varOperation.group(13);
+            String op2 = varOperation.group(RegexConfig.SECOND_ELEMENT);
 
             op1 = Utils.stripName(op1);
             op2 = Utils.stripName(op2);
@@ -378,7 +449,7 @@ public class SyntaxCompiler {
         else{ //normal assignment - either function call, member call, value or array
             //check if it is an array
 
-            if(valueExpression.contains("{")){ //Return array type and deal with it "higher up"
+            if(valueExpression.contains(""+RegexConfig.BLOCK_START_CHAR)){ //Return array type and send it "higher up"
                 if(!insertInto.isArray()) // we are declaring an array inside a non array variable
                     throw new AssignMismatchException();
                 return VariableEnum.ARRAY_TYPE;
@@ -390,7 +461,7 @@ public class SyntaxCompiler {
                     insertInto.Assign(Utils.getValueEnum(valueExpression.trim()));
                     return Utils.getValueEnum(valueExpression.trim());
                 }
-                if(valueExpression.contains("[")){ //we are sending an element of an array
+                if(valueExpression.contains(""+RegexConfig.SQUARE_BRACKETS_START)){ //sending an element of an array
                     ex = new Variable(ex.getType(), "", true); //create a variable that represents the array element
                 }
                 insertInto.Assign(ex);
@@ -401,14 +472,27 @@ public class SyntaxCompiler {
     }
 
 
+    /**
+     * This function retrieves the Expression (Variable or Method) from within the members and methods that the method
+     * "sees"
+     * @param name The name of the expression we are looking for
+     * @param methodMembers The expression map that the method "sees"
+     * @return The expression
+     */
     private static Expression getExpression(String name, LinkedHashMap<String, Expression> methodMembers){
         name = Utils.stripName(name);
-        Expression ex = getGlobalExpression(name);
-        if(ex == null && !methodMembers.isEmpty())
+        Expression ex = getGlobalExpression(name); //First check for global members
+        if(ex == null && !methodMembers.isEmpty()) //If it isn't a global expression look inside the method
             ex = methodMembers.get(name);
         return ex;
+
     }
 
+    /**
+     * This method retrieves the Expression from within the global members or methods
+     * @param name The name of the expression we are looking for
+     * @return The expression
+     */
     private static Expression getGlobalExpression(String name){
         Expression ex = m_MemberMap.get(name);
         if(ex == null)
@@ -416,8 +500,16 @@ public class SyntaxCompiler {
         return ex;
     }
 
-    private static VariableEnum[] getParameterTypes(String line, LinkedHashMap<String, Expression> methodMembers){
-        String[] params = line.split(",");
+    /**
+     * This function receives a line that holds the parameters and returns an array of VariableEnum which represent
+     * the types of the parameters
+     * @param parameterLine The line that holds the parameters
+     * @param methodMembers The members that the method "sees"
+     * @return An array of VariableEnum types that represent the types of all the parameters
+     */
+    private static VariableEnum[] getParameterTypes(String parameterLine,
+                                                    LinkedHashMap<String, Expression> methodMembers){
+        String[] params = parameterLine.split(RegexConfig.COMMA_SEPERATOR_CHAR);
         VariableEnum[] types = new VariableEnum[params.length];
         int index = 0;
         for(String param: params){
@@ -433,7 +525,19 @@ public class SyntaxCompiler {
         return types;
     }
 
-
+    /**
+     * This function validates an array initialization, it receives paramters, the type of the array and known
+     * expressions and makes sure that each parameter can be inserted into the type of the array
+     * @param params The parameters that we want to insert into the array
+     * @param arrayType The type of the array
+     * @param expressions The known expressions that the array "sees"
+     * @throws AssignMismatchException
+     * @throws OperationTypeException
+     * @throws VariableUninitializedException
+     * @throws OperationMismatchException
+     * @throws VariableTypeException
+     * @throws InvalidArrayMembersDeclaration
+     */
     private static void validateArrayInitialization(String[] params, Expression arrayType,
                                                     LinkedHashMap<String, Expression> expressions)
             throws AssignMismatchException, OperationTypeException, VariableUninitializedException,
@@ -447,6 +551,13 @@ public class SyntaxCompiler {
         }
     }
 
+    /**
+     * This method checks if a member exists within the variableMap, this allows us to check for (and allow) duplicates
+     * @param memberName The name of the member we are looking for
+     * @param variableMap The known expressions that the method sees
+     * @param isGlobal Global member or a local member
+     * @return true if it exists and false if it doesn't
+     */
     private static boolean checkMemberExists(String memberName, LinkedHashMap<String, Expression> variableMap,
                                         boolean isGlobal){
         if(isGlobal){ //we are defining a global variable
@@ -461,6 +572,18 @@ public class SyntaxCompiler {
         return true;
     }
 
+    /**
+     * This function receives two elements and a mathematical operation (-+*\) and returns the VariableEnum type of the
+     * result of the operation
+     * @param firstElement The first element in the operation
+     * @param secondElement The second element in the operation
+     * @param operator The actual operator
+     * @param knownExpressions The known expressions
+     * @return The Type of the result of the operation
+     * @throws OperationMismatchException
+     * @throws OperationTypeException
+     * @throws VariableUninitializedException
+     */
     private static VariableEnum getOperationType(String firstElement, String secondElement, String operator,
                                                  LinkedHashMap<String, Expression> knownExpressions) throws
             OperationMismatchException, OperationTypeException, VariableUninitializedException {
@@ -472,12 +595,13 @@ public class SyntaxCompiler {
             operationResultType =  Operation.Operate(firstExpression, operator, secondExpression);
         }
         if(firstExpression == null && secondExpression == null){ //both actual values
-            operationResultType =  Operation.Operate(Utils.getValueEnum(firstElement), operator, Utils.getValueEnum(secondElement));
+            operationResultType =  Operation.Operate(Utils.getValueEnum(firstElement), operator,
+                    Utils.getValueEnum(secondElement));
         }
-        if(firstExpression == null && secondExpression != null){
+        if(firstExpression == null && secondExpression != null){ //one actual value the other an expression
             operationResultType = Operation.Operate(Utils.getValueEnum(firstElement), operator, secondExpression);
         }
-        if(firstExpression != null && secondExpression == null){
+        if(firstExpression != null && secondExpression == null){ //one actual value, the other an expression
             operationResultType = Operation.Operate(Utils.getValueEnum(secondElement), operator, firstExpression);
         }
         return  operationResultType;
