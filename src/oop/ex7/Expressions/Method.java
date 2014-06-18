@@ -88,30 +88,32 @@ public class Method implements Expression {
         String[] arguments = args.split(",");
         String[] currentArgument;
         String argument;
+        boolean variableIsArray;
+        String variableType;
         LinkedHashMap<String,Expression> newVariables= new LinkedHashMap<String, Expression>();
         for (String arg: arguments) {
-            argument = arg.replace("\\s+", " ").trim();
-            argument = argument.replace(" []", "[] ");
+            argument = arg.trim();
             if(ExpressionTypeEnum.checkType(argument + ";") != ExpressionTypeEnum.MEM_DECLARATION){
                 throw new MethodBadArgsException();
             }
             currentArgument = argument.split(" ",2);
-            String variableName = currentArgument[1];
-            if (variableName.trim().contains(" ")){
+            if (currentArgument[1].trim().contains(" ")){
                 throw new InvalidMemberDeclaration();
             }
 
-            if(newVariables.containsKey(variableName)){ //
+            if(newVariables.containsKey(currentArgument[1])){
                 throw new ExistingVariableName();
             }
-            //check if it is an array
+
             if(currentArgument[0].matches(RegexConfig.ARRAY_TYPE_CALL_REGEX)){ //this is an array
-                String type = currentArgument[0].substring(0, currentArgument[0].indexOf("["));
-                newVariables.put(variableName, new Variable(type, variableName, true, true));
+                variableType = currentArgument[0].substring(0, currentArgument[0].indexOf("["));
+                variableIsArray = true;
             }
-            else{ //normal declaration
-                newVariables.put(variableName, new Variable(currentArgument[0], variableName, true));
+            else{ //this is a normal variable
+                variableType = currentArgument[0];
+                variableIsArray = false;
             }
+            newVariables.put(currentArgument[1], new Variable(variableType, currentArgument[1], true, variableIsArray));
         }
         return newVariables;
     }
