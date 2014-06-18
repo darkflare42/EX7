@@ -127,8 +127,13 @@ public class Variable implements Expression{
         return initialized;
     }
 
-    public void setIsInitialized(){
-       initialized = true;
+
+    /**
+     * This function sets if the current variable is initialized or not according to the param
+     * @param isInitialized The boolean to set initialized to
+     */
+    public void setIsInitialized(boolean isInitialized){
+       initialized = isInitialized;
     }
 
     /**

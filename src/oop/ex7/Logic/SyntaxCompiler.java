@@ -166,13 +166,12 @@ public class SyntaxCompiler {
             for(String arg: arguments){
                 arg = arg.trim();
                 Variable vr = validateMemberDeclaration(arg+";", params, false);
-                vr.setIsInitialized();
+                vr.setIsInitialized(true);
             }
         }
 
         if(m_MethodMap.containsKey(methodName)) //If there is another global member with this name - exception
             throw new ExistingMethodNameException();
-        //m_MethodMap.put(methodName, new Method(methodReturnType, methodName, methodArgs, isReturnArray));
         m_MethodMap.put(methodName, new Method(methodReturnType, methodName, params, isReturnArray));
 
     }
