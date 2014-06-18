@@ -105,8 +105,8 @@ public class SyntaxCompiler {
     }
 
     /**
-     * This method 
-     * @param line
+     * This method validates a method declaration
+     * @param line The actual declaration line from the sjava file
      * @throws VariableTypeException
      * @throws MethodBadArgsException
      * @throws ExistingMethodNameException
@@ -138,15 +138,24 @@ public class SyntaxCompiler {
     }
 
     /**
-     * Validates a member declaration
-     * @param line The line of code which is a declaration of a variable
+     * This method validates a member declaration, whether it is done "globally" or it is done locally within a block
+     * @param line The actual declaration line from the sjava file
+     * @param variableMap The variable map that is currently available to the block
+     * @param isGlobal If we are declaring a global variable or not
      * @throws InvalidMemberDeclaration
      * @throws VariableTypeException
      * @throws ExistingVariableName
      * @throws AssignMismatchException
      * @throws UnknownMethodCallException
+     * @throws VariableUninitializedException
+     * @throws InvalidArrayMembersDeclaration
+     * @throws OperationMismatchException
+     * @throws OperationTypeException
+     * @throws InvalidNameException
+     * @throws UnknownCodeLineException
      */
-    private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap, boolean isGlobal)
+    private static void validateMemberDeclaration(String line, LinkedHashMap<String, Expression> variableMap,
+                                                  boolean isGlobal)
             throws InvalidMemberDeclaration, VariableTypeException,
             ExistingVariableName, AssignMismatchException, UnknownMethodCallException, VariableUninitializedException,
             InvalidArrayMembersDeclaration, OperationMismatchException, OperationTypeException, InvalidNameException,
@@ -155,40 +164,23 @@ public class SyntaxCompiler {
         String name;
         Matcher matcher = Utils.validateVariableName(line);
         name = matcher.group(2);
-
         String[] splitDeclaration = line.split(" "); //split type and expression
+        String type = Utils.stripName(splitDeclaration[0]);
+        int index = line.indexOf('='); //check if the is includes an assignment
 
-        //TODO: Check name against saved expressions
-
-        int index = line.indexOf('=');
-
-        if(index == -1){ //No initialization, just definition
-            if(isGlobal){ //we are defining a global variable
-                if(variableMap.containsKey(name))
-                    throw new ExistingVariableName();
-            }
-            else{ //we are defining a local variable
-                if(variableMap.containsKey(name) && !variableMap.get(name).isGlobal())
-                    throw new ExistingVariableName();
-
-            }
+        if(index == -1){ //No assignment, just definition
+            if(!checkMemberExists(name, variableMap, isGlobal))
+                throw new ExistingVariableName();
+            boolean isArray = splitDeclaration[0].matches(RegexConfig.ARRAY_TYPE_CALL_REGEX);
             //TODO: DOUBLE CHECK Matcher already checks if its an array declaration - can use it
-            if(splitDeclaration[0].matches(RegexConfig.ARRAY_TYPE_CALL_REGEX)){ //This is an array
-               String type = splitDeclaration[0].substring(0, splitDeclaration[0].indexOf("["));
-               Variable vr = new Variable(type, name, false, true);
-               vr.setGlobal(isGlobal);
-               variableMap.put(name, vr);
-            }
-            else{
-                Variable vr = new Variable(splitDeclaration[0], name, false);
-                vr.setGlobal(isGlobal);
-                variableMap.put(name, vr);
-            }
+            Variable vr = new Variable(type, name, false, isArray);
+            vr.setGlobal(isGlobal);
+            variableMap.put(name, vr);
+
         }
         else{ //Initialization of the member
             //TODO DOUBLE CHECK, Matcher already checks if its an array declaration
             if(splitDeclaration[0].contains("[")){ //this is an array
-                String type = splitDeclaration[0].substring(0, splitDeclaration[0].indexOf("["));
                 boolean initialized;
                 if(variableMap.containsKey(name))
                     throw new ExistingVariableName();
@@ -209,7 +201,7 @@ public class SyntaxCompiler {
             }
             else{ //This isn't an array
                 String value = matcher.group(3).replaceAll("=", "").trim();
-                String type = splitDeclaration[0];
+
                 validateValueExpression(value,
                         variableMap, new Variable(type, name, true));
 
@@ -498,6 +490,21 @@ public class SyntaxCompiler {
         for(String value: params){
             validateValueExpression(value, expressions, arrayType);
         }
+    }
+
+    private static boolean checkMemberExists(String memberName, LinkedHashMap<String, Expression> variableMap,
+                                        boolean isGlobal){
+        if(isGlobal){ //we are defining a global variable
+            if(variableMap.containsKey(memberName))
+                return false;
+        }
+        else{ //we are defining a local variable
+            if(variableMap.containsKey(memberName) && !variableMap.get(memberName).isGlobal())
+                return false;
+
+        }
+        return true;
+
     }
 
 
