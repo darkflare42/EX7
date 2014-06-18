@@ -214,9 +214,7 @@ public class Method implements Expression {
         if (!assign.isInitialized()) {
             throw new VariableUninitializedException();
         }
-        if (assign.getType()!=type) {
-            throw new VariableAssignMismatchException();
-        }
+        Assign(assign.getType());
     }
 
     /**

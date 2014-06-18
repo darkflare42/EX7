@@ -66,11 +66,8 @@ public class Variable implements Expression{
      */
     // TODO there is a redundant method of the same functionality in VariableEnum.
     public void Assign (VariableEnum assign) throws VariableAssignMismatchException{
-
-
         if(type != assign){
-            if(type == VariableEnum.DOUBLE && assign == VariableEnum.INT) return; //you can insert an int into a double
-            //All other situations - exception
+            if(type == VariableEnum.DOUBLE && assign == VariableEnum.INT) return;
             throw new VariableAssignMismatchException();
         }
         else if(m_isArray)
@@ -90,10 +87,7 @@ public class Variable implements Expression{
         if (!assign.isInitialized()) {
             throw new VariableUninitializedException();
         }
-        if (assign.getType()!=type) {
-            throw new VariableAssignMismatchException();
-        }
-        initialized = true;
+        Assign(assign.getType());
     }
 
     /**
