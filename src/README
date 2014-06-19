@@ -15,7 +15,6 @@ Logic Package       - SJavaValidator.java - Class to attempt reading from the fi
                     - RegexConfig.java    - Class to hold and handle all Regex "Magic Numbers" and properties.
 
 Reader Package      - SJavaReader.java    - Wrapper class to Java's scanner. Used to read from the given file.
-                    - IOException.java    - Exception class for when the reader can't properly read from the given file.
 
 Expressions Package - Expression.java     - Interface Class that both Variable and Method implement.
                       Variable.java       - Class to represent global or function members.

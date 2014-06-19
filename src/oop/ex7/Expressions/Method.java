@@ -64,7 +64,7 @@ public class Method implements Expression {
         }
         int i = 0;
         for (Expression innerExpression : headerExpressions.values()) {
-            if (innerExpression.getType() != headerTypes[i]) {
+            if (i >= headerTypes.length || innerExpression.getType() != headerTypes[i]) {
                 throw new MethodTypeMismatchException();
             }
             i++;
