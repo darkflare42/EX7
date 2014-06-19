@@ -85,9 +85,9 @@ public class SJavaReader {
     public void moveToEndOfMethod(){
         int counter = 0;
         do{
-            if(m_currLine.contains("{"))
+            if(m_currLine.contains(""+RegexConfig.BLOCK_START_CHAR))
                 counter++;
-            if(m_currLine.contains("}"))
+            if(m_currLine.contains(""+RegexConfig.BLOCK_END_CHAR))
                 counter--;
             if(counter > 0){
                 next();
@@ -115,9 +115,9 @@ public class SJavaReader {
         String methodBlock = "";
         int counter = 1;
         do{
-            if(m_currLine.contains("{"))
+            if(m_currLine.contains(""+RegexConfig.BLOCK_START_CHAR))
                 counter++;
-            if(m_currLine.contains("}"))
+            if(m_currLine.contains(""+RegexConfig.BLOCK_END_CHAR))
                 counter--;
             if(counter > 0){
                 methodBlock += m_currLine +"\n"; //Insert the actual code of the method + a newline break

@@ -5,6 +5,7 @@ import oop.ex7.Expressions.Exceptions.ConditionExpressionNotBooleanException;
 import oop.ex7.Expressions.Exceptions.ConditionUnknownExpressionException;
 import oop.ex7.Expressions.Exceptions.VariableUninitializedException;
 import oop.ex7.Logic.RegexConfig;
+import oop.ex7.Logic.Utils;
 
 import java.util.LinkedHashMap;
 
@@ -28,7 +29,7 @@ public class Condition {
             VariableUninitializedException, ConditionArrayCallMismatch {
         condition = condition.trim();
 
-        if (condition.matches("(true|false)")) {
+        if (condition.matches(RegexConfig.BOOLEAN_VALUES)) {
             // Is the string a boolean.
             return true;
         }
@@ -46,7 +47,8 @@ public class Condition {
                     } else {
                         throw new ConditionExpressionNotBooleanException();
                     }
-                } else {
+                }
+                else{
                     throw new VariableUninitializedException();
                 }
             }
@@ -54,7 +56,7 @@ public class Condition {
 
         if (condition.matches(RegexConfig.ARRAY_CALL_REGEX)) {
             // Is the string an array.
-            Variable variable = (Variable)expressions.get(condition.substring(0, condition.indexOf("[")));
+            Variable variable = (Variable)expressions.get(Utils.stripName(condition));
             if (variable != null) {
                 if (!variable.isArray()) {
                     throw new ConditionArrayCallMismatch();
@@ -72,7 +74,7 @@ public class Condition {
         }
 
         if (condition.matches(RegexConfig.METHOD_REGEX)) {
-            Method method = (Method)expressions.get(condition.substring(0,condition.indexOf("(")).trim());
+            Method method = (Method)expressions.get(Utils.stripName(condition));
             if (method != null) {
                 if (method.getType() == VariableEnum.BOOLEAN) {
                     return true;

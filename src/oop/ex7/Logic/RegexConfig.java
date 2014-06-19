@@ -39,7 +39,6 @@ public class RegexConfig {
     public static final String DOUBLE_CALL_REGEX = MINUS_OR_NOT + "(\\d+\\.\\d+)";
     public static final String INT_CALL_REGEX = MINUS_OR_NOT + "(\\d+)";
     public static final String STRING_CALL_REGEX = MINUS_OR_NOT + "[\"][\\w]+[\"]";
-    public static final String ARRAY_TYPE_CALL_REGEX = VariableEnum.GetRegexSet(false) + "\\[\\]";
     public static final String BLOCK_CALL_REGEX = BLOCK_TYPES + " ?\\(.*\\) ?\\"+ BLOCK_START_CHAR;
 
 

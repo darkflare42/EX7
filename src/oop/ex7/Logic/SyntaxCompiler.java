@@ -72,7 +72,8 @@ public class SyntaxCompiler {
     private static void compileMethodDeclaration(SJavaReader reader) throws ExistingMethodNameException,
             ExistingVariableName, VariableTypeException, UnknownCodeLineException, InvalidNameException,
             MethodBadArgsException, InvalidMemberDeclaration, AssignMismatchException, OperationMismatchException,
-            VariableUninitializedException, UnknownMethodCallException, InvalidArrayMembersDeclaration, OperationTypeException {
+            VariableUninitializedException, UnknownMethodCallException, InvalidArrayMembersDeclaration,
+            OperationTypeException {
 
         String currLine;
         while(reader.hasNext()){
@@ -144,8 +145,9 @@ public class SyntaxCompiler {
      */
     private static void validateMethodDeclaration(String line) throws VariableTypeException, MethodBadArgsException,
             ExistingMethodNameException, ExistingVariableName, InvalidNameException, UnknownCodeLineException,
-            InvalidMemberDeclaration, AssignMismatchException, OperationMismatchException, VariableUninitializedException,
-            UnknownMethodCallException, InvalidArrayMembersDeclaration, OperationTypeException {
+            InvalidMemberDeclaration, AssignMismatchException, OperationMismatchException,
+            VariableUninitializedException, UnknownMethodCallException, InvalidArrayMembersDeclaration,
+            OperationTypeException {
 
         String[] methodDeclaration = line.split(" ", 2); //split type and method name+params
         String methodName = Utils.stripName(methodDeclaration[1]).trim();
